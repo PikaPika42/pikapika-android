@@ -3,6 +3,7 @@ package com.wamp42.pokeradar;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -23,6 +24,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.wamp42.pokeradar.data.DataManager;
+import com.wamp42.pokeradar.data.PokemonCallback;
+import com.wamp42.pokeradar.data.PokemonManager;
+import com.wamp42.pokeradar.models.PokemonLocation;
+
+import java.io.IOException;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -35,16 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        //Menu settings
-        final DrawerLayout menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        Button drawerButton = (Button)findViewById(R.id.button_drawer_menu);
-        drawerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!menuDrawerLayout.isDrawerOpen(GravityCompat.START))
-                    menuDrawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
+        initMenu();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -144,6 +146,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    private void initMenu(){
+        //Menu settings
+        final DrawerLayout menuDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if(menuDrawerLayout != null) {
+            Button drawerButton = (Button) findViewById(R.id.button_drawer_menu);
+            drawerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!menuDrawerLayout.isDrawerOpen(GravityCompat.START))
+                        menuDrawerLayout.openDrawer(GravityCompat.START);
+                }
+            });
+        }
+    }
+
     private void initMapResources(){
         if(mMap == null || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  != PackageManager.PERMISSION_GRANTED) )
             return;
@@ -151,9 +168,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (currentLocation != null) {
             LatLng currentPos = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 17));
         }
     }
 
+    public void onMainActionClick(View view) {
+        //PokemonManager.drawPokemonLocations(this,mMap, DataManager.getDummyPokemonsLocation());
+        DataManager dataManager = DataManager.getDataManager();
+        dataManager.getPokemons(0,0,pokemonCallback);
+    }
 
+    /**
+     * Try to call drawPokemonLocations in the main thread. This is because we are doing async request and
+     * the map drawing must be don in the main thread.
+     * @param pokemonList
+     */
+    public void drawPokemonListOnMainThread(final List<PokemonLocation> pokemonList){
+        if(mMap != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    PokemonManager.drawPokemonLocations(MapsActivity.this, mMap, pokemonList);
+                }
+            });
+        }
+    }
+
+    final PokemonCallback<List<PokemonLocation>> pokemonCallback = new PokemonCallback<List<PokemonLocation>>() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            //TODO: show error message
+        }
+
+        @Override
+        public void onResponse(Call call, Response response, List<PokemonLocation> pokemonList) throws IOException {
+            drawPokemonListOnMainThread(pokemonList);
+        }
+    };
 }
