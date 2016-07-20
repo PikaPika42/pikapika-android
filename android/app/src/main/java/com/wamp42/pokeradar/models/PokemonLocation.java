@@ -28,7 +28,7 @@ public class PokemonLocation {
         this.lng = lng;
     }
 
-    public void drawMark(GoogleMap mMap, Context context){
+    public void drawMark(GoogleMap map, Context context){
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(new LatLng(lat, lng));
         markerOptions.title(name+" - Time left: " + timeleft + "s");
@@ -36,7 +36,7 @@ public class PokemonLocation {
         int iconId = context.getResources().getIdentifier(name.toLowerCase()+"_"+getStrId()+"_icon", "drawable", context.getPackageName());
         if(iconId > 0)
             markerOptions.icon(BitmapDescriptorFactory.fromResource(iconId));
-        mMap.addMarker(markerOptions);
+        map.addMarker(markerOptions);
     }
 
     public String getStrId() {

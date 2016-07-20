@@ -2,6 +2,7 @@ package com.wamp42.pokeradar;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -22,6 +23,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wamp42.pokeradar.data.DataManager;
@@ -40,6 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
+    private Location lastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +94,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
 
             // Add a marker in a city and move the camera
             //LatLng gdlLocation = new LatLng(20.666, -103.3685);
@@ -119,12 +123,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == MY_LOCATION_REQUEST_CODE) {
-            if (permissions.length == 1 &&
-                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED)
-                    mMap.setMyLocationEnabled(true);
+            if (grantResults.length > 0 &&  grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //enable map location and set the current position
+                    initMapResources();
             } else {
                 // TODO: Permission was denied. Display an error message.
             }
@@ -165,16 +166,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(mMap == null || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  != PackageManager.PERMISSION_GRANTED) )
             return;
 
-        Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (currentLocation != null) {
-            LatLng currentPos = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        mMap.setMyLocationEnabled(true);
+
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (lastLocation != null) {
+            LatLng currentPos = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 17));
+        } else {
+            //request position and update map
         }
     }
 
     public void onMainActionClick(View view) {
         //PokemonManager.drawPokemonLocations(this,mMap, DataManager.getDummyPokemonsLocation());
         DataManager dataManager = DataManager.getDataManager();
+        mMap.clear();
         dataManager.getPokemons(0,0,pokemonCallback);
     }
 
@@ -189,6 +195,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void run() {
                     PokemonManager.drawPokemonLocations(MapsActivity.this, mMap, pokemonList);
+                    if (lastLocation != null) {
+                        mMap.addCircle(new CircleOptions()
+                                .center(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                                .radius(500) //radio in meters
+                                .strokeColor(ContextCompat.getColor(MapsActivity.this,R.color.colorPrimary))
+                                .strokeWidth(5)
+                                .fillColor(0x5500b6ff));
+                    }
                 }
             });
         }
