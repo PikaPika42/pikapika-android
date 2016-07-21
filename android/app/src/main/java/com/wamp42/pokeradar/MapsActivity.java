@@ -199,14 +199,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void run() {
                     PokemonManager.drawPokemonLocations(MapsActivity.this, mMap, pokemonList);
-                    if (lastLocation != null) {
+                    //add a circle
+                    /*if (lastLocation != null) {
                         mMap.addCircle(new CircleOptions()
                                 .center(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
                                 .radius(500) //radio in meters
                                 .strokeColor(ContextCompat.getColor(MapsActivity.this,R.color.colorPrimary))
                                 .strokeWidth(5)
                                 .fillColor(0x5500b6ff));
-                    }
+                    }*/
                 }
             });
         }
