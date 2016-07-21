@@ -1,6 +1,7 @@
 package com.wamp42.pokeradar;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -48,6 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location lastLocation;
+    private ProgressDialog loadingProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +187,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //PokemonManager.drawPokemonLocations(this,mMap, DataManager.getDummyPokemonsLocation());
         DataManager dataManager = DataManager.getDataManager();
         mMap.clear();
+        loadingProgressDialog = PokemonManager.showLoading(this);
         dataManager.getPokemons(0,0,pokemonCallback);
     }
 
@@ -216,11 +219,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final PokemonCallback<List<PokemonLocation>> pokemonCallback = new PokemonCallback<List<PokemonLocation>>() {
         @Override
         public void onFailure(Call call, IOException e) {
+            if(loadingProgressDialog != null)
+                loadingProgressDialog.dismiss();
             //TODO: show error message
+
         }
 
         @Override
         public void onResponse(Call call, Response response, List<PokemonLocation> pokemonList) throws IOException {
+            if(loadingProgressDialog != null)
+                loadingProgressDialog.dismiss();
             drawPokemonListOnMainThread(pokemonList);
         }
     };
@@ -228,6 +236,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public boolean onMarkerClick(Marker marker) {
         if(PokemonManager.markersMap.containsKey(marker.getId())) {
+            //try to play the pokemon sound
             String audioName = "raw/pokemon_" + PokemonManager.markersMap.get(marker.getId());
             int soundId = getResources().getIdentifier(audioName , null, getPackageName());
             if (soundId > 0) {

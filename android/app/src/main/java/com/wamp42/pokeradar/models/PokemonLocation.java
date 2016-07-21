@@ -46,6 +46,7 @@ public class PokemonLocation {
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedIcon));
         }
         Marker marker = map.addMarker(markerOptions);
+        //maps the marker and the pokemon id
         PokemonManager.markersMap.put(marker.getId(),idStr);
     }
 
