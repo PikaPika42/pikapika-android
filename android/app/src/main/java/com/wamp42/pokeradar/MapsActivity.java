@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wamp42.pokeradar.data.DataManager;
 import com.wamp42.pokeradar.data.PokemonCallback;
@@ -39,7 +41,8 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
 
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
     private GoogleMap mMap;
@@ -91,6 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        googleMap.setOnMarkerClickListener(this);
         mMap = googleMap;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -219,4 +223,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             drawPokemonListOnMainThread(pokemonList);
         }
     };
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if(PokemonManager.markersMap.containsKey(marker.getId())) {
+            String audioName = "raw/pokemon_" + PokemonManager.markersMap.get(marker.getId());
+            int soundId = getResources().getIdentifier(audioName , null, getPackageName());
+            if (soundId > 0) {
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), soundId);
+                mp.start();
+            }
+        }
+        return false;
+    }
 }

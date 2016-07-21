@@ -1,12 +1,17 @@
 package com.wamp42.pokeradar.models;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+import com.wamp42.pokeradar.data.PokemonManager;
 
 /**
  * Created by flavioreyes on 7/19/16.
@@ -33,10 +38,15 @@ public class PokemonLocation {
         markerOptions.position(new LatLng(lat, lng));
         markerOptions.title(name+" - Time left: " + timeleft + "s");
         //set the marker-icon
-        int iconId = context.getResources().getIdentifier(name.toLowerCase()+"_"+getStrId()+"_icon", "drawable", context.getPackageName());
-        if(iconId > 0)
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(iconId));
-        map.addMarker(markerOptions);
+        String idStr = getStrId();
+        int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
+        if(iconId > 0) {
+            Bitmap bitmapIcon = BitmapFactory.decodeResource(context.getResources(),iconId);
+            Bitmap resizedIcon = Bitmap.createScaledBitmap(bitmapIcon, 150, 150, false);
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedIcon));
+        }
+        Marker marker = map.addMarker(markerOptions);
+        PokemonManager.markersMap.put(marker.getId(),idStr);
     }
 
     public String getStrId() {
