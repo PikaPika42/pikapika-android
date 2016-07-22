@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         String user = userEditText.getText().toString();
         String pass = passEditText.getText().toString();
 
-        saveUserData(user, pass);
+        PokemonManager.saveUserData(LoginActivity.this,user, pass);
 
         Location location = null;
         if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED)
@@ -81,20 +81,14 @@ public class LoginActivity extends AppCompatActivity {
         DataManager.getDataManager().login(user, pass, location,loginCallback);
     }
 
-    public void saveUserData(String user, String pass){
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("user", user);
-        editor.putString("pass", pass);
-        editor.apply();
-    }
+
 
     final Callback loginCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
-            saveUserData("","");
+            PokemonManager.saveUserData(LoginActivity.this,"","");
             finish();
         }
 
@@ -117,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                saveUserData("","");
+                PokemonManager.saveUserData(LoginActivity.this,"","");
             }
 
             setResult(RESULT_OK, new Intent());

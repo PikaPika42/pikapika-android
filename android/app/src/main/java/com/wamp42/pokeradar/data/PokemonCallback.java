@@ -1,9 +1,7 @@
 package com.wamp42.pokeradar.data;
 
-import com.wamp42.pokeradar.models.PokemonLocation;
 
 import java.io.IOException;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Response;

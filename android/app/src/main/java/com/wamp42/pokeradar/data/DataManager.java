@@ -1,20 +1,12 @@
 package com.wamp42.pokeradar.data;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.support.v4.content.ContextCompat;
 
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
+import android.location.Location;
+
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.wamp42.pokeradar.models.Coords;
 import com.wamp42.pokeradar.models.LoginData;
-import com.wamp42.pokeradar.models.Pokemon;
 import com.wamp42.pokeradar.models.PokemonLocation;
 import com.wamp42.pokeradar.models.PokemonLocationData;
 import com.wamp42.pokeradar.network.RestClient;
@@ -42,15 +34,7 @@ public class DataManager {
         return dataManagerInstance;
     }
 
-    static public List<PokemonLocation> getDummyPokemonsLocation(){
-        List<PokemonLocation> list = new ArrayList<>();
-        list.add(new PokemonLocation(0,"Flaviomon",100,20.6707593,-103.3686944));
-        list.add(new PokemonLocation(12,"Pierremon",160,20.6710723,-103.3685152));
-        list.add(new PokemonLocation(33,"Cesarmon",21,20.6717847,-103.3684512));
-        return list;
-    }
-
-    public void requestPokemonsOnBackground(String url, final PokemonCallback<List<PokemonLocation>> pokemonCallback){
+    /*public void requestPokemonsOnBackground(String url, final PokemonCallback<List<PokemonLocation>> pokemonCallback){
        Callback tempCallback = new Callback() {
            @Override
            public void onFailure(Call call, IOException e) {
@@ -66,11 +50,11 @@ public class DataManager {
            }
        };
         restClient.get(url,tempCallback);
-    }
+    }*/
 
-    public void getPokemons(int lat, int lng, PokemonCallback<List<PokemonLocation>> pokemonCallback){
+    /*public void getPokemons(int lat, int lng, PokemonCallback<List<PokemonLocation>> pokemonCallback){
         requestPokemonsOnBackground("pokemon_data.json",pokemonCallback);
-    }
+    }*/
 
     public void login(String user, String pass,Location location, Callback callback){
         Coords coords;

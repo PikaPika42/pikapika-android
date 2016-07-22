@@ -29,13 +29,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.wamp42.pokeradar.R;
 import com.wamp42.pokeradar.data.DataManager;
 import com.wamp42.pokeradar.data.PokemonCallback;
 import com.wamp42.pokeradar.data.PokemonManager;
-import com.wamp42.pokeradar.models.PokemonLocation;
 import com.wamp42.pokeradar.models.PokemonResult;
+import com.wamp42.pokeradar.utils.Debug;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -138,11 +141,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-
+                PokemonManager.saveUserData(this,"","");
                 /* TODO:Show an explanation to the user *asynchronously* -- don't block
                     this thread waiting for the user's response! After the user
                      sees the explanation, try again to request the permission. */
-
             } else {
 
                 // No explanation needed, we can request the permission.
@@ -225,6 +227,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             }
             loadingProgressDialog = PokemonManager.showLoading(this);
+            if(pokemonResultList != null)
+                pokemonResultList.clear();
             DataManager.getDataManager().login(user, pass, location,loginCallback);
         }
     }
@@ -241,26 +245,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * the map drawing must be don in the main thread.
      * @param pokemonList
      */
-    public void drawPokemonListOnMainThread(final List<PokemonLocation> pokemonList){
-        if(mMap != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    PokemonManager.drawPokemonLocations(MapsActivity.this, mMap, pokemonList);
-                    //add a circle
-                    /*if (lastLocation != null) {
-                        mMap.addCircle(new CircleOptions()
-                                .center(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                                .radius(500) //radio in meters
-                                .strokeColor(ContextCompat.getColor(MapsActivity.this,R.color.colorPrimary))
-                                .strokeWidth(5)
-                                .fillColor(0x5500b6ff));
-                    }*/
-                }
-            });
-        }
-    }
-
     public void drawPokemonOnMainThread(final List<PokemonResult> pokemonList){
         if(mMap != null) {
             runOnUiThread(new Runnable() {
@@ -272,28 +256,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    final PokemonCallback<List<PokemonLocation>> pokemonCallback = new PokemonCallback<List<PokemonLocation>>() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-            if(loadingProgressDialog != null)
-                loadingProgressDialog.dismiss();
-            //TODO: show error message
-
-        }
-
-        @Override
-        public void onResponse(Call call, Response response, List<PokemonLocation> pokemonList) throws IOException {
-            if(loadingProgressDialog != null)
-                loadingProgressDialog.dismiss();
-            drawPokemonListOnMainThread(pokemonList);
-        }
-    };
-
     final Callback loginCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
+            PokemonManager.showAlert(MapsActivity.this,"Ups!!!","Something was wrong. Try later.");
         }
 
         @Override
@@ -302,18 +270,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (response.code() == 200) {
                 String jsonStr = response.body().string();
                 if (!jsonStr.isEmpty()) {
+                    Debug.Log("login response: "+jsonStr);
                     Type listType = new TypeToken<List<PokemonResult>>() {
                     }.getType();
                     try {
-                        List<PokemonResult> resultList = new Gson().fromJson(jsonStr, listType);
-                        if (resultList != null) {
-                            MapsActivity.getMapsActivity().setPokemonList(resultList);
-                            drawPokemonOnMainThread(pokemonResultList);
+                        JsonParser parser = new JsonParser();
+                        JsonObject jsonObject = parser.parse(jsonStr).getAsJsonObject();
+                        if(jsonObject.has("data")){
+                            List<PokemonResult> resultList = new Gson().fromJson(jsonObject.get("data").toString(), listType);
+                            if (resultList != null) {
+                                MapsActivity.getMapsActivity().setPokemonList(resultList);
+                                drawPokemonOnMainThread(pokemonResultList);
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
+            } else {
+                PokemonManager.showAlert(MapsActivity.this,"Ups!","Something was wrong. Try later.");
             }
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();

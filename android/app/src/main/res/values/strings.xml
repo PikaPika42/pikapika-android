@@ -8,7 +8,9 @@
     <string name="login_user">User</string>
     <string name="login_pass">Password</string>
     <string name="login">Login</string>
+    <string name="logout">Logout</string>
     <string name="google">Google</string>
     <string name="ptc">PTC</string>
     <string name="preference_file_key">prefFileKey</string>
+    <string name="ok">ok</string>
 </resources>
