@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.wamp42.pokeradar.R;
-import com.wamp42.pokeradar.models.PokemonLocation;
 import com.wamp42.pokeradar.models.PokemonResult;
 
 import java.util.HashMap;
@@ -21,13 +20,6 @@ import java.util.List;
 public class PokemonManager {
 
     static public HashMap<String,String> markersMap = new HashMap<>();
-
-    static public void drawPokemonLocations(Context context, GoogleMap map, List<PokemonLocation> locationList){
-        for(PokemonLocation location:locationList){
-            //draw each pokemon mark
-            location.drawMark(map, context);
-        }
-    }
 
     static public void drawPokemonResult(Context context, GoogleMap map, List<PokemonResult> locationList){
         for(PokemonResult location:locationList){

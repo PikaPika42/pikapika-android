@@ -44,7 +44,7 @@ public class PokemonResult {
         markerOptions.position(new LatLng(Latitude, Longitude));
         int [] sedondsArray = splitToComponentTimes(TimeTillHiddenMs);
         String timeStr = String.format(Locale.ENGLISH,"%d:%d:%d",sedondsArray[0],sedondsArray[1],sedondsArray[2]);
-        markerOptions.title(pokeinfo.getName()+"\\nTime left: " + timeStr);
+        markerOptions.title(pokeinfo.getName()+" - Time left: " + timeStr);
         //set the marker-icon
         String idStr = getStrId();
         int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
@@ -70,10 +70,10 @@ public class PokemonResult {
 
     public static int[] splitToComponentTimes(long longVal)
     {
-        int hours = (int) longVal / 3600;
-        int remainder = (int) longVal - hours * 3600;
-        int mins = remainder / 60;
-        remainder = remainder - mins * 60;
+        int hours = (int) longVal / 360000;
+        int remainder = (int) longVal - hours * 360000;
+        int mins = remainder / 6000;
+        remainder = remainder - mins * 6000;
         int secs = remainder;
 
         int[] ints = {hours , mins , secs};

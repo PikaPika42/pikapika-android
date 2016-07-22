@@ -15,13 +15,11 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wamp42.pokeradar.R;
 import com.wamp42.pokeradar.data.DataManager;
 import com.wamp42.pokeradar.data.PokemonManager;
-import com.wamp42.pokeradar.models.PokemonLocation;
 import com.wamp42.pokeradar.models.PokemonResult;
 
 import java.io.IOException;

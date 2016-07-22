@@ -131,12 +131,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
-            // Add a marker in a city and move the camera
-            //LatLng gdlLocation = new LatLng(20.666, -103.3685);
-            //mMap.addMarker(new MarkerOptions().position(gdlLocation).title("Pokemon Team in Gdl"));
-            //set the camera in the position and with a zoom value
-            //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gdlLocation,15));
-
             initMapResources();
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
