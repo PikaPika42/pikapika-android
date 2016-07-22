@@ -30,6 +30,7 @@ public class DataManager {
         if(location != null){
             coords = new Coords(location.getLatitude(),location.getLongitude());
         } else {
+            //This shouldn't happened
             coords = new Coords(0.0,0.0);
         }
         PokemonLocation pokemonLocation = new PokemonLocation(coords);

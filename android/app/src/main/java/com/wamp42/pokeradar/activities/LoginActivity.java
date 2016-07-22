@@ -74,15 +74,11 @@ public class LoginActivity extends AppCompatActivity {
         String provider = googleRadioButton.isChecked() ? PokemonHelper.GOOGLE_PROVIDER : PokemonHelper.PTC_PROVIDER;
         PokemonHelper.saveUserData(LoginActivity.this,user, pass,provider);
         //try to get the current location
-        Location location = null;
-        if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED)
-                && MapsActivity.getMapsActivity() != null){
-            location = LocationServices.FusedLocationApi.getLastLocation(MapsActivity.getMapsActivity().getGoogleAPIClient());
-        }
+        MapsActivity.getMapsActivity().requestLocation();
         //show a progress dialog
         loadingProgressDialog = PokemonHelper.showLoading(this);
         //request the pokemon data / login
-        DataManager.getDataManager().login(user, pass, location,provider,loginCallback);
+        DataManager.getDataManager().login(user, pass, PokemonHelper.lastLocation,provider,loginCallback);
     }
 
 
@@ -113,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                         if(jsonObject.has("data")) {
                             List<PokemonResult> pokemonResultList = new Gson().fromJson(jsonObject.get("data").toString(), listType);
                             if (pokemonResultList != null) {
-                                MapsActivity.setPokemonList(pokemonResultList);
+                                PokemonHelper.pokemonResultList = pokemonResultList;
                             }
                             //finished activity with OK response
                             setResult(RESULT_OK, new Intent());

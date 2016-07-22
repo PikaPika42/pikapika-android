@@ -57,15 +57,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //map stuff
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    private Location lastLocation;
 
     //view stuff
     DrawerLayout menuDrawerLayout;
     private ProgressDialog loadingProgressDialog;
     private Button searchButton;
 
-    //keep the pokemon result objects in memory
-    private static List<PokemonResult> pokemonResultList;
+
 
     //static instance in order to set the pokemon result data from other activities
     public static MapsActivity staticMapActivity;
@@ -113,10 +111,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
-    }
-
-    public static void setPokemonList(List<PokemonResult> resultList){
-        pokemonResultList = resultList;
     }
 
     /**
@@ -203,12 +197,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.setMyLocationEnabled(true);
 
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (lastLocation != null) {
-            LatLng currentPos = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (location != null) {
+            PokemonHelper.lastLocation = location;
+            LatLng currentPos = new LatLng(PokemonHelper.lastLocation.getLatitude(), PokemonHelper.lastLocation.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 17));
         } else {
-            //request position and update map
+            //TODO: request position with other method and update map
         }
     }
 
@@ -223,13 +218,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String pass = sharedPref.getString(PokemonHelper.PASS_PARAMETER,"");
             String provider = sharedPref.getString(PokemonHelper.PROVIDER_PARAMETER,PokemonHelper.PTC_PROVIDER);
             Location location = null;
-            if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED)
-                    && MapsActivity.getMapsActivity() != null){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED){
                 location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                //makes sure we have a valid location
+                if(location == null)
+                    location = PokemonHelper.lastLocation;
             }
             loadingProgressDialog = PokemonHelper.showLoading(this);
-            if(pokemonResultList != null)
-                pokemonResultList.clear();
+            if(PokemonHelper.pokemonResultList != null)
+                PokemonHelper.pokemonResultList.clear();
             DataManager.getDataManager().login(user, pass, location,provider,loginCallback);
         }
     }
@@ -291,8 +288,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if(jsonObject.has("data")){
                             List<PokemonResult> resultList = new Gson().fromJson(jsonObject.get("data").toString(), listType);
                             if (resultList != null) {
-                                pokemonResultList = resultList;
-                                drawPokemonOnMainThread(pokemonResultList);
+                                PokemonHelper.pokemonResultList = resultList;
+                                drawPokemonOnMainThread(PokemonHelper.pokemonResultList);
                             }
                         }
                     } catch (Exception e) {
@@ -327,8 +324,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == LOGIN_ACTIVITY_RESULT && resultCode == RESULT_OK) {
             checkButtonText();
             //try to paint the markers
-            if(pokemonResultList != null){
-                drawPokemonOnMainThread(pokemonResultList);
+            if(PokemonHelper.pokemonResultList != null){
+                drawPokemonOnMainThread(PokemonHelper.pokemonResultList);
             }
         }
     }
@@ -356,6 +353,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             Intent loginIntent = new Intent(this, LoginActivity.class);
             startActivityForResult(loginIntent,LOGIN_ACTIVITY_RESULT);
+        }
+    }
+
+    public void requestLocation() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED){
+            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if(location != null)
+                PokemonHelper.lastLocation = location;
         }
     }
 }

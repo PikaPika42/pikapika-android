@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.support.v7.app.AlertDialog;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -24,9 +25,18 @@ public class PokemonHelper {
     final public static String PASS_PARAMETER = "pass";
     final public static String PROVIDER_PARAMETER = "provider";
 
+    //share the marker in order to
     static public HashMap<String,String> markersMap = new HashMap<>();
+    //keep the pokemon result objects in memory
+    static public List<PokemonResult> pokemonResultList;
+    //share the lastValidLocation;
+    static public Location lastLocation;
 
     static public void drawPokemonResult(Context context, GoogleMap map, List<PokemonResult> locationList){
+        //clear markers
+        map.clear();
+        //clear makers map
+        PokemonHelper.markersMap.clear();
         for(PokemonResult location:locationList){
             //draw each pokemon mark
             location.drawMark(map, context);

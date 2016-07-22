@@ -96,7 +96,7 @@ public class PokemonResult {
         int remainder = (int) longVal - hours * 360000;
         int mins = remainder / 6000;
         remainder = remainder - mins * 6000;
-        int secs = remainder;
+        int secs = remainder/1000;
 
         int[] ints = {hours , mins , secs};
         return ints;
