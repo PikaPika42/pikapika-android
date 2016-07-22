@@ -30,7 +30,8 @@
 
         <activity
             android:name="com.wamp42.pikapika.activities.MapsActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,7 +40,8 @@
         </activity>
         <activity
             android:name="com.wamp42.pikapika.activities.LoginActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

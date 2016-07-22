@@ -319,10 +319,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOGIN_ACTIVITY_RESULT && resultCode == RESULT_OK) {
             checkButtonText();
-            //try to paint the markers
-            if(PokemonHelper.pokemonResultList != null){
-                drawPokemonOnMainThread(PokemonHelper.pokemonResultList);
-            }
+            //request pokemon
+            onMainActionClick(new View(this));
         }
     }
 
