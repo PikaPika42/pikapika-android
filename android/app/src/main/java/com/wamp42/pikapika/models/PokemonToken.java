@@ -4,8 +4,8 @@ package com.wamp42.pikapika.models;
  * Created by flavioreyes on 7/22/16.
  */
 public class PokemonToken {
-    private String accessToken;
-    private String expire_time;
+    private String accessToken = "";
+    private String expire_time = "";
     private String initTime = "";
 
     public PokemonToken(){}

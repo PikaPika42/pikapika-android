@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         String user = userEditText.getText().toString();
         String pass = passEditText.getText().toString();
         String provider = googleRadioButton.isChecked() ? PokemonHelper.GOOGLE_PROVIDER : PokemonHelper.PTC_PROVIDER;
-        PokemonHelper.saveUserData(LoginActivity.this,user, pass,provider);
+        PokemonHelper.saveTokenData(LoginActivity.this,null);
         //try to get the current location
         MapsActivity.getMapsActivity().requestLocation();
         //show a progress dialog
@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onFailure(Call call, IOException e) {
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
-            PokemonHelper.saveUserData(LoginActivity.this,"","","");
+            PokemonHelper.saveTokenData(LoginActivity.this,null);
             PokemonHelper.showAlert(LoginActivity.this,getString(R.string.request_error_title)+"!!",
                     getString(R.string.request_error_body));
         }
@@ -103,10 +103,6 @@ public class LoginActivity extends AppCompatActivity {
                         JsonParser parser = new JsonParser();
                         JsonObject jsonObject = parser.parse(jsonStr).getAsJsonObject();
                         if(jsonObject.has("data")) {
-                            /*List<PokemonResult> pokemonResultList = new Gson().fromJson(jsonObject.get("data").toString(), listType);
-                            if (pokemonResultList != null) {
-                                PokemonHelper.pokemonResultList = pokemonResultList;
-                            }*/
                             Type listType = new TypeToken<PokemonToken>() {}.getType();
                             PokemonToken pokemonToken = new Gson().fromJson(jsonObject.get("data").toString(), listType);
                             if(!pokemonToken.getAccessToken().isEmpty()) {
@@ -122,9 +118,10 @@ public class LoginActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                response.body().close();
             } else {
                 //clean the credentials saved
-                PokemonHelper.saveUserData(LoginActivity.this,"","","");
+                PokemonHelper.saveTokenData(LoginActivity.this,null);
             }
             PokemonHelper.showAlert(LoginActivity.this,getString(R.string.request_error_title),
                     getString(R.string.request_error_body));

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.v7.app.AlertDialog;
 
+import com.google.android.gms.common.server.converter.StringToIntConverter;
 import com.google.android.gms.maps.GoogleMap;
 import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.models.PokemonResult;
@@ -28,6 +29,8 @@ public class PokemonHelper {
     final public static String TOKEN_PARAMETER = "accessToken";
     final public static String EXPIRE_TIME_PARAMETER = "expire_time";
     final public static String CURRENT_TIME_PARAMETER = "provider";
+
+    final public static String AUDIO_SETTING        = "audio_setting";
 
     //share the marker in order to
     static public HashMap<String,String> markersMap = new HashMap<>();
@@ -69,28 +72,16 @@ public class PokemonHelper {
             });
     }
 
-    public static void saveUserData(Context context,String user, String pass,String provider){
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(USER_PARAMETER, user);
-        editor.putString(PASS_PARAMETER, pass);
-        editor.putString(PROVIDER_PARAMETER, provider);
-        editor.apply();
-    }
-
-    public static void saveTokenData(Context context,String token, String expireTime){
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(TOKEN_PARAMETER, token);
-        editor.putString(EXPIRE_TIME_PARAMETER, expireTime);
-        editor.apply();
-    }
-
     public static void saveTokenData(Context context, PokemonToken pokemonToken){
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(TOKEN_PARAMETER, pokemonToken.getAccessToken());
-        editor.putString(EXPIRE_TIME_PARAMETER, pokemonToken.getExpire_time());
+        if(pokemonToken != null) {
+            editor.putString(TOKEN_PARAMETER, pokemonToken.getAccessToken());
+            editor.putString(EXPIRE_TIME_PARAMETER, pokemonToken.getExpire_time());
+        } else {
+            editor.putString(TOKEN_PARAMETER, "");
+            editor.putString(EXPIRE_TIME_PARAMETER, "");
+        }
         editor.apply();
     }
 
@@ -100,5 +91,18 @@ public class PokemonHelper {
         String token = sharedPref.getString(PokemonHelper.TOKEN_PARAMETER,"");
         String time = sharedPref.getString(PokemonHelper.EXPIRE_TIME_PARAMETER,"");
         return new PokemonToken(token,time,"");
+    }
+
+    public static void saveAudioSetting(boolean active, Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(AUDIO_SETTING, active);
+        editor.apply();
+    }
+
+    public static boolean getAudioSetting(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        return sharedPref.getBoolean(PokemonHelper.AUDIO_SETTING,true);
     }
 }
