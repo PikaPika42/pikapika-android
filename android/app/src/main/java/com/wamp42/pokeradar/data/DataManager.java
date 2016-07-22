@@ -6,7 +6,7 @@ import android.location.Location;
 import com.google.gson.Gson;
 import com.wamp42.pokeradar.models.Coords;
 import com.wamp42.pokeradar.models.LoginData;
-import com.wamp42.pokeradar.models.PokemonLocationData;
+import com.wamp42.pokeradar.models.PokemonLocation;
 import com.wamp42.pokeradar.network.RestClient;
 
 import okhttp3.Callback;
@@ -32,7 +32,7 @@ public class DataManager {
         } else {
             coords = new Coords(0.0,0.0);
         }
-        PokemonLocationData pokemonLocation = new PokemonLocationData(coords);
+        PokemonLocation pokemonLocation = new PokemonLocation(coords);
         LoginData loginData = new LoginData(user,pass,loginType,pokemonLocation);
         //convert object to json
         String jsonInString = new Gson().toJson(loginData);

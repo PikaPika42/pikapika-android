@@ -8,10 +8,10 @@ import com.wamp42.pokeradar.data.PokemonHelper;
 public class LoginData {
     private String username;
     private String password;
-    private PokemonLocationData location;
+    private PokemonLocation location;
     private String provider = PokemonHelper.PTC_PROVIDER;
 
-    public LoginData(String username, String password, String provider,PokemonLocationData location) {
+    public LoginData(String username, String password, String provider,PokemonLocation location) {
         this.username = username;
         this.password = password;
         this.location = location;
