@@ -22,7 +22,7 @@ public class PokemonResult {
     private double Latitude;
     private double Longitude;
     private int TimeTillHiddenMs;
-    private PokeInfo pokeinfo;
+    private PokeInfo pokemon;
     public PokemonResult(){}
 
     public double getLatitude() {
@@ -38,14 +38,14 @@ public class PokemonResult {
     }
 
     public PokeInfo getPokeinfo() {
-        return pokeinfo;
+        return pokemon;
     }
 
     public void drawMark(GoogleMap map, Context context){
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(new LatLng(Latitude, Longitude));
 
-        markerOptions.title(pokeinfo.getName());
+        markerOptions.title(pokemon.getPokemonName());
 
         int [] secondsArray = splitToComponentTimes(TimeTillHiddenMs);
         String timeLeftStr = context.getString(R.string.time_left);
@@ -81,7 +81,7 @@ public class PokemonResult {
     }
 
     public String getStrId() {
-        String strId = String.valueOf(pokeinfo.getId());
+        String strId = String.valueOf(pokemon.getPokemonId());
         int length = strId.length();
         if(length == 1)
             strId = "00"+strId;

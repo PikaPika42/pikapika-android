@@ -224,7 +224,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(PokemonHelper.pokemonResultList != null)
                 PokemonHelper.pokemonResultList.clear();
 
-            DataManager.getDataManager().heartbeat(pokemonToken.getAccessToken(), heartbeatCallback);
+            DataManager.getDataManager().heartbeat(pokemonToken.getAccessToken(),location.getLatitude()+"",location.getLongitude()+"", heartbeatCallback);
         }
     }
 

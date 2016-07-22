@@ -5,13 +5,16 @@ package com.wamp42.pikapika.models;
  */
 public class PokeInfo {
     private String id;
-    private String name;
+    private String PokemonName;
+    private String PokemonId;
 
-    public String getName() {
-        return name;
+    public PokeInfo () {}
+
+    public String getPokemonName() {
+        return PokemonName;
     }
 
-    public String getId() {
-        return id;
+    public String getPokemonId() {
+        return PokemonId;
     }
 }

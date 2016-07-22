@@ -13,8 +13,8 @@ import okhttp3.RequestBody;
  * Created by flavioreyes on 7/19/16.
  */
 public class RestClient {
-    private final String API_URL = "https://dl.dropboxusercontent.com/u/820149/";
-    private final String API_URL_TEST ="http://10.0.1.20:3000/";
+    private final String API_URL = "";
+    private final String API_URL_TEST ="http://10.0.1.14:3000/";
 
     private OkHttpClient client = new OkHttpClient();
 

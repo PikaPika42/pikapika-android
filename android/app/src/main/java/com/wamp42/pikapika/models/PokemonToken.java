@@ -4,20 +4,20 @@ package com.wamp42.pikapika.models;
  * Created by flavioreyes on 7/22/16.
  */
 public class PokemonToken {
-    private String accessToken = "";
+    private String access_token = "";
     private String expire_time = "";
     private String initTime = "";
 
     public PokemonToken(){}
 
     public PokemonToken(String accessToken, String expire_time, String initTime) {
-        this.accessToken = accessToken;
+        this.access_token = accessToken;
         this.expire_time = expire_time;
         this.initTime = initTime;
     }
 
     public String getAccessToken() {
-        return accessToken;
+        return access_token;
     }
 
     public String getExpire_time() {
