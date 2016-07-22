@@ -49,7 +49,7 @@ public class PokemonResult {
 
         int [] secondsArray = splitToComponentTimes(TimeTillHiddenMs);
         String timeLeftStr = context.getString(R.string.time_left);
-        String timeStr = String.format(Locale.ENGLISH,"%dh %dm %ds",secondsArray[0],secondsArray[1],secondsArray[2]);
+        String timeStr = String.format(Locale.ENGLISH,"%dm %ds",secondsArray[0],secondsArray[1]);
         markerOptions.snippet(timeLeftStr+": " + timeStr);
 
         //set the marker-icon
@@ -92,13 +92,12 @@ public class PokemonResult {
 
     public static int[] splitToComponentTimes(long longVal)
     {
-        int hours = (int) longVal / 360000;
-        int remainder = (int) longVal - hours * 360000;
-        int mins = remainder / 6000;
-        remainder = remainder - mins * 6000;
-        int secs = remainder/1000;
+        int seconds = (int)longVal/1000;
+        int minutes = seconds / 60;
+        int remainder = seconds - minutes * 60;
+        int secs = remainder;
 
-        int[] ints = {hours , mins , secs};
+        int[] ints = { minutes , secs};
         return ints;
     }
 }
