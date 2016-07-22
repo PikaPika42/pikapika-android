@@ -1,12 +1,13 @@
-package com.wamp42.pokeradar;
+package com.wamp42.pokeradar.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.media.MediaPlayer;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -25,36 +26,59 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.wamp42.pokeradar.R;
 import com.wamp42.pokeradar.data.DataManager;
 import com.wamp42.pokeradar.data.PokemonCallback;
 import com.wamp42.pokeradar.data.PokemonManager;
 import com.wamp42.pokeradar.models.PokemonLocation;
+import com.wamp42.pokeradar.models.PokemonResult;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Response;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener {
 
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
+    private static final int LOGIN_ACTIVITY_RESULT = 101;
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location lastLocation;
+
     private ProgressDialog loadingProgressDialog;
+    private Button searchButon;
+
+    private static List<PokemonResult> pokemonResultList;
+
+    public static MapsActivity staticMapActivity;
+
+    public static MapsActivity getMapsActivity(){
+        return staticMapActivity;
+    }
+
+    public GoogleApiClient getGoolgeAPIclient(){
+        return mGoogleApiClient;
+    }
+
+    public void setPokemonList(List<PokemonResult> resultList){
+        pokemonResultList = resultList;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        staticMapActivity = this;
         setContentView(R.layout.activity_maps);
+        searchButon = (Button)findViewById(R.id.main_action_button);
 
         initMenu();
 
@@ -70,6 +94,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
+        }
+        if(!isLogged()){
+            searchButon.setText(getString(R.string.login));
         }
     }
 
@@ -184,11 +211,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void onMainActionClick(View view) {
-        //PokemonManager.drawPokemonLocations(this,mMap, DataManager.getDummyPokemonsLocation());
-        DataManager dataManager = DataManager.getDataManager();
-        mMap.clear();
-        loadingProgressDialog = PokemonManager.showLoading(this);
-        dataManager.getPokemons(0,0,pokemonCallback);
+        if(!isLogged()){
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivityForResult(loginIntent,LOGIN_ACTIVITY_RESULT);
+        } else {
+            SharedPreferences sharedPref = getSharedPreferences(
+                    getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            String user = sharedPref.getString("user","");
+            String pass = sharedPref.getString("pass","");
+            Location location = null;
+            if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED)
+                    && MapsActivity.getMapsActivity() != null){
+                location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            }
+            loadingProgressDialog = PokemonManager.showLoading(this);
+            DataManager.getDataManager().login(user, pass, location,loginCallback);
+        }
+    }
+
+    public boolean isLogged(){
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        String user = sharedPref.getString("user","");
+        return !user.isEmpty();
     }
 
     /**
@@ -216,6 +261,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public void drawPokemonOnMainThread(final List<PokemonResult> pokemonList){
+        if(mMap != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    PokemonManager.drawPokemonResult(MapsActivity.this, mMap, pokemonList);
+                }
+            });
+        }
+    }
+
     final PokemonCallback<List<PokemonLocation>> pokemonCallback = new PokemonCallback<List<PokemonLocation>>() {
         @Override
         public void onFailure(Call call, IOException e) {
@@ -233,6 +289,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
+    final Callback loginCallback = new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            if(loadingProgressDialog != null)
+                loadingProgressDialog.dismiss();
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+
+            if (response.code() == 200) {
+                String jsonStr = response.body().string();
+                if (!jsonStr.isEmpty()) {
+                    Type listType = new TypeToken<List<PokemonResult>>() {
+                    }.getType();
+                    try {
+                        List<PokemonResult> resultList = new Gson().fromJson(jsonStr, listType);
+                        if (resultList != null) {
+                            MapsActivity.getMapsActivity().setPokemonList(resultList);
+                            drawPokemonOnMainThread(pokemonResultList);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if(loadingProgressDialog != null)
+                loadingProgressDialog.dismiss();
+        }
+    };
+
     @Override
     public boolean onMarkerClick(Marker marker) {
         if(PokemonManager.markersMap.containsKey(marker.getId())) {
@@ -245,5 +332,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOGIN_ACTIVITY_RESULT && resultCode == RESULT_OK) {
+            if(!isLogged()){
+                searchButon.setText(getString(R.string.login));
+            } else {
+                searchButon.setText(getString(R.string.search_action));
+            }
+            if(pokemonResultList != null){
+                drawPokemonOnMainThread(pokemonResultList);
+            }
+        }
     }
 }

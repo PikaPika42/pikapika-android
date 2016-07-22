@@ -5,4 +5,10 @@
     <string name="search_action">Search</string>
     <string name="please_wait">Please Wait!</string>
     <string name="loading_data">Loading data!</string>
+    <string name="login_user">User</string>
+    <string name="login_pass">Password</string>
+    <string name="login">Login</string>
+    <string name="google">Google</string>
+    <string name="ptc">PTC</string>
+    <string name="preference_file_key">prefFileKey</string>
 </resources>

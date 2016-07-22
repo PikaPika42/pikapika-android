@@ -6,6 +6,7 @@ import android.content.Context;
 import com.google.android.gms.maps.GoogleMap;
 import com.wamp42.pokeradar.R;
 import com.wamp42.pokeradar.models.PokemonLocation;
+import com.wamp42.pokeradar.models.PokemonResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,18 @@ public class PokemonManager {
         }
     }
 
+    static public void drawPokemonResult(Context context, GoogleMap map, List<PokemonResult> locationList){
+        for(PokemonResult location:locationList){
+            //draw each pokemon mark
+            location.drawMark(map, context);
+        }
+    }
+
     public static ProgressDialog showLoading(Context context) {
         return ProgressDialog.show(context, context.getString(R.string.please_wait), context.getString(R.string.loading_data), true);
+    }
+
+    public static void showPopMessage(Context context, String title, String body) {
+
     }
 }

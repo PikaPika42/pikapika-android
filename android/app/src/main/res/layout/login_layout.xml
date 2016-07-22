@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- Fields layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:id="@+id/layout_fields"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:id="@+id/relativeLayout">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/inputlayout_login_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginTop="15dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/edittext_login_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:inputType="textEmailAddress"
+                        android:hint="@string/login_user"
+                        android:textColor="@color/colorPrimary"
+                        android:imeOptions="actionNext"
+                        android:background="#ffffff" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/inputlayout_login_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_below="@id/inputlayout_login_email">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/edittext_login_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:inputType="textPassword"
+                        android:hint="@string/login_pass"
+                        android:textColor="@color/colorPrimary"
+                        android:imeOptions="actionDone"
+                        android:background="@android:color/white" />
+                </android.support.design.widget.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/messega_text_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/inputlayout_login_password"
+                    android:layout_marginTop="20dp" />
+
+            </RelativeLayout>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/relativeLayout"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/google"
+                    android:id="@+id/providerRadioButton1"
+                    android:checked="true"
+                    android:textColor="@android:color/white" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ptc"
+                    android:id="@+id/providerRadioButton2"
+                    android:textColor="@android:color/white" />
+            </RadioGroup>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- Login button layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary">
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:text="@string/login"
+                android:layout_centerInParent="true"
+                android:id="@+id/button_login"
+                android:minHeight="0dp"
+                android:background="#ffffff"
+                android:textColor="@color/colorPrimaryDark"
+                android:onClick="onLoginClick" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

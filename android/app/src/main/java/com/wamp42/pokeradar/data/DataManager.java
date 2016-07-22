@@ -1,10 +1,22 @@
 package com.wamp42.pokeradar.data;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.support.v4.content.ContextCompat;
+
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.wamp42.pokeradar.models.Coords;
+import com.wamp42.pokeradar.models.LoginData;
 import com.wamp42.pokeradar.models.Pokemon;
 import com.wamp42.pokeradar.models.PokemonLocation;
+import com.wamp42.pokeradar.models.PokemonLocationData;
 import com.wamp42.pokeradar.network.RestClient;
 
 import java.io.IOException;
@@ -58,5 +70,18 @@ public class DataManager {
 
     public void getPokemons(int lat, int lng, PokemonCallback<List<PokemonLocation>> pokemonCallback){
         requestPokemonsOnBackground("pokemon_data.json",pokemonCallback);
+    }
+
+    public void login(String user, String pass,Location location, Callback callback){
+        Coords coords;
+        if(location != null){
+            coords = new Coords(location.getLatitude(),location.getLongitude());
+        } else {
+            coords = new Coords(20.670573,-103.368709);
+        }
+        PokemonLocationData pokemonLocation = new PokemonLocationData(coords);
+        LoginData loginData = new LoginData(user,pass,pokemonLocation);
+        String jsonInString = new Gson().toJson(loginData);
+        restClient.postJson(jsonInString,"login",callback);
     }
 }
