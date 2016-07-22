@@ -12,14 +12,13 @@
         android:layout_height="wrap_content"
         >
 
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="@android:color/white"
-            android:textSize="19sp"
-            android:textStyle="bold"
-            android:layout_marginTop="30dp" />
+            android:id="@+id/imageView"
+            android:src="@drawable/ic_pikapika"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true" />
 
     </RelativeLayout>
 
