@@ -9,7 +9,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.wamp42.pokeradar.data.PokemonManager;
+import com.wamp42.pokeradar.R;
+import com.wamp42.pokeradar.data.PokemonHelper;
 
 import java.util.Locale;
 
@@ -44,7 +45,8 @@ public class PokemonResult {
         markerOptions.position(new LatLng(Latitude, Longitude));
         int [] sedondsArray = splitToComponentTimes(TimeTillHiddenMs);
         String timeStr = String.format(Locale.ENGLISH,"%d:%d:%d",sedondsArray[0],sedondsArray[1],sedondsArray[2]);
-        markerOptions.title(pokeinfo.getName()+" - Time left: " + timeStr);
+        String timeLeftStr = context.getString(R.string.request_error_title);
+        markerOptions.title(pokeinfo.getName()+" - "+timeLeftStr+": " + timeStr);
         //set the marker-icon
         String idStr = getStrId();
         int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
@@ -55,7 +57,7 @@ public class PokemonResult {
         }
         Marker marker = map.addMarker(markerOptions);
         //maps the marker and the pokemon id
-        PokemonManager.markersMap.put(marker.getId(),idStr);
+        PokemonHelper.markersMap.put(marker.getId(),idStr);
     }
 
     public String getStrId() {

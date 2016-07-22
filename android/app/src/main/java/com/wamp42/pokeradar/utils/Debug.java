@@ -6,21 +6,21 @@ import android.util.Log;
  * Created by Flavio on 23/07/2015.
  */
 public class Debug {
-
+    final private static String TAG = "pikapika";
     private static boolean isDebug = true;
 
     public static void d(String data) {
         if(isDebug)
-            Log.d("pikapika",data);
+            Log.d(TAG,data);
     }
 
     public static void Log(String data) {
         if(isDebug)
-            Log.d("pikapika",data);
+            Log.d(TAG,data);
     }
     public static void Error(String data) {
         if(isDebug)
-            Log.e("pikapika", data);
+            Log.e(TAG, data);
     }
 
     public static void Log(String TAG, String data) {
@@ -49,18 +49,5 @@ public class Debug {
             Log.e(TAG, data);
     }
 
-    /*
-
-    Debug log what shouldn't be commited
-     */
-    public static void trash(String data) {
-        if(isDebug)
-            Log.e("### trash : " + "pikapika", data);
-    }
-
-    public static void generateNullPointerException(){
-        String str = null;
-        str.charAt(1);
-    }
 
 }

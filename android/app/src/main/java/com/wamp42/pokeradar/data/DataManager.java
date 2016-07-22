@@ -25,16 +25,18 @@ public class DataManager {
         return dataManagerInstance;
     }
 
-    public void login(String user, String pass,Location location, Callback callback){
+    public void login(String user, String pass,Location location, String loginType, Callback callback){
         Coords coords;
         if(location != null){
             coords = new Coords(location.getLatitude(),location.getLongitude());
         } else {
-            coords = new Coords(20.670573,-103.368709);
+            coords = new Coords(0.0,0.0);
         }
         PokemonLocationData pokemonLocation = new PokemonLocationData(coords);
-        LoginData loginData = new LoginData(user,pass,pokemonLocation);
+        LoginData loginData = new LoginData(user,pass,loginType,pokemonLocation);
+        //convert object to json
         String jsonInString = new Gson().toJson(loginData);
+        //do the request
         restClient.postJson(jsonInString,"login",callback);
     }
 }

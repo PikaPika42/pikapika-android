@@ -82,7 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/google"
-                    android:id="@+id/providerRadioButton1"
+                    android:id="@+id/google_radio_button"
                     android:checked="true"
                     android:textColor="@android:color/white" />
 
@@ -90,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ptc"
-                    android:id="@+id/providerRadioButton2"
+                    android:id="@+id/ptc_radio_button"
                     android:textColor="@android:color/white" />
             </RadioGroup>
 

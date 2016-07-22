@@ -17,7 +17,12 @@ import java.util.List;
 /**
  * Created by flavioreyes on 7/19/16.
  */
-public class PokemonManager {
+public class PokemonHelper {
+    final public static String GOOGLE_PROVIDER = "google";
+    final public static String PTC_PROVIDER = "ptc";
+    final public static String USER_PARAMETER = "user";
+    final public static String PASS_PARAMETER = "pass";
+    final public static String PROVIDER_PARAMETER = "provider";
 
     static public HashMap<String,String> markersMap = new HashMap<>();
 
@@ -50,11 +55,12 @@ public class PokemonManager {
             });
     }
 
-    public static void saveUserData(Context context,String user, String pass){
+    public static void saveUserData(Context context,String user, String pass,String provider){
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("user", user);
-        editor.putString("pass", pass);
+        editor.putString(USER_PARAMETER, user);
+        editor.putString(PASS_PARAMETER, pass);
+        editor.putString(PROVIDER_PARAMETER, provider);
         editor.apply();
     }
 }
