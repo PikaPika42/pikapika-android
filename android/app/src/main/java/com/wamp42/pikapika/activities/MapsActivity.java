@@ -42,6 +42,7 @@ import com.google.gson.reflect.TypeToken;
 import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.data.DataManager;
 import com.wamp42.pikapika.data.PokemonHelper;
+import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.models.PokemonToken;
 import com.wamp42.pikapika.utils.Debug;
@@ -70,7 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ProgressDialog loadingProgressDialog;
     private Button searchButton;
 
-
+    private boolean shouldRequestLogin = false;
 
     //static instance in order to set the pokemon result data from other activities
     public static MapsActivity staticMapActivity;
@@ -107,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         checkButtonText();
         MenuItem item = navigationView.getMenu().getItem(0);
-        checkAudiioSettings(item);
+        checkAudioSettings(item);
     }
 
     protected void onStart() {
@@ -140,8 +141,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                //clean user data
-                PokemonHelper.saveTokenData(MapsActivity.this,null);
 
                 /* TODO:Show an explanation to the user *asynchronously* -- don't block
                     this thread waiting for the user's response! After the user
@@ -224,8 +223,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMainActionClick(View view) {
         PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
         if(pokemonToken.getAccessToken().isEmpty()){
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivityForResult(loginIntent,LOGIN_ACTIVITY_RESULT);
+            if(shouldRequestLogin){
+                shouldRequestLogin = false;
+                //request new token using the current credentials
+                loginAgain();
+            }else {
+                //open login menu
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivityForResult(loginIntent, LOGIN_ACTIVITY_RESULT);
+            }
         } else {
             Location location = null;
             if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED){
@@ -323,11 +329,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 response.body().close();
             } else {
                 //clean credentials if the token was invalid
-                PokemonHelper.saveTokenData(MapsActivity.this,null);
+                if (response.code() >= 400) {
+                    PokemonHelper.saveTokenData(MapsActivity.this, null);
+                    shouldRequestLogin = true;
+                }
 
                 PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title),
                         getString(R.string.request_error_body));
             }
+        }
+    };
+
+    public void loginAgain() {
+        //get the saved credentials
+        LoginData loginData = PokemonHelper.getDataLogin(this);
+        if(loginData != null) {
+            //try to get the current location
+            MapsActivity.getMapsActivity().requestLocation();
+            //show a progress dialog
+            loadingProgressDialog = PokemonHelper.showLoading(this);
+            //request the pokemon data / login
+            DataManager.getDataManager().login(this, loginData.getUsername(), loginData.getPassword(), PokemonHelper.lastLocation, loginData.getProvider(), loginCallback);
+        }
+    }
+
+    /**** Login Callback ***/
+    final Callback loginCallback = new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            if(loadingProgressDialog != null)
+                loadingProgressDialog.dismiss();
+            //clean data
+            PokemonHelper.saveTokenData(MapsActivity.this,null);
+            PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title)+"!!",
+                    getString(R.string.request_error_body));
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            if(loadingProgressDialog != null)
+                loadingProgressDialog.dismiss();
+            //check first if the request was ok
+            if (response.code() == 200){
+                String jsonStr = response.body().string();
+                if(!jsonStr.isEmpty()) {
+                    Debug.d(jsonStr);
+                    try {
+                        JsonParser parser = new JsonParser();
+                        JsonObject jsonObject = parser.parse(jsonStr).getAsJsonObject();
+                        if(jsonObject.has("data")) {
+                            Type listType = new TypeToken<PokemonToken>() {}.getType();
+                            PokemonToken pokemonToken = new Gson().fromJson(jsonObject.get("data").toString(), listType);
+                            if(!pokemonToken.getAccessToken().isEmpty()) {
+                                //save token
+                                PokemonHelper.saveTokenData(MapsActivity.this,pokemonToken);
+                                //call function of activity result to request pokemon
+                                onActivityResult(LOGIN_ACTIVITY_RESULT,RESULT_OK,null);
+                                return;
+                            }
+                        }
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                response.body().close();
+            } else {
+                //clean the credentials saved
+                PokemonHelper.saveTokenData(MapsActivity.this,null);
+            }
+            PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title),
+                    getString(R.string.request_error_body));
         }
     };
 
@@ -363,7 +434,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
             case R.id.menu_sound_option:
                 PokemonHelper.saveAudioSetting(!PokemonHelper.getAudioSetting(this),this);
-                checkAudiioSettings(item);
+                checkAudioSettings(item);
                 item.setChecked(false);
                 break;
         }
@@ -373,8 +444,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void processLogoutNavButton(MenuItem item){
         PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
         if(!pokemonToken.getAccessToken().isEmpty()){
-            //clean user data
-            PokemonHelper.saveTokenData(MapsActivity.this,null);
             checkButtonText();
             menuDrawerLayout.closeDrawers();
             item.setTitle(getString(R.string.logout));
@@ -392,7 +461,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void checkAudiioSettings(MenuItem item){
+    public void checkAudioSettings(MenuItem item){
         boolean audioActive = PokemonHelper.getAudioSetting(this);
         if(audioActive)
             item.setIcon(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_volume_up_black_24dp, null));

@@ -1,6 +1,7 @@
 package com.wamp42.pikapika.data;
 
 
+import android.content.Context;
 import android.location.Location;
 
 import com.google.gson.Gson;
@@ -27,7 +28,7 @@ public class DataManager {
         return dataManagerInstance;
     }
 
-    public void login(String user, String pass,Location location, String loginType, Callback callback){
+    public void login(Context context, String user, String pass, Location location, String loginType, Callback callback){
         Coords coords;
         if(location != null){
             coords = new Coords(location.getLatitude(),location.getLongitude());
@@ -39,6 +40,8 @@ public class DataManager {
         LoginData loginData = new LoginData(user,pass,loginType,pokemonLocation);
         //convert object to json
         String jsonInString = new Gson().toJson(loginData);
+        //save locally
+        PokemonHelper.saveDataLogin(context,jsonInString);
         //do the request
         restClient.postJson(jsonInString,"trainers/login",callback);
     }

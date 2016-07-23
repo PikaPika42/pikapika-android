@@ -17,5 +17,23 @@ public class LoginData {
         this.location = location;
         this.provider = provider;
     }
+
+    public LoginData() {
+        this.username = "";
+        this.password = "";
+        this.provider = "";
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
 }
 

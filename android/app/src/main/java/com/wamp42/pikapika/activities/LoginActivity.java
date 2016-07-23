@@ -67,13 +67,12 @@ public class LoginActivity extends AppCompatActivity {
         String user = userEditText.getText().toString();
         String pass = passEditText.getText().toString();
         String provider = googleRadioButton.isChecked() ? PokemonHelper.GOOGLE_PROVIDER : PokemonHelper.PTC_PROVIDER;
-        PokemonHelper.saveTokenData(LoginActivity.this,null);
         //try to get the current location
         MapsActivity.getMapsActivity().requestLocation();
         //show a progress dialog
         loadingProgressDialog = PokemonHelper.showLoading(this);
         //request the pokemon data / login
-        DataManager.getDataManager().login(user, pass, PokemonHelper.lastLocation,provider,loginCallback);
+        DataManager.getDataManager().login(this,user, pass, PokemonHelper.lastLocation,provider,loginCallback);
     }
 
 
@@ -83,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         public void onFailure(Call call, IOException e) {
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
+            //clean data
             PokemonHelper.saveTokenData(LoginActivity.this,null);
             PokemonHelper.showAlert(LoginActivity.this,getString(R.string.request_error_title)+"!!",
                     getString(R.string.request_error_body));

@@ -8,12 +8,16 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.v7.app.AlertDialog;
 
-import com.google.android.gms.common.server.converter.StringToIntConverter;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.wamp42.pikapika.R;
+import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.models.PokemonToken;
+import com.wamp42.pikapika.utils.Utils;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,12 +27,13 @@ import java.util.List;
 public class PokemonHelper {
     final public static String GOOGLE_PROVIDER = "google";
     final public static String PTC_PROVIDER = "ptc";
+    final public static String DATA_LOGIN = "data_login";
     final public static String USER_PARAMETER = "user";
     final public static String PASS_PARAMETER = "pass";
     final public static String PROVIDER_PARAMETER = "provider";
     final public static String TOKEN_PARAMETER = "accessToken";
     final public static String EXPIRE_TIME_PARAMETER = "expire_time";
-    final public static String CURRENT_TIME_PARAMETER = "provider";
+    final public static String CURRENT_TIME_PARAMETER = "init_time";
 
     final public static String AUDIO_SETTING        = "audio_setting";
 
@@ -81,6 +86,19 @@ public class PokemonHelper {
         } else {
             editor.putString(TOKEN_PARAMETER, "");
             editor.putString(EXPIRE_TIME_PARAMETER, "");
+            //clean user data as well
+            saveDataLogin(context,null);
+        }
+        editor.apply();
+    }
+
+    public static void saveDataLogin(Context context, String jsonLoginData){
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        if(jsonLoginData != null) {
+            editor.putString(DATA_LOGIN,jsonLoginData);
+        } else {
+            editor.putString(DATA_LOGIN, "");
         }
         editor.apply();
     }
@@ -88,9 +106,23 @@ public class PokemonHelper {
     public static  PokemonToken getTokenFromData(Context context){
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String token = sharedPref.getString(PokemonHelper.TOKEN_PARAMETER,"");
-        String time = sharedPref.getString(PokemonHelper.EXPIRE_TIME_PARAMETER,"");
+        String token = sharedPref.getString(TOKEN_PARAMETER,"");
+        String time = sharedPref.getString(EXPIRE_TIME_PARAMETER,"");
         return new PokemonToken(token,time,"");
+    }
+
+    public static  LoginData getDataLogin(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        String json = sharedPref.getString(DATA_LOGIN,"");
+        try {
+            Type listType = new TypeToken<LoginData>() {}.getType();
+            LoginData loginData = new Gson().fromJson(json, listType);
+            return loginData;
+        } catch (Exception e){
+            e.printStackTrace();
+            return new LoginData();
+        }
     }
 
     public static void saveAudioSetting(boolean active, Context context){
