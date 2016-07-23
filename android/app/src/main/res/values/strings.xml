@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">PikaPika</string>
-    <string name="title_activity_maps">Radar Map</string>
+    <string name="title_activity_maps">PikaPika Map</string>
     <string name="search_action">Search</string>
     <string name="please_wait">Please Wait!</string>
     <string name="loading_data">Loading data!</string>
@@ -16,4 +16,6 @@
     <string name="ok">OK</string>
     <string name="request_error_title">Ups!</string>
     <string name="request_error_body">Something was wrong. Try later.</string>
+    <string name="gps_error_title">GPS Error!</string>
+    <string name="gps_error_body">We have a problem with your GPS location.</string>
 </resources>

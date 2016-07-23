@@ -2,11 +2,16 @@ package com.wamp42.pikapika.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -201,11 +206,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
+            centerMapCamera(location);
+        } else {
+            //TODO: request position with other method and update map
+            requestSingleLocationUpdate();
+        }
+    }
+
+    private void centerMapCamera(Location location){
+        if (location != null) {
             PokemonHelper.lastLocation = location;
             LatLng currentPos = new LatLng(PokemonHelper.lastLocation.getLatitude(), PokemonHelper.lastLocation.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 17));
-        } else {
-            //TODO: request position with other method and update map
         }
     }
 
@@ -224,7 +236,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             if(location == null) {
-                PokemonHelper.showAlert(this,"GPS Error!","We have a problem with your GPS location.");
+                PokemonHelper.showAlert(this,getString(R.string.gps_error_title),getString(R.string.gps_error_body));
             } else {
                 loadingProgressDialog = PokemonHelper.showLoading(this);
                 if(PokemonHelper.pokemonResultList != null)
@@ -386,5 +398,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             item.setIcon(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_volume_up_black_24dp, null));
         else
             item.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_volume_off_black_24dp, null));
+    }
+
+    private void requestSingleLocationUpdate() {
+        Criteria criteria = new Criteria ();
+        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+        criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
+        try {
+            LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestSingleUpdate(criteria, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    Debug.Log(" LocationManager: requestSingleUpdate onLocationChanged = "+location.getLatitude()+ "," +location.getLongitude());
+                    //center the camera to the new location
+                    centerMapCamera(location);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            }, Looper.myLooper());
+        } catch (SecurityException e){
+            Debug.Log("Location security exception");
+        }
     }
 }

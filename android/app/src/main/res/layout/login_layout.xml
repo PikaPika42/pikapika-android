@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!-- Fields layout -->
     <LinearLayout
@@ -13,8 +15,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary">
+            android:layout_height="match_parent">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -36,7 +37,6 @@
                         android:layout_height="40dp"
                         android:inputType="textEmailAddress"
                         android:hint="@string/login_user"
-                        android:textColor="@color/colorPrimary"
                         android:imeOptions="actionNext"
                         android:background="#ffffff" />
                 </android.support.design.widget.TextInputLayout>
@@ -56,7 +56,6 @@
                         android:layout_height="40dp"
                         android:inputType="textPassword"
                         android:hint="@string/login_pass"
-                        android:textColor="@color/colorPrimary"
                         android:imeOptions="actionDone"
                         android:background="@android:color/white" />
                 </android.support.design.widget.TextInputLayout>
@@ -84,14 +83,14 @@
                     android:text="@string/google"
                     android:id="@+id/google_radio_button"
                     android:checked="true"
-                    android:textColor="@android:color/white" />
+                    android:textSize="15dp" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/ptc"
                     android:id="@+id/ptc_radio_button"
-                    android:textColor="@android:color/white" />
+                    android:textSize="15dp" />
             </RadioGroup>
 
         </RelativeLayout>
@@ -105,8 +104,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary">
+            android:layout_height="match_parent">
 
             <Button
                 android:layout_width="100dp"
@@ -115,9 +113,9 @@
                 android:layout_centerInParent="true"
                 android:id="@+id/button_login"
                 android:minHeight="0dp"
-                android:background="#ffffff"
-                android:textColor="@color/colorPrimaryDark"
-                android:onClick="onLoginClick" />
+                android:background="@color/colorPrimary"
+                android:onClick="onLoginClick"
+                android:textColor="@android:color/white" />
 
         </RelativeLayout>
     </LinearLayout>
