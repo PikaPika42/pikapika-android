@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -53,6 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
     private static final int LOGIN_ACTIVITY_RESULT = 101;
+    private static final int REQUEST_TIME_OUT = 15000; //15 seg
 
     //map stuff
     private GoogleMap mMap;
@@ -225,6 +227,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PokemonHelper.pokemonResultList.clear();
 
             DataManager.getDataManager().heartbeat(pokemonToken.getAccessToken(),location.getLatitude()+"",location.getLongitude()+"", heartbeatCallback);
+
+            //dismiss the loading progress after a time out
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(loadingProgressDialog != null && loadingProgressDialog.isShowing()) {
+                        loadingProgressDialog.dismiss();
+                        PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title)+"!",
+                                getString(R.string.request_error_body));
+                    }
+                }
+            }, REQUEST_TIME_OUT);
         }
     }
 
@@ -267,7 +282,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
-
+            if(loadingProgressDialog != null)
+                loadingProgressDialog.dismiss();
             if (response.code() == 200) {
                 String jsonStr = response.body().string();
                 if (!jsonStr.isEmpty()) {
@@ -296,8 +312,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title),
                         getString(R.string.request_error_body));
             }
-            if(loadingProgressDialog != null)
-                loadingProgressDialog.dismiss();
         }
     };
 
