@@ -222,24 +222,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if(location == null)
                     location = PokemonHelper.lastLocation;
             }
-            loadingProgressDialog = PokemonHelper.showLoading(this);
-            if(PokemonHelper.pokemonResultList != null)
-                PokemonHelper.pokemonResultList.clear();
 
-            DataManager.getDataManager().heartbeat(pokemonToken.getAccessToken(),location.getLatitude()+"",location.getLongitude()+"", heartbeatCallback);
+            if(location == null) {
+                PokemonHelper.showAlert(this,"GPS Error!","We have a problem with your GPS location.");
+            } else {
+                loadingProgressDialog = PokemonHelper.showLoading(this);
+                if(PokemonHelper.pokemonResultList != null)
+                    PokemonHelper.pokemonResultList.clear();
+                DataManager.getDataManager().heartbeat(pokemonToken.getAccessToken(), location.getLatitude() + "", location.getLongitude() + "", heartbeatCallback);
 
-            //dismiss the loading progress after a time out
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(loadingProgressDialog != null && loadingProgressDialog.isShowing()) {
-                        loadingProgressDialog.dismiss();
-                        PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title)+"!",
-                                getString(R.string.request_error_body));
+                //dismiss the loading progress after a time out
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (loadingProgressDialog != null && loadingProgressDialog.isShowing()) {
+                            loadingProgressDialog.dismiss();
+                            PokemonHelper.showAlert(MapsActivity.this, getString(R.string.request_error_title) + "!",
+                                    getString(R.string.request_error_body));
+                        }
                     }
-                }
-            }, REQUEST_TIME_OUT);
+                }, REQUEST_TIME_OUT);
+            }
         }
     }
 
