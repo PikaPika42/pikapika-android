@@ -84,8 +84,8 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressDialog.dismiss();
             //clean data
             PokemonHelper.saveTokenData(LoginActivity.this,null);
-            PokemonHelper.showAlert(LoginActivity.this,getString(R.string.request_error_title)+"!!",
-                    getString(R.string.request_error_body));
+            PokemonHelper.showAlert(LoginActivity.this,getString(R.string.server_error_title)+"!!",
+                    getString(R.string.server_error_body));
         }
 
         @Override
@@ -117,12 +117,17 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
                 response.body().close();
-            } else {
-                //clean the credentials saved
-                PokemonHelper.saveTokenData(LoginActivity.this,null);
             }
-            PokemonHelper.showAlert(LoginActivity.this,getString(R.string.request_error_title),
-                    getString(R.string.request_error_body));
+                //clean the credentials saved
+                PokemonHelper.saveTokenData(LoginActivity.this, null);
+
+            if (response.code() == 403){
+                PokemonHelper.showAlert(LoginActivity.this, "Error!",
+                        "Wrong username or password");
+            } else {
+                PokemonHelper.showAlert(LoginActivity.this, getString(R.string.request_error_title),
+                        getString(R.string.request_error_body));
+            }
         }
     };
 }

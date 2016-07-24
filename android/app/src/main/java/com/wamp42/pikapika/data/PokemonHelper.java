@@ -86,8 +86,6 @@ public class PokemonHelper {
         } else {
             editor.putString(TOKEN_PARAMETER, "");
             editor.putString(EXPIRE_TIME_PARAMETER, "");
-            //clean user data as well
-            saveDataLogin(context,null);
         }
         editor.apply();
     }
