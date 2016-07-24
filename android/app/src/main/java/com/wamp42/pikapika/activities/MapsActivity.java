@@ -24,7 +24,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.TextViewCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -116,7 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         checkButtonText();
         MenuItem item = navigationView.getMenu().getItem(0);
-        checkAudioSettings(item);
+        setAudioIcon(item, PokemonHelper.getAudioSetting(this));
+
     }
 
     protected void onStart() {
@@ -446,9 +446,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 processLogoutNavButton(item);
                 break;
             case R.id.menu_sound_option:
-                PokemonHelper.saveAudioSetting(!PokemonHelper.getAudioSetting(this),this);
-                checkAudioSettings(item);
-                item.setChecked(false);
+                boolean audioEnabled = PokemonHelper.getAudioSetting(this);
+                PokemonHelper.saveAudioSetting(!audioEnabled,this);
+                setAudioIcon(item,!audioEnabled);
                 break;
         }
         return true;
@@ -477,9 +477,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void checkAudioSettings(MenuItem item){
-        boolean audioActive = PokemonHelper.getAudioSetting(this);
-        if(audioActive)
+    public void setAudioIcon(MenuItem item,boolean audioEnabled){
+        if(audioEnabled)
             item.setIcon(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_volume_up_black_24dp, null));
         else
             item.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_volume_off_black_24dp, null));

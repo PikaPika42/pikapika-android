@@ -3,6 +3,7 @@ package com.wamp42.pikapika.models;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.TypedValue;
 import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -57,7 +58,9 @@ public class PokemonResult {
         int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
         if(iconId > 0) {
             Bitmap bitmapIcon = BitmapFactory.decodeResource(context.getResources(),iconId);
-            Bitmap resizedIcon = Bitmap.createScaledBitmap(bitmapIcon, 150, 150, false);
+            float wt_px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, context.getResources().getDisplayMetrics());
+            int iconSize = (int)wt_px;
+            Bitmap resizedIcon = Bitmap.createScaledBitmap(bitmapIcon, iconSize, iconSize, false);
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedIcon));
         }
         Marker marker = map.addMarker(markerOptions);
