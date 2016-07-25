@@ -116,7 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
-        checkButtonText();
+        checkSearchButtonText();
         MenuItem item = navigationView.getMenu().getItem(0);
         setAudioIcon(item, PokemonHelper.getAudioSetting(this));
         showPopUpSplash();
@@ -312,7 +312,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void checkButtonText(){
+    private void checkSearchButtonText(){
         //check if the user is logged to change the button text
         PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
         if(pokemonToken.getAccessToken().isEmpty()){
@@ -330,7 +330,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 loadingProgressDialog.dismiss();
             //clean data
             //shouldRequestLogin = true;
-            //PokemonHelper.saveTokenData(MapsActivity.this,null);
             //PokemonHelper.saveTokenData(MapsActivity.this,null);
             PokemonHelper.showAlert(MapsActivity.this,getString(R.string.server_error_title)+"!!",
                     getString(R.string.server_error_body));
@@ -368,7 +367,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     shouldRequestLogin = true;
                     return;
                 }
-
+                Debug.d("error: "+response.code()+", onResponse");
                 PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title),
                         getString(R.string.request_error_body));
             }
@@ -417,10 +416,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Type listType = new TypeToken<PokemonToken>() {}.getType();
                             PokemonToken pokemonToken = new Gson().fromJson(jsonObject.get("data").toString(), listType);
                             if(!pokemonToken.getAccessToken().isEmpty()) {
+                                //set the time when it was saved
+                                pokemonToken.setInitTime(System.currentTimeMillis());
                                 //save token
                                 PokemonHelper.saveTokenData(MapsActivity.this,pokemonToken);
-                                //call function of activity result to request pokemon
-                                onActivityResult(LOGIN_ACTIVITY_RESULT,RESULT_OK,null);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //request pokemon calling the click function
+                                        onMainActionClick(new View(MapsActivity.this));
+                                    }
+                                });
                                 return;
                             }
                         }
@@ -456,7 +462,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOGIN_ACTIVITY_RESULT && resultCode == RESULT_OK) {
-            checkButtonText();
+            checkSearchButtonText();
             //request pokemon
             onMainActionClick(new View(this));
         }
@@ -484,7 +490,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //clean user data as well
             PokemonHelper.saveDataLogin(this, null);
             PokemonHelper.saveTokenData(this, null);
-            checkButtonText();
+            checkSearchButtonText();
             menuDrawerLayout.closeDrawers();
             item.setTitle(getString(R.string.logout));
         } else {
