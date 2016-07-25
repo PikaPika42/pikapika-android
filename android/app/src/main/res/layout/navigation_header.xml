@@ -18,7 +18,8 @@
             android:id="@+id/imageView"
             android:src="@drawable/ic_pikapika"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true" />
 
     </RelativeLayout>
 

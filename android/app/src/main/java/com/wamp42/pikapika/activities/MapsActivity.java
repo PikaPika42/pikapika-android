@@ -51,6 +51,7 @@ import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.models.PokemonToken;
 import com.wamp42.pikapika.utils.Debug;
+import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -249,11 +250,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
         //check if the token is still valid
         boolean tokenIsEmpty = pokemonToken.getAccessToken().isEmpty();
-        long expireTime =  pokemonToken.getExpireTime(); //in case the expired time is not valid check if the value is 0
-        boolean tokenExpired = expireTime == 0 || pokemonToken.getInitTime() + expireTime < System.currentTimeMillis();
-        if(!tokenIsEmpty && tokenExpired) {
-            tokenIsEmpty = true;
-            shouldRequestLogin = true;
+        if(!tokenIsEmpty) {
+            long expireTime = pokemonToken.getExpireTime(); //in case the expired time is not valid check if the value is 0
+            boolean tokenExpired = expireTime == 0 || pokemonToken.getInitTime() + expireTime < System.currentTimeMillis();
+            if (tokenExpired) {
+                tokenIsEmpty = true;
+                shouldRequestLogin = true;
+            }
         }
 
         if(tokenIsEmpty){

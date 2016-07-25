@@ -4,6 +4,7 @@ import android.util.Base64;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -49,12 +50,13 @@ public class Utils {
             c.init(Cipher.ENCRYPT_MODE, key, iv);
             byte[] encValue = c.doFinal(valueToEnc.getBytes());
 
-            byte[] finalCiphertext = new byte[encValue.length+2*16];
-            System.arraycopy(ivBytes, 0, finalCiphertext, 0, 16);
-            System.arraycopy(salt, 0, finalCiphertext, 16, 16);
-            System.arraycopy(encValue, 0, finalCiphertext, 32, encValue.length);
+            byte[] finalCipherText = new byte[encValue.length+2*16];
+            System.arraycopy(ivBytes, 0, finalCipherText, 0, 16);
+            System.arraycopy(salt, 0, finalCipherText, 16, 16);
+            System.arraycopy(encValue, 0, finalCipherText, 32, encValue.length);
 
-            return new String(finalCiphertext);
+            //return new String(finalCipherText);
+            return Base64.encodeToString(finalCipherText, Base64.DEFAULT);
 
         } catch (InvalidKeyException e) {
             e.printStackTrace();
@@ -77,7 +79,7 @@ public class Utils {
 
     public static String decryptIt(String valueToDec) {
         try {
-            byte[] dataSrcByte = valueToDec.getBytes();
+            byte[] dataSrcByte = Base64.decode(valueToDec, Base64.DEFAULT);
             byte[] salt = new byte[16];
             byte[] ivBytes = new byte[16];
             byte[] encValue = new byte[dataSrcByte.length-2*16];
@@ -97,8 +99,7 @@ public class Utils {
             c.init(Cipher.DECRYPT_MODE, key, iv);
             byte[] decryptedValueBytes = c.doFinal(encValue);
 
-            String decryptedValue = new String(decryptedValueBytes);
-            return decryptedValue;
+            return new String(decryptedValueBytes);
 
         } catch (InvalidKeyException e) {
             e.printStackTrace();

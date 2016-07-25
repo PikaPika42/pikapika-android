@@ -15,6 +15,7 @@ import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.models.PokemonToken;
+import com.wamp42.pikapika.utils.Utils;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -96,7 +97,9 @@ public class PokemonHelper {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         if(jsonLoginData != null) {
-            editor.putString(DATA_LOGIN,jsonLoginData);
+            //encrypt the user data
+            String encryptedData = Utils.encryptIt(jsonLoginData);
+            editor.putString(DATA_LOGIN,encryptedData);
         } else {
             editor.putString(DATA_LOGIN, "");
         }
@@ -116,9 +119,13 @@ public class PokemonHelper {
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         String json = sharedPref.getString(DATA_LOGIN,"");
+        if(json.isEmpty())
+            return new LoginData();
+        //decrypt the user data
+        String decryptedData = Utils.decryptIt(json);
         try {
             Type listType = new TypeToken<LoginData>() {}.getType();
-            LoginData loginData = new Gson().fromJson(json, listType);
+            LoginData loginData = new Gson().fromJson(decryptedData, listType);
             return loginData;
         } catch (Exception e){
             e.printStackTrace();
