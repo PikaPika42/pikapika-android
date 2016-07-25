@@ -35,6 +35,7 @@ public class PokemonHelper {
     final public static String INIT_TIME_PARAMETER = "init_time";
 
     final public static String AUDIO_SETTING        = "audio_setting";
+    final public static String FIRST_LAUNCH        = "firstLaunch";
 
     //share the marker in order to
     static public HashMap<String,String> markersMap = new HashMap<>();
@@ -136,5 +137,18 @@ public class PokemonHelper {
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         return sharedPref.getBoolean(PokemonHelper.AUDIO_SETTING,true);
+    }
+
+    public static void saveFirstLaunch(boolean first, Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(FIRST_LAUNCH, first);
+        editor.apply();
+    }
+
+    public static boolean isFirstLaunch(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        return sharedPref.getBoolean(PokemonHelper.FIRST_LAUNCH,true);
     }
 }

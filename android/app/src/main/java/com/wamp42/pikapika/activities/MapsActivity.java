@@ -65,9 +65,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
     private static final int LOGIN_ACTIVITY_RESULT = 101;
     private static final int REQUEST_TIME_OUT = 15000; //15 seg
-    private static final int RESQUET_LIMIT_TIME = 15000; //15 seg
+    private static final int REQUEST_LIMIT_TIME = 15000; //15 seg
 
     private static final int CAMERA_MAP_ZOOM = 15;
+    private static final int ATTEMPS_BEFORE_LOGIN = 3;
 
     //map stuff
     private GoogleMap mMap;
@@ -80,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView timerTextView;
 
     private boolean shouldRequestLogin = false;
-    private long lastTimeHearbeatRequest = 0;
+    private long heartbeatsAttempt = 0;
 
     //static instance in order to set the pokemon result data from other activities
     public static MapsActivity staticMapActivity;
@@ -119,7 +120,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkSearchButtonText();
         MenuItem item = navigationView.getMenu().getItem(0);
         setAudioIcon(item, PokemonHelper.getAudioSetting(this));
-        showPopUpSplash();
+        //show a popup with warning information
+        if(PokemonHelper.isFirstLaunch(this)) {
+            showPopUpSplash();
+            PokemonHelper.saveFirstLaunch(false,this);
+        }
     }
 
     public void showPopUpSplash(){
@@ -329,10 +334,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
             //clean data
-            //shouldRequestLogin = true;
-            //PokemonHelper.saveTokenData(MapsActivity.this,null);
+
             PokemonHelper.showAlert(MapsActivity.this,getString(R.string.server_error_title)+"!!",
                     getString(R.string.server_error_body));
+            heartbeatsAttempt++;
+            if(heartbeatsAttempt >= ATTEMPS_BEFORE_LOGIN){
+                heartbeatsAttempt = 0;
+                shouldRequestLogin = true;
+                PokemonHelper.saveTokenData(MapsActivity.this,null);
+            }
         }
 
         @Override
@@ -545,7 +555,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    final CountDownTimer countDownTimer = new CountDownTimer(RESQUET_LIMIT_TIME, 1000) {
+    final CountDownTimer countDownTimer = new CountDownTimer(REQUEST_LIMIT_TIME, 1000) {
 
         public void onTick(long millisUntilFinished) {
             String labelTime = getString(R.string.time_remaining);

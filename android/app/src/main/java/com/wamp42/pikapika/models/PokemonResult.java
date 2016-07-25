@@ -27,6 +27,15 @@ public class PokemonResult {
     private double Longitude;
     private int TimeTillHiddenMs;
     private PokeInfo pokemon;
+
+    //new parameters
+    private int id;
+    private String number;
+    private String name;
+    private double latitude = 0;
+    private double longitude = 0 ;
+    private int timeLeft = 0;
+
     public PokemonResult(){}
 
     public double getLatitude() {
@@ -47,11 +56,11 @@ public class PokemonResult {
 
     public void drawMark(GoogleMap map, Context context){
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(new LatLng(Latitude, Longitude));
+        markerOptions.position(new LatLng(latitude == 0?Latitude:latitude, longitude == 0? Longitude:longitude));
 
-        markerOptions.title(pokemon.getPokemonName());
+        markerOptions.title(name == null?pokemon.getPokemonName():name);
 
-        int [] secondsArray = splitToComponentTimes(TimeTillHiddenMs);
+        int [] secondsArray = splitToComponentTimes(timeLeft == 0 ? TimeTillHiddenMs:timeLeft);
         String timeLeftStr = context.getString(R.string.time_left);
         String timeStr = String.format(Locale.ENGLISH,"%dm %ds",secondsArray[0],secondsArray[1]);
         markerOptions.snippet(timeLeftStr+": " + timeStr);
@@ -87,7 +96,8 @@ public class PokemonResult {
     }
 
     public String getStrId() {
-        String strId = String.valueOf(pokemon.getPokemonId());
+        String pokemonNumber = number == null ? pokemon.getPokemonId() : number;
+        String strId = String.valueOf(pokemonNumber);
         int length = strId.length();
         if(length == 1)
             strId = "00"+strId;
