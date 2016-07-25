@@ -21,4 +21,6 @@
     <string name="gps_error_title">GPS Error!</string>
     <string name="gps_error_body">We have a problem with your GPS location.</string>
     <string name="time_remaining">Time Remaining</string>
+    <string name="splash_text">Please connect to your Pokemon Account.Your info is safe, we do not store anything.</string>
+    <string name="splash_text_2">If you want, you can use a test account but you would not see the Pokemon that are visible to only you.</string>
 </resources>

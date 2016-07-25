@@ -24,8 +24,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -116,7 +119,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkButtonText();
         MenuItem item = navigationView.getMenu().getItem(0);
         setAudioIcon(item, PokemonHelper.getAudioSetting(this));
+        showPopUpSplash();
+    }
 
+    public void showPopUpSplash(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(R.layout.pop_up_splash_view);
+        alert.setPositiveButton(getText(R.string.ok),null);
+        alert.show();
     }
 
     protected void onStart() {
