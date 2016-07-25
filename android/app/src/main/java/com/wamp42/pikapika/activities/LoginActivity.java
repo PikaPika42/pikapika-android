@@ -104,6 +104,8 @@ public class LoginActivity extends AppCompatActivity {
                             Type listType = new TypeToken<PokemonToken>() {}.getType();
                             PokemonToken pokemonToken = new Gson().fromJson(jsonObject.get("data").toString(), listType);
                             if(!pokemonToken.getAccessToken().isEmpty()) {
+                                //set the time when it was saved
+                                pokemonToken.setInitTime(System.currentTimeMillis());
                                 //save token
                                 PokemonHelper.saveTokenData(LoginActivity.this,pokemonToken);
                                 //finished activity with OK response

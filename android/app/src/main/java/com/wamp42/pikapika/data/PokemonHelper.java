@@ -15,7 +15,6 @@ import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.models.PokemonToken;
-import com.wamp42.pikapika.utils.Utils;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -33,7 +32,7 @@ public class PokemonHelper {
     final public static String PROVIDER_PARAMETER = "provider";
     final public static String TOKEN_PARAMETER = "accessToken";
     final public static String EXPIRE_TIME_PARAMETER = "expire_time";
-    final public static String CURRENT_TIME_PARAMETER = "init_time";
+    final public static String INIT_TIME_PARAMETER = "init_time";
 
     final public static String AUDIO_SETTING        = "audio_setting";
 
@@ -83,9 +82,11 @@ public class PokemonHelper {
         if(pokemonToken != null) {
             editor.putString(TOKEN_PARAMETER, pokemonToken.getAccessToken());
             editor.putString(EXPIRE_TIME_PARAMETER, pokemonToken.getExpire_time());
+            editor.putLong(INIT_TIME_PARAMETER, pokemonToken.getInitTime());
         } else {
             editor.putString(TOKEN_PARAMETER, "");
             editor.putString(EXPIRE_TIME_PARAMETER, "");
+            editor.putLong(INIT_TIME_PARAMETER, 0);
         }
         editor.apply();
     }
@@ -106,7 +107,8 @@ public class PokemonHelper {
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         String token = sharedPref.getString(TOKEN_PARAMETER,"");
         String time = sharedPref.getString(EXPIRE_TIME_PARAMETER,"");
-        return new PokemonToken(token,time,"");
+        Long initTime = sharedPref.getLong(INIT_TIME_PARAMETER,0);
+        return new PokemonToken(token,time,initTime);
     }
 
     public static  LoginData getDataLogin(Context context){

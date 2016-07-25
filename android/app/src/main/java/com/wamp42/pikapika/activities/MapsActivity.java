@@ -27,8 +27,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -68,6 +66,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOGIN_ACTIVITY_RESULT = 101;
     private static final int REQUEST_TIME_OUT = 15000; //15 seg
     private static final int RESQUET_LIMIT_TIME = 15000; //15 seg
+
+    private static final int CAMERA_MAP_ZOOM = 15;
 
     //map stuff
     private GoogleMap mMap;
@@ -234,13 +234,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (location != null) {
             PokemonHelper.lastLocation = location;
             LatLng currentPos = new LatLng(PokemonHelper.lastLocation.getLatitude(), PokemonHelper.lastLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 17));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, CAMERA_MAP_ZOOM));
         }
     }
 
     public void onMainActionClick(View view) {
         PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
-        if(pokemonToken.getAccessToken().isEmpty()){
+        //check if the token is still valid
+        boolean tokenIsEmpty = pokemonToken.getAccessToken().isEmpty();
+        long expireTime =  pokemonToken.getExpireTime(); //in case the expired time is not valid check if the value is 0
+        boolean tokenExpired = expireTime == 0 || pokemonToken.getInitTime() + expireTime < System.currentTimeMillis();
+        if(!tokenIsEmpty && tokenExpired) {
+            tokenIsEmpty = true;
+            shouldRequestLogin = true;
+        }
+
+        if(tokenIsEmpty){
             if(shouldRequestLogin){
                 shouldRequestLogin = false;
                 //request new token using the current credentials
@@ -319,6 +328,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onFailure(Call call, IOException e) {
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
+            //clean data
+            //shouldRequestLogin = true;
+            //PokemonHelper.saveTokenData(MapsActivity.this,null);
             //PokemonHelper.saveTokenData(MapsActivity.this,null);
             PokemonHelper.showAlert(MapsActivity.this,getString(R.string.server_error_title)+"!!",
                     getString(R.string.server_error_body));
@@ -383,6 +395,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
             //clean data
+            shouldRequestLogin = true;
             PokemonHelper.saveTokenData(MapsActivity.this,null);
             PokemonHelper.showAlert(MapsActivity.this,getString(R.string.server_error_title)+"!!",
                     getString(R.string.server_error_body));
@@ -417,6 +430,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 response.body().close();
             } else {
+                shouldRequestLogin = true;
                 //clean the credentials saved
                 PokemonHelper.saveTokenData(MapsActivity.this,null);
             }

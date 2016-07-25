@@ -20,6 +20,9 @@ import java.util.Locale;
  * Created by flavioreyes on 7/21/16.
  */
 public class PokemonResult {
+
+    final public static int POKEMON_SIZE = 60;
+
     private double Latitude;
     private double Longitude;
     private int TimeTillHiddenMs;
@@ -58,7 +61,7 @@ public class PokemonResult {
         int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
         if(iconId > 0) {
             Bitmap bitmapIcon = BitmapFactory.decodeResource(context.getResources(),iconId);
-            float wt_px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, context.getResources().getDisplayMetrics());
+            float wt_px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, POKEMON_SIZE, context.getResources().getDisplayMetrics());
             int iconSize = (int)wt_px;
             Bitmap resizedIcon = Bitmap.createScaledBitmap(bitmapIcon, iconSize, iconSize, false);
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedIcon));
