@@ -25,6 +25,7 @@ public class PokemonToken {
     }
 
     public long getExpireTime(){
+        if(expire_time == null) return  0;
         try {
             //parse from string and change the format to milliseconds
             return Long.valueOf(expire_time)/1000;

@@ -68,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_LIMIT_TIME = 15000; //15 seg
 
     private static final int CAMERA_MAP_ZOOM = 15;
-    private static final int ATTEMPS_BEFORE_LOGIN = 3;
+    private static final int ATTEMPT_BEFORE_LOGIN = 2;
 
     //map stuff
     private GoogleMap mMap;
@@ -335,13 +335,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 loadingProgressDialog.dismiss();
             //clean data
 
-            PokemonHelper.showAlert(MapsActivity.this,getString(R.string.server_error_title)+"!!",
-                    getString(R.string.server_error_body));
+
             heartbeatsAttempt++;
-            if(heartbeatsAttempt >= ATTEMPS_BEFORE_LOGIN){
+            if(heartbeatsAttempt >= ATTEMPT_BEFORE_LOGIN){
                 heartbeatsAttempt = 0;
                 shouldRequestLogin = true;
                 PokemonHelper.saveTokenData(MapsActivity.this,null);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //request pokemon calling the click function
+                        onMainActionClick(new View(MapsActivity.this));
+                    }
+                });
+            } else {
+                PokemonHelper.showAlert(MapsActivity.this,getString(R.string.server_error_title)+"!!",
+                        getString(R.string.server_error_body));
             }
         }
 

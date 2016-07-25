@@ -29,7 +29,7 @@ public class PokemonResult {
     private PokeInfo pokemon;
 
     //new parameters
-    private int id;
+    private String id;
     private String number;
     private String name;
     private double latitude = 0;
