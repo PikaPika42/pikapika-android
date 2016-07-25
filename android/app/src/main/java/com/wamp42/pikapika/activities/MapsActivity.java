@@ -43,6 +43,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.wamp42.pikapika.BuildConfig;
 import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.data.DataManager;
 import com.wamp42.pikapika.data.PokemonHelper;
@@ -95,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (BuildConfig.DEBUG) Debug.setDebugLogActive(false);
         staticMapActivity = this;
         setContentView(R.layout.activity_maps);
         searchButton = (Button)findViewById(R.id.main_action_button);
