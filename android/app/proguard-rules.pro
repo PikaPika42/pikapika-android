@@ -20,5 +20,14 @@
 -keepattributes *Annotation*
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
--dontwarn okhttp3.**
 
+
+# Gson specific classes
+-keep class sun.misc.Unsafe { *; }
+#-keep class com.google.gson.stream.** { *; }
+
+# Application classes that will be serialized/deserialized over Gson
+-keep class com.wamp42.pikapika.models.** { *; }
+
+-dontwarn okhttp3.**
+-dontwarn okio.**
