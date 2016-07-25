@@ -23,44 +23,22 @@ public class PokemonResult {
 
     final public static int POKEMON_SIZE = 60;
 
-    private double Latitude;
-    private double Longitude;
-    private int TimeTillHiddenMs;
-    private PokeInfo pokemon;
-
     //new parameters
     private String id;
     private String number;
     private String name;
-    private double latitude = 0;
-    private double longitude = 0 ;
-    private int timeLeft = 0;
+    private PokemonPosition position;
+    private int timeleft = 0;
 
     public PokemonResult(){}
 
-    public double getLatitude() {
-        return Latitude;
-    }
-
-    public double getLongitude() {
-        return Longitude;
-    }
-
-    public int getTimeTillHiddenMs() {
-        return TimeTillHiddenMs;
-    }
-
-    public PokeInfo getPokeinfo() {
-        return pokemon;
-    }
-
     public void drawMark(GoogleMap map, Context context){
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(new LatLng(latitude == 0?Latitude:latitude, longitude == 0? Longitude:longitude));
+        markerOptions.position(new LatLng(position.getLat(), position.getLng()));
 
-        markerOptions.title(name == null?pokemon.getPokemonName():name);
+        markerOptions.title(name);
 
-        int [] secondsArray = splitToComponentTimes(timeLeft == 0 ? TimeTillHiddenMs:timeLeft);
+        int [] secondsArray = splitToComponentTimes(timeleft);
         String timeLeftStr = context.getString(R.string.time_left);
         String timeStr = String.format(Locale.ENGLISH,"%dm %ds",secondsArray[0],secondsArray[1]);
         markerOptions.snippet(timeLeftStr+": " + timeStr);
@@ -96,7 +74,7 @@ public class PokemonResult {
     }
 
     public String getStrId() {
-        String pokemonNumber = number == null ? pokemon.getPokemonId() : number;
+        String pokemonNumber = number;
         String strId = String.valueOf(pokemonNumber);
         int length = strId.length();
         if(length == 1)
