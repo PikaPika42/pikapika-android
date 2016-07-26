@@ -69,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_LIMIT_TIME = 15000; //15 seg
 
     private static final int CAMERA_MAP_ZOOM = 15;
-    private static final int ATTEMPT_BEFORE_LOGIN = 3;
+    private static final int ATTEMPT_BEFORE_LOGIN = 2;
 
     //map stuff
     private GoogleMap mMap;
