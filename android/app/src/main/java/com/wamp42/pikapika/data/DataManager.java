@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.webkit.WebSettings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -137,6 +138,7 @@ public class DataManager {
 
         String language = locale.getLanguage();
         String skdVersion = Build.VERSION.SDK_INT + "";
+        String user_agent = WebSettings.getDefaultUserAgent(context);
 
         RequestBody formBody = new FormBody.Builder()
                 .add("accountType", "HOSTED_OR_GOOGLE")
@@ -156,6 +158,7 @@ public class DataManager {
         Request request = new Request.Builder()
                 .url(AUTH_URL)
                 .post(formBody)
+                .header("User-Agent",user_agent)
                 .build();
         restClient.getClient().newCall(request).enqueue(googleOAuthCallback);
     }
@@ -177,6 +180,7 @@ public class DataManager {
 
         String language = locale.getLanguage();
         String skdVersion = Build.VERSION.SDK_INT + "";
+        String user_agent = WebSettings.getDefaultUserAgent(context);
 
         String oauth_service = "audience:server:client_id:848232511240-7so421jotr2609rmqakceuu1luuq0ptb.apps.googleusercontent.com";
         String app = "com.nianticlabs.pokemongo";
@@ -201,6 +205,7 @@ public class DataManager {
         Request request = new Request.Builder()
                 .url(AUTH_URL)
                 .post(formBody)
+                .header("User-Agent",user_agent)
                 .build();
         restClient.getClient().newCall(request).enqueue(callback);
     }
