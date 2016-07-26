@@ -28,13 +28,16 @@ public class PokemonToken {
         if(expire_time == null) return  0;
         try {
             //parse from string and change the format to milliseconds
-            return Long.valueOf(expire_time)/1000;
+            return Long.valueOf(expire_time);
         } catch (NumberFormatException e){
             e.printStackTrace();
             return 0;
         }
     }
 
+    public void setExpireTime(String expiredTime) {
+        this.expire_time = expiredTime;
+    }
 
     public long getInitTime() {
         return initTime;

@@ -51,7 +51,6 @@ import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.models.PokemonToken;
 import com.wamp42.pikapika.utils.Debug;
-import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -70,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_LIMIT_TIME = 15000; //15 seg
 
     private static final int CAMERA_MAP_ZOOM = 15;
-    private static final int ATTEMPT_BEFORE_LOGIN = 2;
+    private static final int ATTEMPT_BEFORE_LOGIN = 3;
 
     //map stuff
     private GoogleMap mMap;
@@ -90,14 +89,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static MapsActivity getMapsActivity(){
         return staticMapActivity;
     }
-    public GoogleApiClient getGoogleAPIClient(){
-        return mGoogleApiClient;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (BuildConfig.DEBUG) Debug.setDebugLogActive(false);
+        Debug.setDebugLogActive(BuildConfig.DEBUG);
         staticMapActivity = this;
         setContentView(R.layout.activity_maps);
         searchButton = (Button)findViewById(R.id.main_action_button);
@@ -120,6 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
+
         checkSearchButtonText();
         MenuItem item = navigationView.getMenu().getItem(0);
         setAudioIcon(item, PokemonHelper.getAudioSetting(this));
@@ -366,7 +363,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (response.code() == 200) {
                 String jsonStr = response.body().string();
                 if (!jsonStr.isEmpty()) {
-                    Debug.Log("login response: "+jsonStr);
+                    Debug.Log("heartbeatCallback response: "+jsonStr);
                     Type listType = new TypeToken<List<PokemonResult>>() {
                     }.getType();
                     try {
@@ -407,7 +404,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //show a progress dialog
             loadingProgressDialog = PokemonHelper.showLoading(this);
             //request the pokemon data / login
-            DataManager.getDataManager().login(this, loginData.getUsername(), loginData.getPassword(), PokemonHelper.lastLocation, loginData.getProvider(), loginCallback);
+            shouldRequestLogin = false;
+            DataManager.getDataManager().oauthGoogle(loginData.getUsername(), loginData.getPassword(),loginData.getProvider().getName(),loginCallback, this);
         }
     }
 
@@ -428,6 +426,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onResponse(Call call, Response response) throws IOException {
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
+
             //check first if the request was ok
             if (response.code() == 200){
                 String jsonStr = response.body().string();
@@ -442,11 +441,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             if(!pokemonToken.getAccessToken().isEmpty()) {
                                 //set the time when it was saved
                                 pokemonToken.setInitTime(System.currentTimeMillis());
+                                //set expired time from niantic response
+                                pokemonToken.setExpireTime(DataManager.getDataManager().getTokenExpiredTime());
                                 //save token
                                 PokemonHelper.saveTokenData(MapsActivity.this,pokemonToken);
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        shouldRequestLogin = false;
                                         //request pokemon calling the click function
                                         onMainActionClick(new View(MapsActivity.this));
                                     }
@@ -459,10 +461,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 response.body().close();
-            } else {
-                shouldRequestLogin = true;
-                //clean the credentials saved
-                PokemonHelper.saveTokenData(MapsActivity.this,null);
             }
             PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title),
                     getString(R.string.request_error_body));

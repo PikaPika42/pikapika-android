@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         userEditText = (EditText)findViewById(R.id.edittext_login_email);
         passEditText = (EditText)findViewById(R.id.edittext_login_password);
         googleRadioButton = (RadioButton)findViewById(R.id.google_radio_button);
+        //removing PTC for the moment is disabled
     }
     //Home back arrow support
     @Override
@@ -62,8 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+
     public void onLoginClick(View view) {
-        //save the user credentials for future requests
         String user = userEditText.getText().toString();
         String pass = passEditText.getText().toString();
         String provider = googleRadioButton.isChecked() ? PokemonHelper.GOOGLE_PROVIDER : PokemonHelper.PTC_PROVIDER;
@@ -71,11 +72,11 @@ public class LoginActivity extends AppCompatActivity {
         MapsActivity.getMapsActivity().requestLocation();
         //show a progress dialog
         loadingProgressDialog = PokemonHelper.showLoading(this);
-        //request the pokemon data / login
-        DataManager.getDataManager().login(this,user, pass, PokemonHelper.lastLocation,provider,loginCallback);
+        if(googleRadioButton.isChecked())
+            DataManager.getDataManager().oauthGoogle(user,pass,provider,loginCallback, this);
+
+        //save the user credentials for future requests
     }
-
-
 
     final Callback loginCallback = new Callback() {
         @Override
@@ -106,6 +107,8 @@ public class LoginActivity extends AppCompatActivity {
                             if(!pokemonToken.getAccessToken().isEmpty()) {
                                 //set the time when it was saved
                                 pokemonToken.setInitTime(System.currentTimeMillis());
+                                //set expired time from niantic response
+                                pokemonToken.setExpireTime(DataManager.getDataManager().getTokenExpiredTime());
                                 //save token
                                 PokemonHelper.saveTokenData(LoginActivity.this,pokemonToken);
                                 //finished activity with OK response
@@ -120,16 +123,17 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 response.body().close();
             }
-                //clean the credentials saved
-                PokemonHelper.saveTokenData(LoginActivity.this, null);
+            //clean the credentials saved
+            PokemonHelper.saveTokenData(LoginActivity.this, null);
 
             if (response.code() == 403){
                 PokemonHelper.showAlert(LoginActivity.this, "Error!",
-                        "Wrong username or password");
+                        "Wrong Authentication.");
             } else {
                 PokemonHelper.showAlert(LoginActivity.this, getString(R.string.request_error_title),
                         getString(R.string.request_error_body));
             }
+
         }
     };
 }

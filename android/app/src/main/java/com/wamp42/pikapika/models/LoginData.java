@@ -8,20 +8,19 @@ import com.wamp42.pikapika.data.PokemonHelper;
 public class LoginData {
     private String username;
     private String password;
+    private Provider provider;
     private PokemonLocation location;
-    private String provider = PokemonHelper.PTC_PROVIDER;
+    //private String provider = PokemonHelper.PTC_PROVIDER;
 
-    public LoginData(String username, String password, String provider,PokemonLocation location) {
+    public LoginData(String username, Provider provider, PokemonLocation location) {
         this.username = username;
-        this.password = password;
-        this.location = location;
         this.provider = provider;
+        this.location = location;
     }
 
     public LoginData() {
         this.username = "";
         this.password = "";
-        this.provider = "";
     }
 
     public String getUsername() {
@@ -32,8 +31,12 @@ public class LoginData {
         return password;
     }
 
-    public String getProvider() {
+    public Provider getProvider() {
         return provider;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
 

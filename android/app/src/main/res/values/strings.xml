@@ -10,7 +10,7 @@
     <string name="logout">Logout</string>
     <string name="sound">Sound</string>
     <string name="google">Google</string>
-    <string name="ptc">PTC</string>
+    <string name="ptc">PTC (available next version)</string>
     <string name="time_left">Time Left</string>
     <string name="preference_file_key">prefFileKey</string>
     <string name="ok">OK</string>

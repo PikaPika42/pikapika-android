@@ -2,25 +2,20 @@ package com.wamp42.pikapika.utils;
 
 import android.util.Base64;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.HashMap;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -117,5 +112,17 @@ public class Utils {
             e.printStackTrace();
         }
         return valueToDec;
+    }
+
+    public static HashMap<String, String> getMapFromForm(String form){
+        HashMap<String, String> map = new HashMap<>();
+        String[] parts = form.split("\n");
+        for(String part : parts){
+            String[] keys = part.split("=");
+            if(keys.length > 1){
+                map.put(keys[0],keys[1]);
+            }
+        }
+        return map;
     }
 }

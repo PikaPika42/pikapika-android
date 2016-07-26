@@ -74,7 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/relativeLayout"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:gravity="center">
 
                 <RadioButton
@@ -90,7 +90,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/ptc"
                     android:id="@+id/ptc_radio_button"
-                    android:textSize="15dp" />
+                    android:textSize="15dp"
+                    android:enabled="false" />
             </RadioGroup>
 
         </RelativeLayout>

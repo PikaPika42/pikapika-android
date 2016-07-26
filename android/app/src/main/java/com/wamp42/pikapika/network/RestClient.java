@@ -14,7 +14,7 @@ import okhttp3.RequestBody;
  */
 public class RestClient {
     private final String API_URL = "https://api.pikapika.io/";
-    //private final String API_URL_TEST ="http://10.0.1.14:3000/";
+    //private final String API_URL ="http://10.0.1.84:3000/";
 
     private OkHttpClient client = new OkHttpClient();
 
@@ -23,6 +23,10 @@ public class RestClient {
 
     public String getFullURL(String path){
         return API_URL + path;
+    }
+
+    public OkHttpClient getClient(){
+        return client;
     }
 
     public void get(String path, HashMap<String,String> parametersMap, Callback callback) {
