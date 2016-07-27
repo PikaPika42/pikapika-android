@@ -122,14 +122,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkSearchButtonText();
         MenuItem item = navigationView.getMenu().getItem(0);
         setAudioIcon(item, PokemonHelper.getAudioSetting(this));
+        //show google login popup
+        GoogleAuthTokenJson googleAuthToken = PokemonHelper.getGoogleTokenJson(MapsActivity.this);
+        if (googleAuthToken.getId_token() == null)
+            showPopUpLogin();
         //show a popup with warning information
         if(PokemonHelper.isFirstLaunch(this)) {
             showPopUpSplash();
             PokemonHelper.saveFirstLaunch(false,this);
         }
-        GoogleAuthTokenJson googleAuthToken = PokemonHelper.getGoogleTokenJson(MapsActivity.this);
-        if (googleAuthToken.getId_token() == null)
-            showPopUpLogin();
     }
 
     public void showPopUpSplash(){
@@ -148,8 +149,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onGoogleButtonClick(View view) {
         if(alertDialog != null)
             alertDialog.dismiss();
-        Intent loginIntent = new Intent(MapsActivity.this, GoogleWebActivity.class);
-        startActivityForResult(loginIntent, GOOGLE_WEB_VIEW_ACTIVITY_RESULT);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            Intent loginIntent = new Intent(MapsActivity.this, GoogleWebActivity.class);
+            startActivityForResult(loginIntent, GOOGLE_WEB_VIEW_ACTIVITY_RESULT);
+        } else {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_LOCATION_REQUEST_CODE);
+        }
     }
 
     protected void onStart() {
@@ -203,7 +214,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //enable map location and set the current position
                     initMapResources();
             } else {
-                // TODO: Permission was denied. Display an error message.
+                PokemonHelper.showAlert(this,getString(R.string.warning_title),getString(R.string.permissions_location_body));
             }
         }
     }
@@ -332,6 +343,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     PokemonHelper.drawPokemonResult(MapsActivity.this, mMap, pokemonList);
                     timerTextView.setVisibility(View.VISIBLE);
                     countDownTimer.start();
+                    if(pokemonList.size() == 0){
+                        //message to try login again
+                        PokemonHelper.showAlert(MapsActivity.this,getString(R.string.warning_title),getString(R.string.pokemon_not_found));
+                    }
                 }
             });
         }
@@ -407,8 +422,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                String googleCode = PokemonHelper.getGoogleCode(MapsActivity.this);
+                if(!googleCode.isEmpty()){
+                    DataManager.getDataManager().autoGoogleLoader(MapsActivity.this, googleCode, loginCallback);
+                }
                 //get the saved credentials
-                GoogleAuthTokenJson googleAuthToken = PokemonHelper.getGoogleTokenJson(MapsActivity.this);
+                /*GoogleAuthTokenJson googleAuthToken = PokemonHelper.getGoogleTokenJson(MapsActivity.this);
                 if (googleAuthToken != null) {
                     //try to get the current location
                     MapsActivity.getMapsActivity().requestLocation();
@@ -422,7 +441,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             PokemonHelper.lastLocation,
                             "",
                             loginCallback);
-                }
+                }*/
             }
         });
     }
@@ -503,6 +522,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == GOOGLE_WEB_VIEW_ACTIVITY_RESULT && resultCode == RESULT_OK) {
             String code = data.getStringExtra(GoogleWebActivity.EXTRA_CODE);
             if(code != null) {
+                PokemonHelper.saveGoogleCode(code,this);
                 //show a progress dialog
                 loadingProgressDialog = PokemonHelper.showLoading(MapsActivity.this, getString(R.string.login_title), "...");
                 DataManager.getDataManager().autoGoogleLoader(this, code, loginCallback);
