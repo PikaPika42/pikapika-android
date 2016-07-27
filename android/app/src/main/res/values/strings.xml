@@ -20,6 +20,11 @@
     <string name="server_error_body">Something was wrong with the connection. Try later.</string>
     <string name="gps_error_title">GPS Error!</string>
     <string name="gps_error_body">We have a problem with your GPS location.</string>
+    <string name="error_title">Error!</string>
+    <string name="auth_error_body">"Bad Authentication."</string>
+    <string name="login_title">Login!</string>
+    <string name="login_error_body">"Authenticating error from server. Try again."</string>
+    <string name="internet_error_body">"Could not connect to internet."</string>
     <string name="time_remaining">Time Remaining</string>
     <string name="splash_text">Please connect to your Pokemon Account.Your info is safe, we do not store anything.</string>
     <string name="splash_text_2">If you want, you can use a test account but you would not see the Pokemon that are visible to only you.</string>

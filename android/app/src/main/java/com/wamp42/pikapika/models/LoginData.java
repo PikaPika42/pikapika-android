@@ -1,6 +1,5 @@
 package com.wamp42.pikapika.models;
 
-import com.wamp42.pikapika.data.PokemonHelper;
 
 /**
  * Created by flavioreyes on 7/21/16.

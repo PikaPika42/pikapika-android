@@ -60,6 +60,10 @@ public class PokemonHelper {
         return ProgressDialog.show(context, context.getString(R.string.please_wait), context.getString(R.string.loading_data), true);
     }
 
+    public static ProgressDialog showLoading(Context context, String title, String body) {
+        return ProgressDialog.show(context, title, body, true);
+    }
+
     public static void showAlert(final Activity activity, final String title, final String body) {
         activity.runOnUiThread(new Runnable() {
                 @Override

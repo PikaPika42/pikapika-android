@@ -1,5 +1,8 @@
 package com.wamp42.pikapika.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Base64;
 
 import java.security.InvalidAlgorithmParameterException;
@@ -25,6 +28,8 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Utils {
     private static String cryptoPass = "pEr1P33*pEr1P33*";
+
+
 
     public static String encryptIt(String valueToEnc) {
         try {
@@ -124,5 +129,13 @@ public class Utils {
             }
         }
         return map;
+    }
+
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

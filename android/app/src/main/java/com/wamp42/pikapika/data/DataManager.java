@@ -59,11 +59,6 @@ public class DataManager {
     private String mPass;
     private String mProvider;
 
-    private String tokenExpiredTime ="";
-
-    public String getTokenExpiredTime() {
-        return tokenExpiredTime;
-    }
 
     /*public void login(Context context, String user, String pass, Location location, String loginType, Callback callback){
         Coords coords;
@@ -266,14 +261,17 @@ public class DataManager {
                     try {
                         HashMap<String,String> formMap = Utils.getMapFromForm(jsonStr);
                         if(formMap.containsKey("Auth")){
-                            tokenExpiredTime = formMap.get("Expiry");
+                            String authToken = formMap.get("Auth");
+                            String tokenExpiredTime = formMap.get("Expiry");
+                            PokemonToken pokemonToken = new PokemonToken(authToken,tokenExpiredTime, System.currentTimeMillis());
+                            PokemonHelper.saveTokenData(mContext,pokemonToken);
                             //request auth with niantic
                             String user = mUser;
                             String provider = mProvider;
                             loginWithToken(
                                     mContext,
                                     user,
-                                    formMap.get("Auth"),
+                                    authToken,
                                     tokenExpiredTime,
                                     PokemonHelper.lastLocation,
                                     provider,

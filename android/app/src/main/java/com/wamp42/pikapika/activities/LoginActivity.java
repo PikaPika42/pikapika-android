@@ -18,6 +18,7 @@ import com.wamp42.pikapika.data.DataManager;
 import com.wamp42.pikapika.data.PokemonHelper;
 import com.wamp42.pikapika.models.PokemonToken;
 import com.wamp42.pikapika.utils.Debug;
+import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -83,10 +84,18 @@ public class LoginActivity extends AppCompatActivity {
         public void onFailure(Call call, IOException e) {
             if(loadingProgressDialog != null)
                 loadingProgressDialog.dismiss();
+
+            if(!Utils.isNetworkAvailable(LoginActivity.this)){
+                //internet error message
+                PokemonHelper.showAlert(LoginActivity.this,getString(R.string.error_title)+"!",
+                        getString(R.string.internet_error_body));
+            } else {
+                PokemonHelper.showAlert(LoginActivity.this,getString(R.string.server_error_title)+"!",
+                        getString(R.string.login_error_body));
+            }
             //clean data
             PokemonHelper.saveTokenData(LoginActivity.this,null);
-            PokemonHelper.showAlert(LoginActivity.this,getString(R.string.server_error_title)+"!!",
-                    getString(R.string.server_error_body));
+
         }
 
         @Override
@@ -102,36 +111,27 @@ public class LoginActivity extends AppCompatActivity {
                         JsonParser parser = new JsonParser();
                         JsonObject jsonObject = parser.parse(jsonStr).getAsJsonObject();
                         if(jsonObject.has("data")) {
-                            Type listType = new TypeToken<PokemonToken>() {}.getType();
-                            PokemonToken pokemonToken = new Gson().fromJson(jsonObject.get("data").toString(), listType);
-                            if(!pokemonToken.getAccessToken().isEmpty()) {
-                                //set the time when it was saved
-                                pokemonToken.setInitTime(System.currentTimeMillis());
-                                //set expired time from niantic response
-                                pokemonToken.setExpireTime(DataManager.getDataManager().getTokenExpiredTime());
-                                //save token
-                                PokemonHelper.saveTokenData(LoginActivity.this,pokemonToken);
-                                //finished activity with OK response
-                                setResult(RESULT_OK, new Intent());
-                                finish();
-                                return;
-                            }
+                            //finished activity with OK response
+                            setResult(RESULT_OK, new Intent());
+                            finish();
+                            return;
                         }
                     } catch(Exception e){
                         e.printStackTrace();
                     }
                 }
                 response.body().close();
-            }
-            //clean the credentials saved
-            PokemonHelper.saveTokenData(LoginActivity.this, null);
-
-            if (response.code() == 403){
-                PokemonHelper.showAlert(LoginActivity.this, "Error!",
-                        "Wrong Authentication.");
             } else {
-                PokemonHelper.showAlert(LoginActivity.this, getString(R.string.request_error_title),
-                        getString(R.string.request_error_body));
+                //clean the token saved in case the response is not valid
+                PokemonHelper.saveTokenData(LoginActivity.this, null);
+
+                if (response.code() == 403) {
+                    PokemonHelper.showAlert(LoginActivity.this, getString(R.string.error_title),
+                            getString(R.string.auth_error_body));
+                } else {
+                    PokemonHelper.showAlert(LoginActivity.this, getString(R.string.request_error_title),
+                            getString(R.string.request_error_body)+"(response code: "+response.code()+")");
+                }
             }
 
         }
