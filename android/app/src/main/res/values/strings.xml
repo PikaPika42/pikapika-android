@@ -6,6 +6,8 @@
     <string name="loading_data">Loading data!</string>
     <string name="login_user">User</string>
     <string name="login_pass">Password</string>
+    <string name="login_google">Login with Google</string>
+    <string name="login_ptc">Login with PTC (next version)</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="sound">Sound</string>
@@ -28,4 +30,5 @@
     <string name="time_remaining">Time Remaining</string>
     <string name="splash_text">Please connect to your Pokemon Account.Your info is safe, we do not store anything.</string>
     <string name="splash_text_2">If you want, you can use a test account but you would not see the Pokemon that are visible to only you.</string>
+    <string name="permissions_error_body">To use PikaPika we need you to accept these permissions</string>>
 </resources>

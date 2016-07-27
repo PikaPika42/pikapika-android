@@ -12,6 +12,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wamp42.pikapika.R;
+import com.wamp42.pikapika.models.GoogleAuthTokenJson;
 import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.models.PokemonToken;
@@ -28,6 +29,7 @@ public class PokemonHelper {
     final public static String GOOGLE_PROVIDER = "google";
     final public static String PTC_PROVIDER = "ptc";
     final public static String DATA_LOGIN = "data_login";
+    final public static String DATA_GOOGLE_TOKEN = "google_auth_token";
     final public static String TOKEN_PARAMETER = "accessToken";
     final public static String EXPIRE_TIME_PARAMETER = "expire_time";
     final public static String INIT_TIME_PARAMETER = "init_time";
@@ -172,5 +174,36 @@ public class PokemonHelper {
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         return sharedPref.getBoolean(PokemonHelper.FIRST_LAUNCH,true);
+    }
+
+    public static void saveGoogleTokenJson(Context context, String jsonToken){
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        if(jsonToken != null) {
+            //encrypt the user data
+            String encryptedData = Utils.encryptIt(jsonToken);
+            editor.putString(DATA_GOOGLE_TOKEN,encryptedData);
+        } else {
+            editor.putString(DATA_GOOGLE_TOKEN, "");
+        }
+        editor.apply();
+    }
+
+    public static GoogleAuthTokenJson getGoogleTokenJson(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        String json = sharedPref.getString(DATA_GOOGLE_TOKEN,"");
+        if(json.isEmpty())
+            return new GoogleAuthTokenJson();
+        //decrypt the user data
+        String decryptedData = Utils.decryptIt(json);
+        try {
+            Type listType = new TypeToken<GoogleAuthTokenJson>() {}.getType();
+            GoogleAuthTokenJson authTokenJson = new Gson().fromJson(decryptedData, listType);
+            return authTokenJson;
+        } catch (Exception e){
+            e.printStackTrace();
+            return new GoogleAuthTokenJson();
+        }
     }
 }

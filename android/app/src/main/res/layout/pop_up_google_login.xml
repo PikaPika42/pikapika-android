@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pop_up_pikapika_image"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_pikapika"
+        android:layout_margin="15dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_google"
+        android:id="@+id/button_google_login"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/holo_red_light"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="10dp"
+        android:onClick="onGoogleButtonClick"
+        android:textAlignment="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_ptc"
+        android:id="@+id/button2"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:enabled="false"
+        android:layout_marginBottom="15dp" />
+
+
+</LinearLayout>

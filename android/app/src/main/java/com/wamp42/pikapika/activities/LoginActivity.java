@@ -9,14 +9,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.data.DataManager;
 import com.wamp42.pikapika.data.PokemonHelper;
-import com.wamp42.pikapika.models.PokemonToken;
 import com.wamp42.pikapika.utils.Debug;
 import com.wamp42.pikapika.utils.Utils;
 
@@ -36,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passEditText;
     private ProgressDialog loadingProgressDialog;
     private RadioButton googleRadioButton;
+
+    final public static int GOOGLE_ACTIVITY = 1005;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +65,10 @@ public class LoginActivity extends AppCompatActivity {
 
 
     public void onLoginClick(View view) {
+        Intent loginIntent = new Intent(this, GoogleWebActivity.class);
+        startActivityForResult(loginIntent, GOOGLE_ACTIVITY);
+        /*
+
         String user = userEditText.getText().toString();
         String pass = passEditText.getText().toString();
         String provider = googleRadioButton.isChecked() ? PokemonHelper.GOOGLE_PROVIDER : PokemonHelper.PTC_PROVIDER;
@@ -75,8 +78,15 @@ public class LoginActivity extends AppCompatActivity {
         loadingProgressDialog = PokemonHelper.showLoading(this);
         if(googleRadioButton.isChecked())
             DataManager.getDataManager().oauthGoogle(user,pass,provider,loginCallback, this);
+        */
+    }
 
-        //save the user credentials for future requests
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GOOGLE_ACTIVITY && resultCode == RESULT_OK) {
+            String code = data.getStringExtra(GoogleWebActivity.EXTRA_CODE);
+            DataManager.getDataManager().autoGoogleLoader(this, code,loginCallback);
+        }
     }
 
     final Callback loginCallback = new Callback() {

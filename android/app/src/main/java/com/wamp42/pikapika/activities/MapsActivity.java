@@ -25,6 +25,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialog;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -47,9 +48,8 @@ import com.wamp42.pikapika.BuildConfig;
 import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.data.DataManager;
 import com.wamp42.pikapika.data.PokemonHelper;
-import com.wamp42.pikapika.models.LoginData;
+import com.wamp42.pikapika.models.GoogleAuthTokenJson;
 import com.wamp42.pikapika.models.PokemonResult;
-import com.wamp42.pikapika.models.PokemonToken;
 import com.wamp42.pikapika.utils.Debug;
 import com.wamp42.pikapika.utils.Utils;
 
@@ -66,6 +66,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
     private static final int LOGIN_ACTIVITY_RESULT = 101;
+    private static final int GOOGLE_WEB_VIEW_ACTIVITY_RESULT = 1005;
+
     private static final int REQUEST_TIME_OUT = 25000; //25 seg
     private static final int REQUEST_LIMIT_TIME = 15000; //15 seg
 
@@ -80,6 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ProgressDialog loadingProgressDialog;
     private Button searchButton;
     private TextView timerTextView;
+    private AlertDialog alertDialog;
 
     private long heartbeatsAttempt = 0;
 
@@ -124,6 +127,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             showPopUpSplash();
             PokemonHelper.saveFirstLaunch(false,this);
         }
+        GoogleAuthTokenJson googleAuthToken = PokemonHelper.getGoogleTokenJson(MapsActivity.this);
+        if (googleAuthToken.getId_token() == null)
+            showPopUpLogin();
     }
 
     public void showPopUpSplash(){
@@ -131,6 +137,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alert.setView(R.layout.pop_up_splash_view);
         alert.setPositiveButton(getText(R.string.ok),null);
         alert.show();
+    }
+
+    public void showPopUpLogin(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(R.layout.pop_up_google_login);
+        alertDialog =alert.show();
+    }
+
+    public void onGoogleButtonClick(View view) {
+        if(alertDialog != null)
+            alertDialog.dismiss();
+        Intent loginIntent = new Intent(MapsActivity.this, GoogleWebActivity.class);
+        startActivityForResult(loginIntent, GOOGLE_WEB_VIEW_ACTIVITY_RESULT);
     }
 
     protected void onStart() {
@@ -243,13 +262,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void onMainActionClick(View view) {
-        PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
+        GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(this);
 
         //check if the token is still valid
-        boolean tokenIsEmpty = pokemonToken.getAccessToken().isEmpty();
+        boolean tokenIsEmpty = googleAuthTokenJson.getId_token()  == null;
         if(!tokenIsEmpty) {
-            long expireTime = pokemonToken.getExpireTime(); //in case the expired time is not valid check if the value is 0
-            boolean tokenExpired = expireTime == 0 || pokemonToken.getInitTime() + expireTime < System.currentTimeMillis();
+            long expireTime = googleAuthTokenJson.getExpires_in(); //in case the expired time is not valid check if the value is 0
+            boolean tokenExpired = expireTime == 0 || googleAuthTokenJson.getInit_time() + expireTime < System.currentTimeMillis()/1000;
             if (tokenExpired) {
                 //request new token using the current credentials
                 loginAgain();
@@ -259,9 +278,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //if there is token, means we can do the heartbeat request, in other case we go to login activity
         if(tokenIsEmpty){
-            //open login menu
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivityForResult(loginIntent, LOGIN_ACTIVITY_RESULT);
+            showPopUpLogin();
         } else {
             heartbeat();
         }
@@ -283,8 +300,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             loadingProgressDialog = PokemonHelper.showLoading(this);
             if(PokemonHelper.pokemonResultList != null)
                 PokemonHelper.pokemonResultList.clear();
-            PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
-            DataManager.getDataManager().heartbeat(pokemonToken.getAccessToken(), location.getLatitude() + "", location.getLongitude() + "", heartbeatCallback);
+            GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(this);
+            DataManager.getDataManager().heartbeat(googleAuthTokenJson.getId_token(), location.getLatitude() + "", location.getLongitude() + "", heartbeatCallback);
 
             //dismiss the loading progress after a time out
             Handler handler = new Handler();
@@ -322,8 +339,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void checkSearchButtonText(){
         //check if the user is logged to change the button text
-        PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
-        if(pokemonToken.getAccessToken().isEmpty()){
+        GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(this);
+        if(googleAuthTokenJson.getId_token() == null){
             //TODO:set text for navigation menu button
            //searchButton.setCompoundDrawablesRelative(ResourcesCompat.getDrawable(getResources(), android.R.drawable.ic_menu_add, null),null,null,null);
             searchButton.setText(getString(R.string.login));
@@ -391,14 +408,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void run() {
                 //get the saved credentials
-                LoginData loginData = PokemonHelper.getDataLogin(MapsActivity.this);
-                if (loginData != null) {
+                GoogleAuthTokenJson googleAuthToken = PokemonHelper.getGoogleTokenJson(MapsActivity.this);
+                if (googleAuthToken != null) {
                     //try to get the current location
                     MapsActivity.getMapsActivity().requestLocation();
                     //show a progress dialog
                     loadingProgressDialog = PokemonHelper.showLoading(MapsActivity.this, getString(R.string.login_title), "...");
                     //request the pokemon data / login
-                    DataManager.getDataManager().oauthGoogle(loginData.getUsername(), loginData.getPassword(), loginData.getProvider().getName(), loginCallback, MapsActivity.this);
+                    DataManager.getDataManager().loginWithToken(
+                            MapsActivity.this,
+                            googleAuthToken.getId_token(),
+                            googleAuthToken.getExpires_in()+"",
+                            PokemonHelper.lastLocation,
+                            "",
+                            loginCallback);
                 }
             }
         });
@@ -440,6 +463,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 public void run() {
                                     //request pokemon
                                     heartbeat();
+                                    checkSearchButtonText();
                                 }
                             });
                             return;
@@ -476,6 +500,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //request pokemon
             heartbeat();
         }
+        if (requestCode == GOOGLE_WEB_VIEW_ACTIVITY_RESULT && resultCode == RESULT_OK) {
+            String code = data.getStringExtra(GoogleWebActivity.EXTRA_CODE);
+            if(code != null) {
+                //show a progress dialog
+                loadingProgressDialog = PokemonHelper.showLoading(MapsActivity.this, getString(R.string.login_title), "...");
+                DataManager.getDataManager().autoGoogleLoader(this, code, loginCallback);
+            } else {
+                PokemonHelper.showAlert(this,getString(R.string.error_title),getString(R.string.permissions_error_body));
+            }
+        }
     }
 
     @Override
@@ -495,19 +529,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void processLogoutNavButton(MenuItem item){
-        PokemonToken pokemonToken = PokemonHelper.getTokenFromData(this);
-        if(!pokemonToken.getAccessToken().isEmpty()){
+        GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(this);
+        if(googleAuthTokenJson.getId_token()  != null){
             //clean user data as well
-            PokemonHelper.saveDataLogin(this, null);
-            PokemonHelper.saveTokenData(this, null);
+            PokemonHelper.saveGoogleTokenJson(this,null);
             checkSearchButtonText();
             menuDrawerLayout.closeDrawers();
             item.setTitle(getString(R.string.logout));
             //clear pokemon markers
             mMap.clear();
         } else {
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivityForResult(loginIntent,LOGIN_ACTIVITY_RESULT);
+            showPopUpLogin();
         }
     }
 

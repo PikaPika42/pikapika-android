@@ -8,8 +8,6 @@ public class PokemonToken {
     private String expire_time = "";
     private long initTime = 0;
 
-    public PokemonToken(){}
-
     public PokemonToken(String accessToken, String expire_time, long initTime) {
         this.access_token = accessToken;
         this.expire_time = expire_time;

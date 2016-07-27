@@ -2,7 +2,6 @@ package com.wamp42.pikapika.data;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.provider.Settings;
@@ -10,12 +9,7 @@ import android.telephony.TelephonyManager;
 import android.webkit.WebSettings;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.internal.Streams;
-import com.google.gson.reflect.TypeToken;
-import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.models.Coords;
+import com.wamp42.pikapika.models.GoogleAuthTokenJson;
 import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonLocation;
 import com.wamp42.pikapika.models.PokemonToken;
@@ -25,7 +19,6 @@ import com.wamp42.pikapika.utils.Debug;
 import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -42,6 +35,10 @@ import okhttp3.Response;
 public class DataManager {
 
     public static String AUTH_URL = "https://android.clients.google.com/auth";
+    public static final String SECRET = "NCjF1TLi2CcY6t5mt0ZveuL7";
+    public static final String CLIENT_ID = "848232511240-73ri3t7plvk96pj4f85uj8otdat2alem.apps.googleusercontent.com";
+    public static final String OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/device/code";
+    public static final String OAUTH_TOKEN_ENDPOINT = "https://www.googleapis.com/oauth2/v4/token";
 
     private static DataManager dataManagerInstance;
     private RestClient restClient = new RestClient();
@@ -55,47 +52,26 @@ public class DataManager {
     //should be just one in all the flow
     private Callback mGoogleLoginCallback;
     private Context mContext;
-    private String mUser;
-    private String mPass;
-    private String mProvider;
+    private String mProvider = "google";
 
-
-    /*public void login(Context context, String user, String pass, Location location, String loginType, Callback callback){
-        Coords coords;
-        if(location != null){
-            coords = new Coords(location.getLatitude(),location.getLongitude());
-        } else {
-            //This shouldn't happened
-            coords = new Coords(0.0,0.0);
-        }
-        PokemonLocation pokemonLocation = new PokemonLocation(coords);
-        LoginData loginData = new LoginData(user,pass,loginType,pokemonLocation);
-        //convert object to json
-        String jsonInString = new Gson().toJson(loginData);
-        //save locally
-        PokemonHelper.saveDataLogin(context,jsonInString);
-        //do the request
-        restClient.postJson(jsonInString,"trainers/login",callback);
-    }*/
-
-    public void loginWithToken(Context context, String user, String token, String timeExpire , Location location, String loginType, Callback callback){
-
+    public void loginWithToken(Context context,String token, String timeExpire , Location location, String loginType, Callback callback){
+        //using android Id as username
+        String androidId = Settings.Secure.getString(context.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
         PokemonLocation pokemonLocation;
         if(location == null){
             pokemonLocation = new PokemonLocation(0,0, 0);
         } else {
             pokemonLocation = new PokemonLocation(location.getLatitude(),location.getLongitude(), location.getAltitude());
         }
-        LoginData loginData = new LoginData(user, new Provider("google",token,timeExpire), pokemonLocation);
+        //hardcoding google provider
+        LoginData loginData = new LoginData(androidId, new Provider("google",token,timeExpire), pokemonLocation);
         //convert object to json
         String jsonInString = new Gson().toJson(loginData);
         //do the request
         restClient.postJson(jsonInString,"trainers/login",callback);
-        //save locally
-        loginData.setPassword(mPass);
         jsonInString = new Gson().toJson(loginData);
         PokemonHelper.saveDataLogin(context,jsonInString);
-        cleanTemps();
     }
 
     public void heartbeat(String token,String lat, String lng, Callback callback){
@@ -104,13 +80,24 @@ public class DataManager {
         restClient.get("pokemons/"+lat+"/"+lng+"/heartbeat", params, callback);
     }
 
-    private void cleanTemps(){
-        mUser = "";
-        mPass = "";
-        mProvider = "";
+    public void autoGoogleLoader(Context context,String code, Callback callback){
+        mContext = context;
+        mGoogleLoginCallback = callback;
+        RequestBody body = new FormBody.Builder()
+                .add("code", code)
+                .add("client_id", CLIENT_ID)
+                .add("client_secret", SECRET)
+                .add("redirect_uri", "http://127.0.0.1:9004")
+                .add("grant_type", "authorization_code")
+                .build();
+        Request request = new Request.Builder()
+                .url(OAUTH_TOKEN_ENDPOINT)
+                .method("POST", body)
+                .build();
+        restClient.getClient().newCall(request).enqueue(googleOAuthCallback);
     }
 
-    public void oauthGoogle(String user, String pass, String provider, Callback callback, Context context){
+    /*public void oauthGoogle(String user, String pass, String provider, Callback callback, Context context){
         mGoogleLoginCallback = callback;
         mContext = context;
         mUser = user;
@@ -203,12 +190,51 @@ public class DataManager {
                 .header("User-Agent",user_agent)
                 .build();
         restClient.getClient().newCall(request).enqueue(callback);
-    }
+    }*/
 
     /******* Callbacks *******/
-
-
     final Callback googleOAuthCallback = new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            if(mGoogleLoginCallback != null)
+                mGoogleLoginCallback.onFailure(call,e);
+            mGoogleLoginCallback = null;
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            //check first if the request was ok
+            if (response.code() == 200){
+                String jsonStr = response.body().string();
+                if(!jsonStr.isEmpty()) {
+                    try {
+                        GoogleAuthTokenJson googleAuthToken = new Gson().fromJson(jsonStr, GoogleAuthTokenJson.class);
+                        googleAuthToken.setInit_time(System.currentTimeMillis()/1000);
+                        PokemonHelper.saveGoogleTokenJson(mContext, new Gson().toJson(googleAuthToken));
+                        //request auth with niantic
+                        String provider = mProvider;
+                        loginWithToken(
+                                mContext,
+                                googleAuthToken.getId_token(),
+                                googleAuthToken.getExpires_in()+"",
+                                PokemonHelper.lastLocation,
+                                provider,
+                                mGoogleLoginCallback);
+                        return;
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                response.body().close();
+            }
+            if(mGoogleLoginCallback != null)
+                mGoogleLoginCallback.onResponse(call,response);
+            mGoogleLoginCallback = null;
+        }
+    };
+
+
+    /*final Callback googleOAuthCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
             if(mGoogleLoginCallback != null)
@@ -288,6 +314,6 @@ public class DataManager {
                 mGoogleLoginCallback.onFailure(call,new IOException("Code error "+response.code()));
             mGoogleLoginCallback = null;
         }
-    };
+    };*/
 
 }
