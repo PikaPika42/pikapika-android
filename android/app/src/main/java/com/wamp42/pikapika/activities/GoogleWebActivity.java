@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Window;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -30,7 +28,8 @@ public class GoogleWebActivity extends AppCompatActivity {
         //Remove notification bar
         //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if(getSupportActionBar() != null)
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().hide();
+            //getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         setContentView(R.layout.google_login_view);
         googlWebview = (WebView)findViewById(R.id.google_webview);
