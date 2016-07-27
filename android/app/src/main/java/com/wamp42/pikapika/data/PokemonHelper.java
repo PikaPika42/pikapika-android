@@ -28,14 +28,12 @@ public class PokemonHelper {
     final public static String GOOGLE_PROVIDER = "google";
     final public static String PTC_PROVIDER = "ptc";
     final public static String DATA_LOGIN = "data_login";
-    final public static String USER_PARAMETER = "user";
-    final public static String PASS_PARAMETER = "pass";
-    final public static String PROVIDER_PARAMETER = "provider";
     final public static String TOKEN_PARAMETER = "accessToken";
     final public static String EXPIRE_TIME_PARAMETER = "expire_time";
     final public static String INIT_TIME_PARAMETER = "init_time";
 
     final public static String AUDIO_SETTING        = "audio_setting";
+    final public static String AUTO_SEARCH_SETTING        = "audio_setting";
     final public static String FIRST_LAUNCH        = "firstLaunch";
 
     //share the marker in order to
@@ -148,6 +146,19 @@ public class PokemonHelper {
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         return sharedPref.getBoolean(PokemonHelper.AUDIO_SETTING,true);
+    }
+
+    public static void saveAutoSearchSetting(boolean active, Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(AUTO_SEARCH_SETTING, active);
+        editor.apply();
+    }
+
+    public static boolean getAutoSearchSetting(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        return sharedPref.getBoolean(PokemonHelper.AUTO_SEARCH_SETTING,true);
     }
 
     public static void saveFirstLaunch(boolean first, Context context){
