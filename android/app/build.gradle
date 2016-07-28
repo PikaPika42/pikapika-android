@@ -15,8 +15,8 @@ android {
         applicationId "com.wamp42.pikapika"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 4
-        versionName "1.2.1"
+        versionCode 5
+        versionName "1.2.2"
 
         // Enabling multidex support.
         multiDexEnabled true
