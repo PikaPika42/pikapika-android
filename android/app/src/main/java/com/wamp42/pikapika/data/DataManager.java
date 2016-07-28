@@ -83,16 +83,27 @@ public class DataManager {
     public void autoGoogleLoader(Context context,String code, Callback callback){
         mContext = context;
         mGoogleLoginCallback = callback;
-        RequestBody body = new FormBody.Builder()
-                .add("code", code)
+        GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(context);
+        FormBody.Builder body = new FormBody.Builder()
                 .add("client_id", CLIENT_ID)
-                .add("client_secret", SECRET)
-                .add("redirect_uri", "http://127.0.0.1:9004")
-                .add("grant_type", "authorization_code")
-                .build();
+                .add("client_secret", SECRET);
+
+
+
+        if(googleAuthTokenJson.getId_token() == null){
+            body.add("code", code)
+                    .add("grant_type", "authorization_code")
+                    .add("redirect_uri", "http://127.0.0.1:9004");
+        } else {
+            String refreshToken = PokemonHelper.getGoogleRefreshToken(context);
+            body.add("refresh_token", refreshToken)
+                    .add("grant_type", "refresh_token");
+
+        }
+        RequestBody requestBody = body.build();
         Request request = new Request.Builder()
                 .url(OAUTH_TOKEN_ENDPOINT)
-                .method("POST", body)
+                .method("POST", requestBody)
                 .build();
         restClient.getClient().newCall(request).enqueue(googleOAuthCallback);
     }
@@ -210,6 +221,10 @@ public class DataManager {
                     try {
                         GoogleAuthTokenJson googleAuthToken = new Gson().fromJson(jsonStr, GoogleAuthTokenJson.class);
                         googleAuthToken.setInit_time(System.currentTimeMillis()/1000);
+                        //save the refresh token if it exists
+                        if(googleAuthToken.getRefresh_token() != null)
+                            PokemonHelper.saveGoogleRefreshToken(googleAuthToken.getRefresh_token(),mContext);
+                        //save the token json with the init time
                         PokemonHelper.saveGoogleTokenJson(mContext, new Gson().toJson(googleAuthToken));
                         //request auth with niantic
                         String provider = mProvider;

@@ -31,6 +31,7 @@ public class PokemonHelper {
     final public static String DATA_LOGIN = "data_login";
     final public static String DATA_GOOGLE_TOKEN = "google_auth_token";
     final public static String DATA_GOOGLE_CODE = "google_auth_code";
+    final public static String DATA_GOOGLE_REFRESH_TOKEN = "google_refresh_token";
     final public static String TOKEN_PARAMETER = "accessToken";
     final public static String EXPIRE_TIME_PARAMETER = "expire_time";
     final public static String INIT_TIME_PARAMETER = "init_time";
@@ -208,16 +209,16 @@ public class PokemonHelper {
         }
     }
 
-    public static void saveGoogleCode(String code, Context context){
+    public static void saveGoogleRefreshToken(String code, Context context){
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(DATA_GOOGLE_CODE, code);
+        editor.putString(DATA_GOOGLE_REFRESH_TOKEN, code);
         editor.apply();
     }
 
-    public static String getGoogleCode(Context context){
+    public static String getGoogleRefreshToken(Context context){
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        return sharedPref.getString(PokemonHelper.DATA_GOOGLE_CODE,"");
+        return sharedPref.getString(PokemonHelper.DATA_GOOGLE_REFRESH_TOKEN,"");
     }
 }
