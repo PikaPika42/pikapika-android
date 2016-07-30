@@ -30,9 +30,13 @@ public class PokemonResult {
     private PokemonPosition position;
     private int timeleft = 0;
 
+    private long initTime=0;
+
     public PokemonResult(){}
 
     public void drawMark(GoogleMap map, Context context){
+        if(position == null)
+            return;
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(new LatLng(position.getLat(), position.getLng()));
 
@@ -55,22 +59,8 @@ public class PokemonResult {
         }
         Marker marker = map.addMarker(markerOptions);
         //maps the marker and the pokemon id
-        PokemonHelper.markersMap.put(marker.getId(),idStr);
-    }
-
-    public void createInfoWindowAdapter(){
-        new GoogleMap.InfoWindowAdapter () {
-            @Override
-            public View getInfoContents(Marker marker) {
-                return null;
-
-            }
-
-            @Override
-            public View getInfoWindow(Marker arg0) {
-                return null;
-            }
-        };
+        PokemonHelper.markersMap.put(marker.getId(),this);
+        initTime = System.currentTimeMillis();
     }
 
     public String getStrId() {
@@ -82,6 +72,29 @@ public class PokemonResult {
         else if (length == 2)
             strId = "0"+strId;
         return strId;
+    }
+
+    public int getTimeleft() {
+        return timeleft;
+    }
+
+    public long getInitTime() {
+        return initTime;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getTimeleftParsed(Context context,long currentMilli) {
+        long realTimeLeft = timeleft-currentMilli;
+        if(realTimeLeft > 0) {
+            int[] secondsArray = splitToComponentTimes(realTimeLeft);
+            String timeLeftStr = context.getString(R.string.time_left);
+            String timeStr = String.format(Locale.ENGLISH, "%dm %ds", secondsArray[0], secondsArray[1]);
+            return timeLeftStr + ": " + timeStr;
+        }
+        return "It has gone.";
     }
 
     public static int[] splitToComponentTimes(long longVal)

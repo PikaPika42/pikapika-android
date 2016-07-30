@@ -3,24 +3,17 @@ package com.wamp42.pikapika.data;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.Build;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
-import android.webkit.WebSettings;
 
 import com.google.gson.Gson;
 import com.wamp42.pikapika.models.GoogleAuthTokenJson;
 import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonLocation;
-import com.wamp42.pikapika.models.PokemonToken;
 import com.wamp42.pikapika.models.Provider;
 import com.wamp42.pikapika.network.RestClient;
-import com.wamp42.pikapika.utils.Debug;
-import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -52,6 +45,7 @@ public class DataManager {
     //should be just one in all the flow
     private Callback mGoogleLoginCallback;
     private Context mContext;
+    private boolean mShouldLoginAPE = false;
     private String mProvider = "google";
 
     public void loginWithToken(Context context,String token, String timeExpire , Location location, String loginType, Callback callback){
@@ -70,8 +64,17 @@ public class DataManager {
         String jsonInString = new Gson().toJson(loginData);
         //do the request
         restClient.postJson(jsonInString,"trainers/login",callback);
-        jsonInString = new Gson().toJson(loginData);
-        PokemonHelper.saveDataLogin(context,jsonInString);
+    }
+
+    public void login(Context context,Callback callback){
+        String androidId = Settings.Secure.getString(context.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        //HashMap<String, LoginData> dataHashMap = new HashMap<>();
+        //dataHashMap.put("data", new LoginData(androidId,"google"));
+        //convert object to json
+        String jsonInString = new Gson().toJson(new LoginData(androidId,"google"));
+        //do the request
+        restClient.postJson(jsonInString,"trainers/login",callback);
     }
 
     public void heartbeat(String token,String lat, String lng, Callback callback){
@@ -83,6 +86,7 @@ public class DataManager {
     public void autoGoogleLoader(Context context,String code, Callback callback){
         mContext = context;
         mGoogleLoginCallback = callback;
+        mShouldLoginAPE = !(code == null || code.isEmpty());
         GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(context);
         FormBody.Builder body = new FormBody.Builder()
                 .add("client_id", CLIENT_ID)
@@ -226,15 +230,14 @@ public class DataManager {
                             PokemonHelper.saveGoogleRefreshToken(googleAuthToken.getRefresh_token(),mContext);
                         //save the token json with the init time
                         PokemonHelper.saveGoogleTokenJson(mContext, new Gson().toJson(googleAuthToken));
-                        //request auth with niantic
-                        String provider = mProvider;
-                        loginWithToken(
-                                mContext,
-                                googleAuthToken.getId_token(),
-                                googleAuthToken.getExpires_in()+"",
-                                PokemonHelper.lastLocation,
-                                provider,
-                                mGoogleLoginCallback);
+                        if(mShouldLoginAPE) {
+                            mShouldLoginAPE = false;
+                            login(mContext, mGoogleLoginCallback);
+                        } else {
+                            if(mGoogleLoginCallback != null)
+                                mGoogleLoginCallback.onResponse(call,response);
+                            mGoogleLoginCallback = null;
+                        }
                         return;
                     } catch(Exception e){
                         e.printStackTrace();

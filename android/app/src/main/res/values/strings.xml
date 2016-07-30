@@ -3,7 +3,8 @@
     <string name="title_activity_maps">PikaPika Map</string>
     <string name="search_action">Search</string>
     <string name="please_wait">Please Wait!</string>
-    <string name="loading_data">Loading data</string>
+    <string name="loading_data">Loading pokemon data</string>
+    <string name="arrive_message">They arrive ...</string>
     <string name="login_user">User</string>
     <string name="login_pass">Password</string>
     <string name="login_google">Login with Google</string>

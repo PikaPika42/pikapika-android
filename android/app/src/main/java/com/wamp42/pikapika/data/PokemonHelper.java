@@ -41,7 +41,7 @@ public class PokemonHelper {
     final public static String FIRST_LAUNCH        = "firstLaunch";
 
     //share the marker in order to
-    static public HashMap<String,String> markersMap = new HashMap<>();
+    static public HashMap<String,PokemonResult> markersMap = new HashMap<>();
     //keep the pokemon result objects in memory
     static public List<PokemonResult> pokemonResultList;
     //share the lastValidLocation;

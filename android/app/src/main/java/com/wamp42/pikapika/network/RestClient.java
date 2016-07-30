@@ -2,6 +2,7 @@ package com.wamp42.pikapika.network;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -16,10 +17,18 @@ public class RestClient {
     private final String API_URL = "https://api.pikapika.io/";
     //private final String API_URL ="http://10.0.1.84:3000/";
 
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
 
     public static final MediaType MEDIA_TYPE_JSON
             = MediaType.parse("application/json");
+
+    public RestClient(){
+        client = new OkHttpClient.Builder()
+                .connectTimeout(35, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
+    }
 
     public String getFullURL(String path){
         return API_URL + path;
