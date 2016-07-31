@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.data.PokemonHelper;
+import com.wamp42.pikapika.helpers.PokemonHelper;
 
 import java.util.Locale;
 
@@ -30,6 +30,7 @@ public class PokemonResult {
     private int timeleft = 0;
 
     private long initTime = 0;
+    private boolean fromQuickScan = false;
 
     public PokemonResult(){}
 
@@ -40,12 +41,12 @@ public class PokemonResult {
         markerOptions.position(new LatLng(position.getLat(), position.getLng()));
 
         markerOptions.title(name);
-
-        int [] secondsArray = splitToComponentTimes(timeleft);
-        String timeLeftStr = context.getString(R.string.time_left);
-        String timeStr = String.format(Locale.ENGLISH,"%dm %ds",secondsArray[0],secondsArray[1]);
-        markerOptions.snippet(timeLeftStr+": " + timeStr);
-
+        if(!fromQuickScan) {
+            int[] secondsArray = splitToComponentTimes(timeleft);
+            String timeLeftStr = context.getString(R.string.time_left);
+            String timeStr = String.format(Locale.ENGLISH, "%dm %ds", secondsArray[0], secondsArray[1]);
+            markerOptions.snippet(timeLeftStr + ": " + timeStr);
+        }
         //set the marker-icon
         String idStr = getStrNumber();
         int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
@@ -60,7 +61,8 @@ public class PokemonResult {
         //maps the marker and the pokemon id
         PokemonHelper.markersPokemonMap.put(marker.getId(),id);
         PokemonHelper.pokemonMarkersMap.put(id,marker);
-        initTime = System.currentTimeMillis();
+        if(!fromQuickScan)
+            initTime = System.currentTimeMillis();
     }
 
     public String getStrNumber() {
@@ -99,6 +101,14 @@ public class PokemonResult {
             return timeLeftStr + ": " + timeStr;
         }
         return context.getString(R.string.it_has_gone);
+    }
+
+    public boolean isFromQuickScan() {
+        return fromQuickScan;
+    }
+
+    public void setFromQuickScan(boolean quickScan) {
+        this.fromQuickScan = quickScan;
     }
 
     public static int[] splitToComponentTimes(long longVal)

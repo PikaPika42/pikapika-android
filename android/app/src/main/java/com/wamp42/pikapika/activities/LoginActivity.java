@@ -12,13 +12,12 @@ import android.widget.RadioButton;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.data.DataManager;
-import com.wamp42.pikapika.data.PokemonHelper;
+import com.wamp42.pikapika.helpers.DataManager;
+import com.wamp42.pikapika.helpers.PokemonHelper;
 import com.wamp42.pikapika.utils.Debug;
 import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 import okhttp3.Call;
 import okhttp3.Callback;

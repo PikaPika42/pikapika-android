@@ -1,15 +1,12 @@
-package com.wamp42.pikapika.data;
+package com.wamp42.pikapika.helpers;
 
 
 import android.content.Context;
-import android.location.Location;
 import android.provider.Settings;
 
 import com.google.gson.Gson;
 import com.wamp42.pikapika.models.GoogleAuthTokenJson;
 import com.wamp42.pikapika.models.LoginData;
-import com.wamp42.pikapika.models.PokemonLocation;
-import com.wamp42.pikapika.models.Provider;
 import com.wamp42.pikapika.network.RestClient;
 
 import java.io.IOException;
@@ -48,29 +45,9 @@ public class DataManager {
     private boolean mShouldLoginAPE = false;
     private String mProvider = "google";
 
-    public void loginWithToken(Context context,String token, String timeExpire , Location location, String loginType, Callback callback){
-        //using android Id as username
-        String androidId = Settings.Secure.getString(context.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
-        PokemonLocation pokemonLocation;
-        if(location == null){
-            pokemonLocation = new PokemonLocation(0,0, 0);
-        } else {
-            pokemonLocation = new PokemonLocation(location.getLatitude(),location.getLongitude(), location.getAltitude());
-        }
-        //hardcoding google provider
-        LoginData loginData = new LoginData(androidId, new Provider("google",token,timeExpire), pokemonLocation);
-        //convert object to json
-        String jsonInString = new Gson().toJson(loginData);
-        //do the request
-        restClient.postJson(jsonInString,"trainers/login",callback);
-    }
-
     public void login(Context context,Callback callback){
         String androidId = Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        //HashMap<String, LoginData> dataHashMap = new HashMap<>();
-        //dataHashMap.put("data", new LoginData(androidId,"google"));
         //convert object to json
         String jsonInString = new Gson().toJson(new LoginData(androidId,"google"));
         //do the request
@@ -81,6 +58,12 @@ public class DataManager {
         HashMap<String, String> params = new HashMap<>();
         params.put("access_token", token);
         restClient.get("pokemons/"+lat+"/"+lng+"/heartbeat", params, callback);
+    }
+
+    public void quickHeartbeat(String lat, String lng, int radius, Callback callback){
+        HashMap<String, String> params = new HashMap<>();
+        params.put("radius", radius+"");
+        restClient.get("pokemons/"+lat+"/"+lng+"", params, callback);
     }
 
     public void autoGoogleLoader(Context context,String code, Callback callback){

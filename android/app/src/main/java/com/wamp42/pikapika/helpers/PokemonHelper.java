@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.data;
+package com.wamp42.pikapika.helpers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -50,7 +50,7 @@ public class PokemonHelper {
     //share the lastValidLocation;
     static public Location lastLocation;
 
-    static public void addToDrawPokemonResult(Context context, GoogleMap map, List<PokemonResult> locationList){
+    static public void addToDrawPokemon(Context context, GoogleMap map, List<PokemonResult> locationList){
 
         cleanPokemon();
 

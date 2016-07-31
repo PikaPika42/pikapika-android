@@ -38,22 +38,18 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.wamp42.pikapika.BuildConfig;
 import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.data.DataManager;
-import com.wamp42.pikapika.data.PokemonHelper;
-import com.wamp42.pikapika.data.UserMarkerHelper;
+import com.wamp42.pikapika.helpers.DataManager;
+import com.wamp42.pikapika.helpers.PokemonHelper;
+import com.wamp42.pikapika.helpers.PokemonRequestHelper;
+import com.wamp42.pikapika.helpers.UserMarkerHelper;
 import com.wamp42.pikapika.models.GoogleAuthTokenJson;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.utils.Debug;
 import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import okhttp3.Call;
@@ -78,15 +74,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
 
     //view stuff
-    DrawerLayout menuDrawerLayout;
-    private ProgressDialog loadingProgressDialog;
+    private DrawerLayout menuDrawerLayout;
+    public  ProgressDialog loadingProgressDialog;
     private Button searchButton;
     private TextView timerTextView;
     private AlertDialog alertDialog;
 
     private Marker currentMarker;
     private Handler markerHandler;
+
+    //helpers
     private UserMarkerHelper userMarkerHelper;
+    private PokemonRequestHelper pokemonRequestHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         markerHandler = new Handler();
+        pokemonRequestHelper = new PokemonRequestHelper(this);
     }
 
     public void showPopUpSplash(){
@@ -182,6 +182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         userMarkerHelper = new UserMarkerHelper(MapsActivity.this, googleMap);
+
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMapClickListener(this);
         mMap = googleMap;
@@ -260,6 +261,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (location != null) {
             PokemonHelper.lastLocation = location;
             centerMapCamera(location);
+            //quick scan from DB
+            pokemonRequestHelper.doQuickPokemonScan();
         } else {
             //TODO: request position with other method and update map
             requestSingleLocationUpdate();
@@ -294,11 +297,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(tokenIsEmpty){
             showPopUpLogin();
         } else {
-            heartbeat();
+            pokemonRequestHelper.heartbeat();
         }
     }
 
-    private void heartbeat(){
+    public LatLng getLocation(){
         LatLng latLng = null;
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED){
             //check if the user marker is activated
@@ -317,23 +320,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 latLng = new LatLng(location.getLatitude(),location.getLongitude());
             }
         }
-
-        if(latLng == null) {
-            PokemonHelper.showAlert(this,getString(R.string.gps_error_title),getString(R.string.gps_error_body));
-        } else {
-            loadingProgressDialog = PokemonHelper.showLoading(this);
-            GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(this);
-            DataManager.getDataManager().heartbeat(googleAuthTokenJson.getId_token(), latLng.latitude + "", latLng.longitude + "", heartbeatCallback);
-            countDownRequestTimer.start();
-        }
+        return  latLng;
     }
 
     /**
-     * Try to call drawPokemonLocations in the main thread. This is because we are doing async request and
+     * Try to call draw Pokemon in the main thread. This is because we are doing async request and
      * the map drawing must be don in the main thread.
      * @param pokemonList
      */
-    public void adddrawPokemonOnMainThread(final List<PokemonResult> pokemonList){
+    public synchronized void addDrawPokemonOnMainThread(final List<PokemonResult> pokemonList, final boolean withAlert){
         if(mMap != null) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -341,10 +336,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //remove handler
                     markerHandler.removeCallbacks(markerRunnable);
                     setActiveSearchButton(false);
-                    PokemonHelper.addToDrawPokemonResult(MapsActivity.this, mMap, pokemonList);
+                    PokemonHelper.addToDrawPokemon(MapsActivity.this, mMap, pokemonList);
                     timerTextView.setVisibility(View.VISIBLE);
                     countDownNewHeartBeat.start();
-                    if(pokemonList.size() == 0){
+                    if(withAlert && pokemonList.size() == 0){
                         //message to try login again
                         PokemonHelper.showAlert(MapsActivity.this,getString(R.string.warning_title),getString(R.string.pokemon_not_found));
                     }
@@ -365,59 +360,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             searchButton.setText(getString(R.string.search_action));
         }
     }
-
-    final Callback heartbeatCallback = new Callback() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-            if(loadingProgressDialog != null)
-                loadingProgressDialog.dismiss();
-
-            if(!Utils.isNetworkAvailable(MapsActivity.this)){
-                //internet error message
-                PokemonHelper.showAlert(MapsActivity.this,getString(R.string.error_title)+"!",
-                        getString(R.string.internet_error_body));
-            } else {
-                refreshToken();
-            }
-            countDownRequestTimer.onFinish();
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-            if(loadingProgressDialog != null)
-                loadingProgressDialog.dismiss();
-            if (response.code() == 200) {
-                String jsonStr = response.body().string();
-                if (!jsonStr.isEmpty()) {
-                    Debug.Log("heartbeatCallback response: "+jsonStr);
-                    Type listType = new TypeToken<List<PokemonResult>>() {
-                    }.getType();
-                    try {
-                        JsonParser parser = new JsonParser();
-                        JsonObject jsonObject = parser.parse(jsonStr).getAsJsonObject();
-                        if(jsonObject.has("data")){
-                            List<PokemonResult> resultList = new Gson().fromJson(jsonObject.get("data").toString(), listType);
-                            if (resultList != null) {
-                                adddrawPokemonOnMainThread(resultList);
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                response.body().close();
-            } else {
-                //strange error from api, try to generate login again
-               if (response.code() >= 400) {
-                    refreshToken();
-                    return;
-                }
-                PokemonHelper.showAlert(MapsActivity.this,getString(R.string.request_error_title),
-                        getString(R.string.request_error_body));
-            }
-            countDownRequestTimer.onFinish();
-        }
-    };
 
     public void refreshToken() {
         runOnUiThread(new Runnable() {
@@ -477,7 +419,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void run() {
                         loadingProgressDialog.dismiss();
                         //request pokemon
-                        heartbeat();
+                        pokemonRequestHelper.heartbeat();
                     }
                 },DELAY_LOGIN_HEARTBEAT);
             }
@@ -522,13 +464,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mp.start();
                 }
             }
-            if(pokemonResult.getTimeleft() > 0) {
-                long t = System.currentTimeMillis() - pokemonResult.getInitTime();
-                marker.setSnippet(pokemonResult.getTimeleftParsed(MapsActivity.this, t));
-            }
             currentMarker = marker;
             markerHandler.removeCallbacks(markerRunnable);
-            markerHandler.postDelayed(markerRunnable,1000);
+
+            if(!pokemonResult.isFromQuickScan() && pokemonResult.getTimeleft() > 0) {
+                long t = System.currentTimeMillis() - pokemonResult.getInitTime();
+                marker.setSnippet(pokemonResult.getTimeleftParsed(MapsActivity.this, t));
+                markerHandler.postDelayed(markerRunnable,1000);
+            }
         }
         return false;
     }
@@ -538,7 +481,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == LOGIN_ACTIVITY_RESULT && resultCode == RESULT_OK) {
             checkSearchButtonText();
             //request pokemon
-            heartbeat();
+            pokemonRequestHelper.heartbeat();
         }
         if (requestCode == GOOGLE_WEB_VIEW_ACTIVITY_RESULT && resultCode == RESULT_OK) {
             final String code = data.getStringExtra(GoogleWebActivity.EXTRA_CODE);
@@ -646,7 +589,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    final CountDownTimer countDownRequestTimer = new CountDownTimer(REQUEST_LIMIT_TIME, 1000) {
+    final public CountDownTimer countDownRequestTimer = new CountDownTimer(REQUEST_LIMIT_TIME, 1000) {
 
         public void onTick(long millisUntilFinished) {
             String textTimer = String.valueOf(millisUntilFinished / 1000);

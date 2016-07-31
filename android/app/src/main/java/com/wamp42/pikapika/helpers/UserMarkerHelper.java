@@ -1,7 +1,5 @@
-package com.wamp42.pikapika.data;
+package com.wamp42.pikapika.helpers;
 
-import android.content.Context;
-import android.location.Location;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.Button;
