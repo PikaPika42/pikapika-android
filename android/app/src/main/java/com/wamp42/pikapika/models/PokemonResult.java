@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.TypedValue;
-import android.view.View;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -30,7 +29,7 @@ public class PokemonResult {
     private PokemonPosition position;
     private int timeleft = 0;
 
-    private long initTime=0;
+    private long initTime = 0;
 
     public PokemonResult(){}
 
@@ -48,7 +47,7 @@ public class PokemonResult {
         markerOptions.snippet(timeLeftStr+": " + timeStr);
 
         //set the marker-icon
-        String idStr = getStrId();
+        String idStr = getStrNumber();
         int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
         if(iconId > 0) {
             Bitmap bitmapIcon = BitmapFactory.decodeResource(context.getResources(),iconId);
@@ -59,11 +58,12 @@ public class PokemonResult {
         }
         Marker marker = map.addMarker(markerOptions);
         //maps the marker and the pokemon id
-        PokemonHelper.markersMap.put(marker.getId(),this);
+        PokemonHelper.markersPokemonMap.put(marker.getId(),id);
+        PokemonHelper.pokemonMarkersMap.put(id,marker);
         initTime = System.currentTimeMillis();
     }
 
-    public String getStrId() {
+    public String getStrNumber() {
         String pokemonNumber = number;
         String strId = String.valueOf(pokemonNumber);
         int length = strId.length();
@@ -84,6 +84,10 @@ public class PokemonResult {
 
     public String getName() {
         return name;
+    }
+
+    public String getUniqueId(){
+        return id;
     }
 
     public String getTimeleftParsed(Context context,long currentMilli) {

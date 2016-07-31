@@ -322,8 +322,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             PokemonHelper.showAlert(this,getString(R.string.gps_error_title),getString(R.string.gps_error_body));
         } else {
             loadingProgressDialog = PokemonHelper.showLoading(this);
-            if(PokemonHelper.pokemonResultList != null)
-                PokemonHelper.pokemonResultList.clear();
             GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(this);
             DataManager.getDataManager().heartbeat(googleAuthTokenJson.getId_token(), latLng.latitude + "", latLng.longitude + "", heartbeatCallback);
             countDownRequestTimer.start();
@@ -335,7 +333,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * the map drawing must be don in the main thread.
      * @param pokemonList
      */
-    public void drawPokemonOnMainThread(final List<PokemonResult> pokemonList){
+    public void adddrawPokemonOnMainThread(final List<PokemonResult> pokemonList){
         if(mMap != null) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -343,7 +341,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //remove handler
                     markerHandler.removeCallbacks(markerRunnable);
                     setActiveSearchButton(false);
-                    PokemonHelper.drawPokemonResult(MapsActivity.this, mMap, pokemonList);
+                    PokemonHelper.addToDrawPokemonResult(MapsActivity.this, mMap, pokemonList);
                     timerTextView.setVisibility(View.VISIBLE);
                     countDownNewHeartBeat.start();
                     if(pokemonList.size() == 0){
@@ -400,8 +398,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if(jsonObject.has("data")){
                             List<PokemonResult> resultList = new Gson().fromJson(jsonObject.get("data").toString(), listType);
                             if (resultList != null) {
-                                PokemonHelper.pokemonResultList = resultList;
-                                drawPokemonOnMainThread(PokemonHelper.pokemonResultList);
+                                adddrawPokemonOnMainThread(resultList);
                             }
                         }
                     } catch (Exception e) {
@@ -490,8 +487,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final private Runnable markerRunnable = new Runnable() {
         @Override
         public void run() {
-            if(currentMarker != null && PokemonHelper.markersMap.containsKey(currentMarker.getId())) {
-                PokemonResult pokemonResult = PokemonHelper.markersMap.get(currentMarker.getId());
+            if(currentMarker != null && PokemonHelper.markersPokemonMap.containsKey(currentMarker.getId())) {
+                String key = PokemonHelper.markersPokemonMap.get(currentMarker.getId());
+                PokemonResult pokemonResult = PokemonHelper.pokemonGlobalMap.get(key);
                 if(pokemonResult.getTimeleft() > 0) {
                     long currentMilli = System.currentTimeMillis() - pokemonResult.getInitTime();
                     if(pokemonResult.getTimeleft() - currentMilli > 0 ) {
@@ -510,15 +508,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        if(PokemonHelper.markersMap.containsKey(marker.getId())) {
-            PokemonResult pokemonResult = PokemonHelper.markersMap.get(marker.getId());
-
-            //mMap.setInfoWindowAdapter(new PokemonMarkerAdapter(MapsActivity.this,pokemonResult));
+        if(PokemonHelper.markersPokemonMap.containsKey(marker.getId())) {
+            String key = PokemonHelper.markersPokemonMap.get(marker.getId());
+            PokemonResult pokemonResult = PokemonHelper.pokemonGlobalMap.get(key);
 
             if(PokemonHelper.getAudioSetting(this)) {
                 //try to play the pokemon sound
 
-                String audioName = "raw/pokemon_" + pokemonResult.getStrId();
+                String audioName = "raw/pokemon_" + pokemonResult.getStrNumber();
                 int soundId = getResources().getIdentifier(audioName , null, getPackageName());
                 if (soundId > 0) {
                     MediaPlayer mp = MediaPlayer.create(getApplicationContext(), soundId);

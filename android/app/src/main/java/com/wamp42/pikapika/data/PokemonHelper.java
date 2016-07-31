@@ -9,17 +9,18 @@ import android.location.Location;
 import android.support.v7.app.AlertDialog;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.models.GoogleAuthTokenJson;
-import com.wamp42.pikapika.models.LoginData;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.models.PokemonToken;
 import com.wamp42.pikapika.utils.Utils;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,21 +41,48 @@ public class PokemonHelper {
     final public static String AUTO_SEARCH_SETTING        = "audio_setting";
     final public static String FIRST_LAUNCH        = "firstLaunch";
 
-    //share the marker in order to
-    static public HashMap<String,PokemonResult> markersMap = new HashMap<>();
+    //map <marker Id, pokemon Id>
+    static public HashMap<String,String> markersPokemonMap = new HashMap<>();
+    //map <pokemon Id, Marker>
+    static public HashMap<String,Marker> pokemonMarkersMap = new HashMap<>();
     //keep the pokemon result objects in memory
-    static public List<PokemonResult> pokemonResultList;
+    static public HashMap<String,PokemonResult> pokemonGlobalMap = new HashMap<>();
     //share the lastValidLocation;
     static public Location lastLocation;
 
-    static public void drawPokemonResult(Context context, GoogleMap map, List<PokemonResult> locationList){
-        //clear markers
-        map.clear();
-        //clear makers map
-        PokemonHelper.markersMap.clear();
-        for(PokemonResult location:locationList){
-            //draw each pokemon mark
-            location.drawMark(map, context);
+    static public void addToDrawPokemonResult(Context context, GoogleMap map, List<PokemonResult> locationList){
+
+        cleanPokemon();
+
+        //draw the new pokemon
+        for(PokemonResult pokemon:locationList) {
+            pokemonGlobalMap.put(pokemon.getUniqueId(),pokemon);
+            pokemon.drawMark(map, context);
+        }
+    }
+
+    static public void cleanPokemon(){
+        //check which pokemon has a valid time, in oder case it is removed
+        Iterator it = pokemonGlobalMap.entrySet().iterator();
+        while (it.hasNext()) {
+            HashMap.Entry pair = (HashMap.Entry)it.next();
+            String pokemonKey = (String)pair.getKey();
+            PokemonResult pokemon =  pokemonGlobalMap.get(pokemonKey);
+            if(pokemon.getTimeleft() > 0 && pokemon.getInitTime() > 0){
+                long currentMilli = System.currentTimeMillis() - pokemon.getInitTime();
+                if(pokemon.getTimeleft() - currentMilli <= 0 ){
+                    //remove pokemon
+                    it.remove();
+                    //remove marker
+                    if(pokemonMarkersMap.containsKey(pokemonKey)) {
+                        Marker marker = pokemonMarkersMap.get(pokemonKey);
+                        String markerId = marker.getId();
+                        marker.remove();
+                        pokemonMarkersMap.remove(pokemonKey);
+                        markersPokemonMap.remove(markerId);
+                    }
+                }
+            }
         }
     }
 
@@ -110,33 +138,6 @@ public class PokemonHelper {
             editor.putString(DATA_LOGIN, "");
         }
         editor.apply();
-    }
-
-    public static  PokemonToken getTokenFromData(Context context){
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String token = sharedPref.getString(TOKEN_PARAMETER,"");
-        String time = sharedPref.getString(EXPIRE_TIME_PARAMETER,"");
-        Long initTime = sharedPref.getLong(INIT_TIME_PARAMETER,0);
-        return new PokemonToken(token,time,initTime);
-    }
-
-    public static  LoginData getDataLogin(Context context){
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        String json = sharedPref.getString(DATA_LOGIN,"");
-        if(json.isEmpty())
-            return new LoginData();
-        //decrypt the user data
-        String decryptedData = Utils.decryptIt(json);
-        try {
-            Type listType = new TypeToken<LoginData>() {}.getType();
-            LoginData loginData = new Gson().fromJson(decryptedData, listType);
-            return loginData;
-        } catch (Exception e){
-            e.printStackTrace();
-            return new LoginData();
-        }
     }
 
     public static void saveAudioSetting(boolean active, Context context){
