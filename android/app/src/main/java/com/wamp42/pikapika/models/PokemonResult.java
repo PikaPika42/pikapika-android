@@ -94,7 +94,7 @@ public class PokemonResult {
             String timeStr = String.format(Locale.ENGLISH, "%dm %ds", secondsArray[0], secondsArray[1]);
             return timeLeftStr + ": " + timeStr;
         }
-        return "It has gone.";
+        return context.getString(R.string.it_has_gone);
     }
 
     public static int[] splitToComponentTimes(long longVal)

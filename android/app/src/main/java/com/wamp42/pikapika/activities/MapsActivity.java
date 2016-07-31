@@ -46,6 +46,7 @@ import com.wamp42.pikapika.BuildConfig;
 import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.data.DataManager;
 import com.wamp42.pikapika.data.PokemonHelper;
+import com.wamp42.pikapika.data.UserMarkerHelper;
 import com.wamp42.pikapika.models.GoogleAuthTokenJson;
 import com.wamp42.pikapika.models.PokemonResult;
 import com.wamp42.pikapika.utils.Debug;
@@ -85,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Marker currentMarker;
     private Handler markerHandler;
-
+    private UserMarkerHelper userMarkerHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,9 +181,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        userMarkerHelper = new UserMarkerHelper(MapsActivity.this, googleMap);
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMapClickListener(this);
         mMap = googleMap;
+
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
@@ -254,6 +258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
+            PokemonHelper.lastLocation = location;
             centerMapCamera(location);
         } else {
             //TODO: request position with other method and update map
@@ -261,11 +266,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void centerMapCamera(Location location){
+    public void centerMapCamera(Location location){
         if (location != null) {
-            PokemonHelper.lastLocation = location;
-            LatLng currentPos = new LatLng(PokemonHelper.lastLocation.getLatitude(), PokemonHelper.lastLocation.getLongitude());
+            LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, CAMERA_MAP_ZOOM));
+            //create the user marker
+
         }
     }
 
@@ -293,23 +299,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void heartbeat(){
-        Location location = null;
+        LatLng latLng = null;
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED){
-            //get the last location
-            location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            //makes sure we have a valid location
-            if(location == null)
-                location = PokemonHelper.lastLocation;
+            //check if the user marker is activated
+            if(userMarkerHelper != null && userMarkerHelper.getLocation() != null){
+                latLng = userMarkerHelper.getLocation();
+            } else {
+                //get the last location
+                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+                //makes sure we have a valid location
+                if (location == null)
+                    location = PokemonHelper.lastLocation;
+                else
+                    PokemonHelper.lastLocation = location;
+
+                latLng = new LatLng(location.getLatitude(),location.getLongitude());
+            }
         }
 
-        if(location == null) {
+        if(latLng == null) {
             PokemonHelper.showAlert(this,getString(R.string.gps_error_title),getString(R.string.gps_error_body));
         } else {
             loadingProgressDialog = PokemonHelper.showLoading(this);
             if(PokemonHelper.pokemonResultList != null)
                 PokemonHelper.pokemonResultList.clear();
             GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(this);
-            DataManager.getDataManager().heartbeat(googleAuthTokenJson.getId_token(), location.getLatitude() + "", location.getLongitude() + "", heartbeatCallback);
+            DataManager.getDataManager().heartbeat(googleAuthTokenJson.getId_token(), latLng.latitude + "", latLng.longitude + "", heartbeatCallback);
             countDownRequestTimer.start();
         }
     }
@@ -477,9 +493,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(currentMarker != null && PokemonHelper.markersMap.containsKey(currentMarker.getId())) {
                 PokemonResult pokemonResult = PokemonHelper.markersMap.get(currentMarker.getId());
                 if(pokemonResult.getTimeleft() > 0) {
-                    long t = System.currentTimeMillis() - pokemonResult.getInitTime();
-                    currentMarker.setSnippet(pokemonResult.getTimeleftParsed(MapsActivity.this, t));
-                    currentMarker.showInfoWindow();
+                    long currentMilli = System.currentTimeMillis() - pokemonResult.getInitTime();
+                    if(pokemonResult.getTimeleft() - currentMilli > 0 ) {
+                        currentMarker.setSnippet(pokemonResult.getTimeleftParsed(MapsActivity.this, currentMilli));
+                        currentMarker.showInfoWindow();
+                    } else {
+                        currentMarker.remove();
+                        markerHandler.removeCallbacks(this);
+                        return;
+                    }
                 }
             }
             markerHandler.postDelayed(markerRunnable,1000);

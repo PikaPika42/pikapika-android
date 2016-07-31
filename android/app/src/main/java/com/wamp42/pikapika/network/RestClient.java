@@ -24,9 +24,9 @@ public class RestClient {
 
     public RestClient(){
         client = new OkHttpClient.Builder()
-                .connectTimeout(35, TimeUnit.SECONDS)
+                .connectTimeout(40, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(40, TimeUnit.SECONDS)
                 .build();
     }
 
