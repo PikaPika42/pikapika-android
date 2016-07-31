@@ -1,5 +1,6 @@
 package com.wamp42.pikapika.helpers;
 
+import android.location.Location;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,9 @@ import com.wamp42.pikapika.utils.Utils;
  * Created by flavioreyes on 7/30/16.
  */
 public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerDragListener{
+
+    final public double MAX_DISTANCE_NEW_POSITION = 0.7;
+
     public MapsActivity mMapsActivity;
     public GoogleMap mMap;
     private Marker userMarker;
@@ -37,6 +41,17 @@ public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, Goog
     public void onMapLongClick(LatLng latLng) {
         if(userMarker != null)
             userMarker.remove();
+        LatLng loc = PokemonRequestHelper.lastLocationRequested;
+        if(loc == null) {
+            Location location = PokemonHelper.lastLocation;
+            loc = new LatLng(location.getLatitude(),location.getLongitude());
+        }
+        if(Utils.locationDistance(latLng.latitude,latLng.longitude,loc.latitude,loc.longitude) > MAX_DISTANCE_NEW_POSITION ) {
+            removeMarker();
+            PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.warning_title),
+                    mMapsActivity.getString(R.string.warning_banning_location));
+            return;
+        }
         createMarker(latLng);
         userMarkerButtonClicked = true;
         cancelMarkerButton.setBackground(ResourcesCompat.getDrawable(mMapsActivity.getResources(),R.drawable.ic_location_off_black_36dp, null));
@@ -55,7 +70,6 @@ public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, Goog
         public void onClick(View view) {
             if(userMarkerButtonClicked) {
                 removeMarker();
-                cancelMarkerButton.setBackground(ResourcesCompat.getDrawable(mMapsActivity.getResources(), R.drawable.ic_location_on_black_36dp, null));
             } else {
                 mMapsActivity.requestLocation();
                 if (PokemonHelper.lastLocation != null) {
@@ -72,6 +86,7 @@ public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, Goog
         if(userMarker != null)
             userMarker.remove();
         userMarker = null;
+        cancelMarkerButton.setBackground(ResourcesCompat.getDrawable(mMapsActivity.getResources(), R.drawable.ic_location_on_black_36dp, null));
     }
 
     public LatLng getLocation(){
@@ -81,13 +96,13 @@ public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, Goog
             return null;
     }
 
-    public boolean isRecommendeDistance(LatLng oldLocation){
+    public boolean isRecommendedDistance(LatLng oldLocation){
         if(userMarker != null){
             double distanceMiles = Utils.locationDistance(oldLocation.latitude,
                     oldLocation.longitude,
                     userMarker.getPosition().latitude,
                     userMarker.getPosition().longitude);
-            return distanceMiles < 100;
+            return distanceMiles < 50;
         }
         return true;
     }
@@ -104,6 +119,17 @@ public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, Goog
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
-
+        LatLng latLng = marker.getPosition();
+        LatLng loc = PokemonRequestHelper.lastLocationRequested;
+        if(loc == null) {
+            Location location = PokemonHelper.lastLocation;
+            loc = new LatLng(location.getLatitude(),location.getLongitude());
+        }
+        if(Utils.locationDistance(latLng.latitude,latLng.longitude,loc.latitude,loc.longitude) > MAX_DISTANCE_NEW_POSITION ) {
+            removeMarker();
+            PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.warning_title),
+                    mMapsActivity.getString(R.string.warning_banning_location));
+            return;
+        }
     }
 }

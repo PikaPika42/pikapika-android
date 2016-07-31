@@ -65,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int GOOGLE_WEB_VIEW_ACTIVITY_RESULT = 1005;
 
     private static final int REQUEST_LIMIT_TIME = 10000; //15 seg
-    private static final int DELAY_LOGIN_HEARTBEAT = 1500; //1.5 seg
+    private static final int DELAY_LOGIN_HEARTBEAT = 1000; //1 seg
 
     private static final int CAMERA_MAP_ZOOM = 15;
 
@@ -186,7 +186,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMapClickListener(this);
         mMap = googleMap;
-
+        mMap.setMyLocationEnabled(true);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -254,8 +254,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void initMapResources(){
         if(mMap == null || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  != PackageManager.PERMISSION_GRANTED) )
             return;
-
-        mMap.setMyLocationEnabled(true);
 
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
@@ -333,16 +331,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //remove handler
-                    markerHandler.removeCallbacks(markerRunnable);
+                PokemonHelper.addToDrawPokemon(MapsActivity.this, mMap, pokemonList);
+                if(withAlert) {
                     setActiveSearchButton(false);
-                    PokemonHelper.addToDrawPokemon(MapsActivity.this, mMap, pokemonList);
                     timerTextView.setVisibility(View.VISIBLE);
                     countDownNewHeartBeat.start();
-                    if(withAlert && pokemonList.size() == 0){
-                        //message to try login again
+
+                    //message to try login again
+                    if(pokemonList.size() == 0)
                         PokemonHelper.showAlert(MapsActivity.this,getString(R.string.warning_title),getString(R.string.pokemon_not_found));
-                    }
+                }
                 }
             });
         }
@@ -438,7 +436,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         currentMarker.setSnippet(pokemonResult.getTimeleftParsed(MapsActivity.this, currentMilli));
                         currentMarker.showInfoWindow();
                     } else {
-                        currentMarker.remove();
+                        PokemonHelper.removePokemonMarker(currentMarker);
+                        currentMarker = null;
                         markerHandler.removeCallbacks(this);
                         return;
                     }
@@ -467,7 +466,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             currentMarker = marker;
             markerHandler.removeCallbacks(markerRunnable);
 
-            if(!pokemonResult.isFromQuickScan() && pokemonResult.getTimeleft() > 0) {
+            if(pokemonResult.getTimeleft() > 0) {
                 long t = System.currentTimeMillis() - pokemonResult.getInitTime();
                 marker.setSnippet(pokemonResult.getTimeleftParsed(MapsActivity.this, t));
                 markerHandler.postDelayed(markerRunnable,1000);

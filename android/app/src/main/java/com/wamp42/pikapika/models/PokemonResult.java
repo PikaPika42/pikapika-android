@@ -3,6 +3,11 @@ package com.wamp42.pikapika.models;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.Paint;
 import android.util.TypedValue;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -32,6 +37,9 @@ public class PokemonResult {
     private long initTime = 0;
     private boolean fromQuickScan = false;
 
+    private String createdAt;
+    private String expireAt;
+
     public PokemonResult(){}
 
     public void drawMark(GoogleMap map, Context context){
@@ -41,12 +49,11 @@ public class PokemonResult {
         markerOptions.position(new LatLng(position.getLat(), position.getLng()));
 
         markerOptions.title(name);
-        if(!fromQuickScan) {
-            int[] secondsArray = splitToComponentTimes(timeleft);
-            String timeLeftStr = context.getString(R.string.time_left);
-            String timeStr = String.format(Locale.ENGLISH, "%dm %ds", secondsArray[0], secondsArray[1]);
-            markerOptions.snippet(timeLeftStr + ": " + timeStr);
-        }
+        int[] secondsArray = splitToComponentTimes(timeleft);
+        String timeLeftStr = context.getString(R.string.time_left);
+        String timeStr = String.format(Locale.ENGLISH, "%dm %ds", secondsArray[0], secondsArray[1]);
+        markerOptions.snippet(timeLeftStr + ": " + timeStr);
+
         //set the marker-icon
         String idStr = getStrNumber();
         int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
@@ -55,14 +62,15 @@ public class PokemonResult {
             float wt_px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, POKEMON_SIZE, context.getResources().getDisplayMetrics());
             int iconSize = (int)wt_px;
             Bitmap resizedIcon = Bitmap.createScaledBitmap(bitmapIcon, iconSize, iconSize, false);
+            if(fromQuickScan)
+                resizedIcon = changeBitmapColor(resizedIcon, 0xacb2d8);
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedIcon));
         }
         Marker marker = map.addMarker(markerOptions);
         //maps the marker and the pokemon id
         PokemonHelper.markersPokemonMap.put(marker.getId(),id);
         PokemonHelper.pokemonMarkersMap.put(id,marker);
-        if(!fromQuickScan)
-            initTime = System.currentTimeMillis();
+        initTime = System.currentTimeMillis();
     }
 
     public String getStrNumber() {
@@ -74,6 +82,15 @@ public class PokemonResult {
         else if (length == 2)
             strId = "0"+strId;
         return strId;
+    }
+
+
+    public void setTimeleft(int timeleft) {
+        this.timeleft = timeleft;
+    }
+
+    public String getExpireAt() {
+        return expireAt;
     }
 
     public int getTimeleft() {
@@ -120,5 +137,18 @@ public class PokemonResult {
 
         int[] ints = { minutes , secs};
         return ints;
+    }
+
+    private Bitmap changeBitmapColor(Bitmap sourceBitmap, int color) {
+
+        Bitmap resultBitmap = Bitmap.createBitmap(sourceBitmap, 0, 0,
+                sourceBitmap.getWidth() - 1, sourceBitmap.getHeight() - 1);
+        Paint p = new Paint();
+        ColorFilter filter = new LightingColorFilter(color, 1);
+        p.setColorFilter(filter);
+
+        Canvas canvas = new Canvas(resultBitmap);
+        canvas.drawBitmap(resultBitmap, 0, 0, p);
+        return resultBitmap;
     }
 }

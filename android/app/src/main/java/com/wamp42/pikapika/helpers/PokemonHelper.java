@@ -56,34 +56,68 @@ public class PokemonHelper {
 
         //draw the new pokemon
         for(PokemonResult pokemon:locationList) {
-            pokemonGlobalMap.put(pokemon.getUniqueId(),pokemon);
-            pokemon.drawMark(map, context);
+            //if doesn't exist we added to map
+            if(!pokemonGlobalMap.containsKey(pokemon.getUniqueId())) {
+                pokemonGlobalMap.put(pokemon.getUniqueId(), pokemon);
+                pokemon.drawMark(map, context);
+            } else if(!pokemon.isFromQuickScan()){
+                /**
+                 * A pokemon from normal heartbeat has priority form one from quickScan.
+                 * So we remove the quickScan pokemon and we save the new one.
+                 */
+                //remove the old one
+                String pokemonKey = pokemon.getUniqueId();
+                Marker marker = pokemonMarkersMap.get(pokemonKey);
+                String markerId = marker.getId();
+                pokemonMarkersMap.remove(pokemonKey);
+                markersPokemonMap.remove(markerId);
+                marker.remove();
+                pokemonGlobalMap.remove(pokemonKey);
+                //add the new one
+                pokemonGlobalMap.put(pokemon.getUniqueId(), pokemon);
+                pokemon.drawMark(map, context);
+            }
         }
     }
 
     static public void cleanPokemon(){
         //check which pokemon has a valid time, in oder case it is removed
         Iterator it = pokemonGlobalMap.entrySet().iterator();
+        long currentTimeMillis = System.currentTimeMillis();
         while (it.hasNext()) {
             HashMap.Entry pair = (HashMap.Entry)it.next();
             String pokemonKey = (String)pair.getKey();
             PokemonResult pokemon =  pokemonGlobalMap.get(pokemonKey);
             if(pokemon.getTimeleft() > 0 && pokemon.getInitTime() > 0){
-                long currentMilli = System.currentTimeMillis() - pokemon.getInitTime();
+                long currentMilli = currentTimeMillis - pokemon.getInitTime();
                 if(pokemon.getTimeleft() - currentMilli <= 0 ){
-                    //remove pokemon
-                    it.remove();
-                    //remove marker
-                    if(pokemonMarkersMap.containsKey(pokemonKey)) {
-                        Marker marker = pokemonMarkersMap.get(pokemonKey);
-                        String markerId = marker.getId();
-                        marker.remove();
-                        pokemonMarkersMap.remove(pokemonKey);
-                        markersPokemonMap.remove(markerId);
-                    }
+                    removePokemon(it,pokemonKey);
                 }
             }
         }
+    }
+
+    private static void removePokemon(Iterator it,String pokemonKey){
+        //remove pokemon
+        if(it != null)
+            it.remove();
+        //remove marker
+        if(pokemonMarkersMap.containsKey(pokemonKey)) {
+            Marker marker = pokemonMarkersMap.get(pokemonKey);
+            String markerId = marker.getId();
+            pokemonMarkersMap.remove(pokemonKey);
+            markersPokemonMap.remove(markerId);
+            marker.remove();
+        }
+    }
+
+    public static void removePokemonMarker(Marker marker){
+        String markerId = marker.getId();
+        String pokemonKey = markersPokemonMap.get(markerId);
+        pokemonMarkersMap.remove(pokemonKey);
+        markersPokemonMap.remove(markerId);
+        marker.remove();
+        pokemonGlobalMap.remove(pokemonKey);
     }
 
     public static ProgressDialog showLoading(Context context) {

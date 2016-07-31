@@ -1,5 +1,7 @@
 package com.wamp42.pikapika.helpers;
 
+import android.os.Handler;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -13,7 +15,13 @@ import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -23,8 +31,11 @@ import okhttp3.Response;
  * Created by flavioreyes on 7/31/16.
  */
 public class PokemonRequestHelper {
-    private static final int RADIUS_QUICK_SCAN = 3000;
+    private static final int RADIUS_QUICK_SCAN = 5000; //5km
+    private static final int AUTO_QUICK_SCAN_TIME =15000; //15seconds
     public MapsActivity mMapsActivity;
+
+    public static LatLng lastLocationRequested = null;
 
     public PokemonRequestHelper(MapsActivity mMapsActivity) {
         this.mMapsActivity = mMapsActivity;
@@ -36,6 +47,7 @@ public class PokemonRequestHelper {
         if(latLng == null) {
             PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.gps_error_title),mMapsActivity.getString(R.string.gps_error_body));
         } else {
+            lastLocationRequested = latLng;
             mMapsActivity.loadingProgressDialog = PokemonHelper.showLoading(mMapsActivity);
             GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(mMapsActivity);
             DataManager.getDataManager().heartbeat(googleAuthTokenJson.getId_token(), latLng.latitude + "", latLng.longitude + "", heartbeatCallback);
@@ -100,10 +112,25 @@ public class PokemonRequestHelper {
             DataManager.getDataManager().quickHeartbeat(latLng.latitude+"",latLng.longitude+"",RADIUS_QUICK_SCAN,quickScanCallback);
     }
 
+    public void autoScan(){
+        mMapsActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doQuickPokemonScan();
+                    }
+                }, AUTO_QUICK_SCAN_TIME);
+            }
+        });
+    }
+
     final Callback quickScanCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
             //TODO:handle failure
+            autoScan();
         }
 
         @Override
@@ -120,6 +147,8 @@ public class PokemonRequestHelper {
                             if (resultList != null) {
                                 setQuickScanFlag(resultList);
                                 mMapsActivity.addDrawPokemonOnMainThread(resultList,false);
+                                //scan again
+                                autoScan();
                             }
                         }
                     } catch (Exception e) {
@@ -132,7 +161,28 @@ public class PokemonRequestHelper {
     };
 
     public static void setQuickScanFlag(List<PokemonResult> list){
-        for(PokemonResult pokemonResult:list)
+        //TimeZone timeZone = TimeZone.getTimeZone("GMT");
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        long currentMillis = cal.getTimeInMillis();
+        for(PokemonResult pokemonResult:list) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            try {
+                dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+                Date convertedDate = dateFormat.parse(pokemonResult.getExpireAt());
+                long expireMillis = convertedDate.getTime();
+                int timeLeft = (int) (expireMillis - currentMillis);
+                pokemonResult.setTimeleft(timeLeft);
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             pokemonResult.setFromQuickScan(true);
+        }
+        Iterator it = list.iterator();
+        while(it.hasNext()){
+            PokemonResult pokemon = (PokemonResult) it.next();
+            if(pokemon.getTimeleft() <= 0)
+                it.remove();
+        }
     }
 }
