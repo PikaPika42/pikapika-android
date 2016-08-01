@@ -39,4 +39,5 @@
     <string name="permissions_location_body">To use PikaPika you need to allow the location services and activate it</string>
     <string name="pokemon_not_found">No pokemon found. If the problem persists, try to logout/login.</string>
     <string name="warning_banning_location">Move the marker long distances could get you banned.</string>
+    <string name="change_position_instruction">Just tap the map for 2s to change your position (limited to 1 km to prevent users from ban).</string>
 </resources>

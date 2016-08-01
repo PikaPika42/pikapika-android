@@ -33,12 +33,15 @@ import okhttp3.Response;
 public class PokemonRequestHelper {
     private static final int RADIUS_QUICK_SCAN = 5000; //5km
     private static final int AUTO_QUICK_SCAN_TIME =15000; //15seconds
-    public MapsActivity mMapsActivity;
+
+    private MapsActivity mMapsActivity;
+    private Handler autoScanHandler;
 
     public static LatLng lastLocationRequested = null;
 
     public PokemonRequestHelper(MapsActivity mMapsActivity) {
         this.mMapsActivity = mMapsActivity;
+        autoScanHandler = new Handler();
     }
 
     public void heartbeat(){
@@ -106,31 +109,31 @@ public class PokemonRequestHelper {
         }
     };
 
-    public void doQuickPokemonScan(){
-        LatLng latLng = mMapsActivity.getLocation();
-        if(latLng != null)
-            DataManager.getDataManager().quickHeartbeat(latLng.latitude+"",latLng.longitude+"",RADIUS_QUICK_SCAN,quickScanCallback);
+    public void startQuickScanLoop(){
+        autoScanHandler.removeCallbacks(quickScanRunnable);
+        autoQuickPokemonScan();
+
     }
 
-    public void autoScan(){
-        mMapsActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        doQuickPokemonScan();
-                    }
-                }, AUTO_QUICK_SCAN_TIME);
-            }
-        });
+    public void autoQuickPokemonScan(){
+        LatLng latLng = mMapsActivity.getLocation();
+        if(latLng != null) {
+            DataManager.getDataManager().quickHeartbeat(latLng.latitude + "", latLng.longitude + "", RADIUS_QUICK_SCAN, quickScanCallback);
+        }
+        autoScanHandler.postDelayed(quickScanRunnable,AUTO_QUICK_SCAN_TIME);
     }
+
+    final Runnable quickScanRunnable = new Runnable() {
+        @Override
+        public void run() {
+            autoQuickPokemonScan();
+        }
+    };
 
     final Callback quickScanCallback = new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
             //TODO:handle failure
-            autoScan();
         }
 
         @Override
@@ -147,8 +150,6 @@ public class PokemonRequestHelper {
                             if (resultList != null) {
                                 setQuickScanFlag(resultList);
                                 mMapsActivity.addDrawPokemonOnMainThread(resultList,false);
-                                //scan again
-                                autoScan();
                             }
                         }
                     } catch (Exception e) {

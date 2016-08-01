@@ -40,6 +40,7 @@ public class PokemonHelper {
     final public static String AUDIO_SETTING        = "audio_setting";
     final public static String AUTO_SEARCH_SETTING        = "audio_setting";
     final public static String FIRST_LAUNCH        = "firstLaunch";
+    final public static String CHANGE_POSITION_INSTRUCTION        = "positionInstructionShown";
 
     //map <marker Id, pokemon Id>
     static public HashMap<String,String> markersPokemonMap = new HashMap<>();
@@ -255,5 +256,18 @@ public class PokemonHelper {
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         return sharedPref.getString(PokemonHelper.DATA_GOOGLE_REFRESH_TOKEN,"");
+    }
+
+    public static void savePositionInstructionShown(boolean active, Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(CHANGE_POSITION_INSTRUCTION, active);
+        editor.apply();
+    }
+
+    public static boolean getPositionInstructionShown(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        return sharedPref.getBoolean(PokemonHelper.CHANGE_POSITION_INSTRUCTION,false);
     }
 }

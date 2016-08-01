@@ -163,6 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStart() {
         mGoogleApiClient.connect();
         super.onStart();
+        pokemonRequestHelper.startQuickScanLoop();
     }
 
     protected void onStop() {
@@ -190,7 +191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-
+            pokemonRequestHelper.startQuickScanLoop();
             initMapResources();
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -213,8 +214,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == MY_LOCATION_REQUEST_CODE) {
             if (grantResults.length > 0 &&  grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //enable map location and set the current position
-                    initMapResources();
+                //enable map location and set the current position
+                initMapResources();
+                pokemonRequestHelper.startQuickScanLoop();
             } else {
                 PokemonHelper.showAlert(this,getString(R.string.warning_title),getString(R.string.permissions_location_body));
             }
@@ -259,8 +261,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (location != null) {
             PokemonHelper.lastLocation = location;
             centerMapCamera(location);
-            //quick scan from DB
-            pokemonRequestHelper.doQuickPokemonScan();
         } else {
             //TODO: request position with other method and update map
             requestSingleLocationUpdate();
@@ -315,7 +315,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 else
                     PokemonHelper.lastLocation = location;
 
-                latLng = new LatLng(location.getLatitude(),location.getLongitude());
+                if (location != null)
+                    latLng = new LatLng(location.getLatitude(),location.getLongitude());
             }
         }
         return  latLng;

@@ -1,9 +1,13 @@
 package com.wamp42.pikapika.helpers;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.location.Location;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -41,17 +45,8 @@ public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, Goog
     public void onMapLongClick(LatLng latLng) {
         if(userMarker != null)
             userMarker.remove();
-        LatLng loc = PokemonRequestHelper.lastLocationRequested;
-        if(loc == null) {
-            Location location = PokemonHelper.lastLocation;
-            loc = new LatLng(location.getLatitude(),location.getLongitude());
-        }
-        if(Utils.locationDistance(latLng.latitude,latLng.longitude,loc.latitude,loc.longitude) > MAX_DISTANCE_NEW_POSITION ) {
-            removeMarker();
-            PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.warning_title),
-                    mMapsActivity.getString(R.string.warning_banning_location));
-            return;
-        }
+       if(!isOnRange(latLng))
+           return;
         createMarker(latLng);
         userMarkerButtonClicked = true;
         cancelMarkerButton.setBackground(ResourcesCompat.getDrawable(mMapsActivity.getResources(),R.drawable.ic_location_off_black_36dp, null));
@@ -68,6 +63,7 @@ public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, Goog
     private View.OnClickListener userMarkerListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            showInstruction();
             if(userMarkerButtonClicked) {
                 removeMarker();
             } else {
@@ -120,16 +116,45 @@ public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, Goog
     @Override
     public void onMarkerDragEnd(Marker marker) {
         LatLng latLng = marker.getPosition();
-        LatLng loc = PokemonRequestHelper.lastLocationRequested;
-        if(loc == null) {
+        isOnRange(latLng);
+
+    }
+
+    private boolean isOnRange(LatLng newLocation){
+
+        LatLng lastValidLocation = PokemonRequestHelper.lastLocationRequested;
+        if(lastValidLocation == null) {
             Location location = PokemonHelper.lastLocation;
-            loc = new LatLng(location.getLatitude(),location.getLongitude());
+            if(location != null)
+                lastValidLocation = new LatLng(location.getLatitude(),location.getLongitude());
         }
-        if(Utils.locationDistance(latLng.latitude,latLng.longitude,loc.latitude,loc.longitude) > MAX_DISTANCE_NEW_POSITION ) {
+
+        if(lastValidLocation == null) {
+            PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.gps_error_title),mMapsActivity.getString(R.string.gps_error_body));
+            return false;
+        }
+
+        if(Utils.locationDistance(newLocation.latitude,newLocation.longitude,lastValidLocation.latitude,lastValidLocation.longitude) > MAX_DISTANCE_NEW_POSITION ) {
             removeMarker();
+            userMarkerButtonClicked = false;
             PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.warning_title),
                     mMapsActivity.getString(R.string.warning_banning_location));
-            return;
+            return false;
         }
+
+        return true;
+    }
+
+    public void showInstruction(){
+        if(PokemonHelper.getPositionInstructionShown(mMapsActivity))
+            return;
+        PokemonHelper.savePositionInstructionShown(true,mMapsActivity);
+        Dialog dialog = new Dialog(mMapsActivity);
+        dialog.setContentView(R.layout.pop_up_splash_view);
+        TextView mainTexView = (TextView)dialog.findViewById(R.id.text_view_pop_up);
+        TextView emptyTexView = (TextView)dialog.findViewById(R.id.textView);
+        emptyTexView.setText("");
+        mainTexView.setText(mMapsActivity.getString(R.string.change_position_instruction));
+        dialog.show();
     }
 }
