@@ -23,7 +23,7 @@ import com.wamp42.pikapika.utils.Utils;
  */
 public class UserMarkerHelper implements  GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerDragListener{
 
-    final public double MAX_DISTANCE_NEW_POSITION = 0.7;
+    final public double MAX_DISTANCE_NEW_POSITION = 0.44;
 
     public MapsActivity mMapsActivity;
     public GoogleMap mMap;

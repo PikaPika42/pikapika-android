@@ -190,7 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            pokemonRequestHelper.startQuickScanLoop();
+            startQuickSearchWithDelay();
             initMapResources();
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -215,7 +215,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (grantResults.length > 0 &&  grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //enable map location and set the current position
                 initMapResources();
-                pokemonRequestHelper.startQuickScanLoop();
+                startQuickSearchWithDelay();
             } else {
                 PokemonHelper.showAlert(this,getString(R.string.warning_title),getString(R.string.permissions_location_body));
             }
@@ -321,6 +321,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         return  latLng;
+    }
+
+    private void startQuickSearchWithDelay(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pokemonRequestHelper.startQuickScanLoop();
+            }
+        },1000);
     }
 
     /**
