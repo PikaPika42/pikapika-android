@@ -187,7 +187,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMapClickListener(this);
         mMap = googleMap;
-        mMap.setMyLocationEnabled(true);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -256,6 +255,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void initMapResources(){
         if(mMap == null || (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  != PackageManager.PERMISSION_GRANTED) )
             return;
+
+        mMap.setMyLocationEnabled(true);
 
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
