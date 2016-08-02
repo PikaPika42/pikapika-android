@@ -66,6 +66,12 @@ public class DataManager {
         restClient.get("pokemons/"+lat+"/"+lng+"", params, callback);
     }
 
+    public void heartbeat_v2(String token,String lat, String lng, Callback callback){
+        HashMap<String, String> params = new HashMap<>();
+        params.put("access_token", token);
+        restClient.get("v2/pokemons/"+lat+"/"+lng+"/heartbeat", params, callback);
+    }
+
     public void autoGoogleLoader(Context context,String code, Callback callback){
         mContext = context;
         mGoogleLoginCallback = callback;

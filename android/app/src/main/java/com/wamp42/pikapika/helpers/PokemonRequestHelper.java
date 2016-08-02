@@ -1,8 +1,15 @@
 package com.wamp42.pikapika.helpers;
 
+import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v4.content.res.ResourcesCompat;
+import android.view.View;
+import android.widget.ProgressBar;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -31,17 +38,25 @@ import okhttp3.Response;
  * Created by flavioreyes on 7/31/16.
  */
 public class PokemonRequestHelper {
+    private static final double EARTH_RADIUS_METERS = 6372797.6; // earth radius in meters
+    private static final double BASE_SCAN_METERS = 150;
+
     private static final int RADIUS_QUICK_SCAN = 5000; //5km
     private static final int AUTO_QUICK_SCAN_TIME =15000; //15seconds
 
     private MapsActivity mMapsActivity;
     private Handler autoScanHandler;
+    private ProgressBar progressBar;
 
     public static LatLng lastLocationRequested = null;
+    private int scanCounter = 0;
 
     public PokemonRequestHelper(MapsActivity mMapsActivity) {
         this.mMapsActivity = mMapsActivity;
+        progressBar = (ProgressBar)mMapsActivity.findViewById(R.id.progressBar);
         autoScanHandler = new Handler();
+        //Drawable customDrawable= ResourcesCompat.getDrawable(mMapsActivity.getResources(),R.drawable.custom_progressbar,null);
+        //progressBar.setProgressDrawable(customDrawable);
     }
 
     public void heartbeat(){
@@ -54,8 +69,58 @@ public class PokemonRequestHelper {
             mMapsActivity.loadingProgressDialog = PokemonHelper.showLoading(mMapsActivity);
             GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(mMapsActivity);
             DataManager.getDataManager().heartbeat(googleAuthTokenJson.getId_token(), latLng.latitude + "", latLng.longitude + "", heartbeatCallback);
-            mMapsActivity.countDownRequestTimer.start();
+            //mMapsActivity.countDownRequestTimer.start();
         }
+    }
+
+    public boolean heartbeat_v2(){
+        LatLng latLng = lastLocationRequested;
+
+        if(latLng == null) {
+            PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.gps_error_title),mMapsActivity.getString(R.string.gps_error_body));
+            return false;
+        } else {
+            GoogleAuthTokenJson googleAuthTokenJson = PokemonHelper.getGoogleTokenJson(mMapsActivity);
+            LatLng newLatLng;
+            if(scanCounter == 0){
+                newLatLng = latLng;
+            }else {
+                double angleRadians = (2 * Math.PI/8)*(scanCounter-1);
+                newLatLng = locationWithBearing(angleRadians, BASE_SCAN_METERS, latLng);
+            }
+            createDebugMarker(newLatLng);
+            DataManager.getDataManager().heartbeat_v2(googleAuthTokenJson.getId_token(), newLatLng.latitude + "", newLatLng.longitude + "", heartbeatCallback);
+            scanCounter ++;
+            return true;
+        }
+    }
+
+    public void createDebugMarker(LatLng latLng){
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_pin_yellow_36))
+                .draggable(true);
+        mMapsActivity.mMap.addMarker(markerOptions);
+    }
+
+    public void startAutoHeartBeat_v2(){
+        LatLng latLng = mMapsActivity.getLocation();
+
+        if(latLng == null) {
+            PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.gps_error_title),mMapsActivity.getString(R.string.gps_error_body));
+        } else {
+            scanCounter = 0;
+            lastLocationRequested = latLng;
+            countDownAutoScan.start();
+            progressBar.setVisibility(View.VISIBLE);
+            mMapsActivity.searchButton.setVisibility(View.INVISIBLE);
+
+        }
+    }
+
+    public void stopAutoHeartBeat_v2(){
+        countDownAutoScan.onFinish();
+        mMapsActivity.countDownNewHeartBeat.onFinish();
     }
 
     final Callback heartbeatCallback = new Callback() {
@@ -71,7 +136,7 @@ public class PokemonRequestHelper {
             } else {
                 mMapsActivity.refreshToken();
             }
-            mMapsActivity.countDownRequestTimer.onFinish();
+            //mMapsActivity.countDownRequestTimer.onFinish();
         }
 
         @Override
@@ -105,14 +170,13 @@ public class PokemonRequestHelper {
                 PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.request_error_title),
                         mMapsActivity.getString(R.string.request_error_body));
             }
-            mMapsActivity.countDownRequestTimer.onFinish();
+            //mMapsActivity.countDownRequestTimer.onFinish();
         }
     };
 
     public void startQuickScanLoop(){
         autoScanHandler.removeCallbacks(quickScanRunnable);
         autoQuickPokemonScan();
-
     }
 
     public void autoQuickPokemonScan(){
@@ -186,4 +250,40 @@ public class PokemonRequestHelper {
                 it.remove();
         }
     }
+
+    public static LatLng locationWithBearing(double bearing, double distanceMeters,  LatLng locationOrigin) {
+        double distRadians = distanceMeters / EARTH_RADIUS_METERS;
+
+        double lat1 = locationOrigin.latitude * Math.PI / 180;
+        double lon1 = locationOrigin.longitude * Math.PI / 180;
+
+        double lat2 = Math.asin(Math.sin(lat1) * Math.cos(distRadians) + Math.cos(lat1) * Math.sin(distRadians) * Math.cos(bearing));
+        double lon2 = lon1 + Math.atan2(Math.sin(bearing) * Math.sin(distRadians) * Math.cos(lat1), Math.cos(distRadians) - Math.sin(lat1) * Math.sin(lat2));
+
+        return new LatLng( lat2 * 180 /  Math.PI,  lon2 * 180 / Math.PI);
+    }
+
+    public static LatLng locationForAngle(double angle ,  LatLng location, double distance){
+        //angle must be in radians
+        double longitude = distance * Math.cos(angle) - location.longitude;
+        double latitude = distance * Math.sin(angle) - location.latitude;
+        return new LatLng(latitude,longitude);
+    }
+
+    final CountDownTimer countDownAutoScan = new CountDownTimer(45000, 5000) {
+
+        public void onTick(long millisUntilFinished) {
+            heartbeat_v2();
+            progressBar.setProgress(100/9*scanCounter);
+        }
+
+        public void onFinish() {
+            scanCounter = 0;
+            mMapsActivity.setActiveSearchButton(false);
+            mMapsActivity.searchButton.setVisibility(View.VISIBLE);
+            mMapsActivity.timerTextView.setVisibility(View.VISIBLE);
+            mMapsActivity.countDownNewHeartBeat.start();
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    };
 }
