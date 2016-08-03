@@ -1,14 +1,13 @@
 package com.wamp42.pikapika.helpers;
 
-import android.graphics.drawable.Drawable;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -50,14 +50,15 @@ public class PokemonRequestHelper {
     private ProgressBar progressBar;
 
     public static LatLng lastLocationRequested = null;
+
+    private int scanNumber = 9;
     private int scanCounter = 0;
+    private List<Marker> markerDebugList = new ArrayList<>();
 
     public PokemonRequestHelper(MapsActivity mMapsActivity) {
         this.mMapsActivity = mMapsActivity;
         progressBar = (ProgressBar)mMapsActivity.findViewById(R.id.progressBar);
         autoScanHandler = new Handler();
-        //Drawable customDrawable= ResourcesCompat.getDrawable(mMapsActivity.getResources(),R.drawable.custom_progressbar,null);
-        //progressBar.setProgressDrawable(customDrawable);
     }
 
     public void heartbeat(){
@@ -86,7 +87,7 @@ public class PokemonRequestHelper {
             if(scanCounter == 0){
                 newLatLng = latLng;
             }else {
-                double angleRadians = (2 * Math.PI/8)*(scanCounter-1);
+                double angleRadians = (2 * Math.PI/(scanNumber-1))*(scanCounter-1);
                 newLatLng = locationWithBearing(angleRadians, BASE_SCAN_METERS, latLng);
                 Debug.Log("new heartbeat: "+scanCounter+ " angle:"+angleRadians);
 
@@ -101,9 +102,9 @@ public class PokemonRequestHelper {
     public void createDebugMarker(LatLng latLng){
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_map_pin_blue))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_ocation_map_pin_blue_36))
                 .draggable(true);
-        mMapsActivity.mMap.addMarker(markerOptions);
+        markerDebugList.add(mMapsActivity.mMap.addMarker(markerOptions));
     }
 
     public void startAutoHeartBeat_v2(){
@@ -277,7 +278,7 @@ public class PokemonRequestHelper {
 
         public void onTick(long millisUntilFinished) {
             heartbeat_v2();
-            int progress = 100/9*scanCounter;
+            int progress = 100/scanNumber*scanCounter;
                 if (progress > 97)
                     progress = 100;
             progressBar.setProgress(progress);
@@ -290,6 +291,8 @@ public class PokemonRequestHelper {
             mMapsActivity.timerTextView.setVisibility(View.VISIBLE);
             mMapsActivity.countDownNewHeartBeat.start();
             progressBar.setVisibility(View.INVISIBLE);
+            for(Marker marker:markerDebugList)
+                marker.remove();
         }
     };
 }
