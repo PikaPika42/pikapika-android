@@ -18,6 +18,7 @@ import com.wamp42.pikapika.R;
 import com.wamp42.pikapika.activities.MapsActivity;
 import com.wamp42.pikapika.models.GoogleAuthTokenJson;
 import com.wamp42.pikapika.models.PokemonResult;
+import com.wamp42.pikapika.utils.Debug;
 import com.wamp42.pikapika.utils.Utils;
 
 import java.io.IOException;
@@ -87,6 +88,8 @@ public class PokemonRequestHelper {
             }else {
                 double angleRadians = (2 * Math.PI/8)*(scanCounter-1);
                 newLatLng = locationWithBearing(angleRadians, BASE_SCAN_METERS, latLng);
+                Debug.Log("new heartbeat: "+scanCounter+ " angle:"+angleRadians);
+
             }
             createDebugMarker(newLatLng);
             DataManager.getDataManager().heartbeat_v2(googleAuthTokenJson.getId_token(), newLatLng.latitude + "", newLatLng.longitude + "", heartbeatCallback);
@@ -98,7 +101,7 @@ public class PokemonRequestHelper {
     public void createDebugMarker(LatLng latLng){
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_pin_yellow_36))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_map_pin_blue))
                 .draggable(true);
         mMapsActivity.mMap.addMarker(markerOptions);
     }
@@ -270,11 +273,14 @@ public class PokemonRequestHelper {
         return new LatLng(latitude,longitude);
     }
 
-    final CountDownTimer countDownAutoScan = new CountDownTimer(45000, 5000) {
+    final CountDownTimer countDownAutoScan = new CountDownTimer(50000, 5000) {
 
         public void onTick(long millisUntilFinished) {
             heartbeat_v2();
-            progressBar.setProgress(100/9*scanCounter);
+            int progress = 100/9*scanCounter;
+                if (progress > 97)
+                    progress = 100;
+            progressBar.setProgress(progress);
         }
 
         public void onFinish() {
