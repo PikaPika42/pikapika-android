@@ -95,7 +95,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search_action"
+            android:text="@string/scan_action"
             android:id="@+id/main_action_button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"

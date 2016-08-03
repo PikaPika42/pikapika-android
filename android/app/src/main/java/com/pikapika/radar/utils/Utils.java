@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.utils;
+package com.pikapika.radar.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

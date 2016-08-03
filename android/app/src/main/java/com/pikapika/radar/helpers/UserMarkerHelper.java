@@ -1,10 +1,8 @@
-package com.wamp42.pikapika.helpers;
+package com.pikapika.radar.helpers;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.location.Location;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,9 +12,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.activities.MapsActivity;
-import com.wamp42.pikapika.utils.Utils;
+import com.pikapika.radar.R;
+import com.pikapika.radar.activities.MapsActivity;
+import com.pikapika.radar.utils.Utils;
 
 /**
  * Created by flavioreyes on 7/30/16.

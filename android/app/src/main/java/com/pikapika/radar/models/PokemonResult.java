@@ -1,10 +1,9 @@
-package com.wamp42.pikapika.models;
+package com.pikapika.radar.models;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
@@ -15,8 +14,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.helpers.PokemonHelper;
+import com.pikapika.radar.R;
+import com.pikapika.radar.helpers.PokemonHelper;
 
 import java.util.Locale;
 

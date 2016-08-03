@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.activities;
+package com.pikapika.radar.activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.wamp42.pikapika.R;
+import com.pikapika.radar.R;
 
 /**
  * Created by flavioreyes on 7/27/16.

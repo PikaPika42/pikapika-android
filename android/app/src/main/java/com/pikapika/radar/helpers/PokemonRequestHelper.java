@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.helpers;
+package com.pikapika.radar.helpers;
 
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -13,12 +13,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.activities.MapsActivity;
-import com.wamp42.pikapika.models.GoogleAuthTokenJson;
-import com.wamp42.pikapika.models.PokemonResult;
-import com.wamp42.pikapika.utils.Debug;
-import com.wamp42.pikapika.utils.Utils;
+import com.pikapika.radar.R;
+import com.pikapika.radar.activities.MapsActivity;
+import com.pikapika.radar.models.GoogleAuthTokenJson;
+import com.pikapika.radar.models.PokemonResult;
+import com.pikapika.radar.utils.Debug;
+import com.pikapika.radar.utils.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -44,6 +44,9 @@ public class PokemonRequestHelper {
 
     private static final int RADIUS_QUICK_SCAN = 5000; //5km
     private static final int AUTO_QUICK_SCAN_TIME =15000; //15seconds
+
+    private static final int CIRCLE_1_SCAN_STEPS = 9;
+    private static final int CIRCLE_2_SCAN_STEPS = 25;
 
     private MapsActivity mMapsActivity;
     private Handler autoScanHandler;
@@ -87,7 +90,7 @@ public class PokemonRequestHelper {
             if(scanCounter == 0){
                 newLatLng = latLng;
             }else {
-                double angleRadians = (2 * Math.PI/(scanNumber-1))*(scanCounter-1);
+                double angleRadians = (2 * Math.PI/(CIRCLE_1_SCAN_STEPS-1))*(scanCounter-1);
                 newLatLng = locationWithBearing(angleRadians, BASE_SCAN_METERS, latLng);
                 Debug.Log("new heartbeat: "+scanCounter+ " angle:"+angleRadians);
 
@@ -278,7 +281,7 @@ public class PokemonRequestHelper {
 
         public void onTick(long millisUntilFinished) {
             heartbeat_v2();
-            int progress = 100/scanNumber*scanCounter;
+            int progress = 100/CIRCLE_1_SCAN_STEPS*scanCounter;
                 if (progress > 97)
                     progress = 100;
             progressBar.setProgress(progress);

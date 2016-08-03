@@ -1,7 +1,5 @@
-package com.wamp42.pikapika.models;
+package com.pikapika.radar.models;
 
-
-import android.util.Log;
 
 /**
  * Created by flavioreyes on 7/21/16.

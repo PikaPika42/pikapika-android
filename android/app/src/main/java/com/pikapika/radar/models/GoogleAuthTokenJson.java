@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.models;
+package com.pikapika.radar.models;
 public class GoogleAuthTokenJson {
     private String error;
     private String access_token;

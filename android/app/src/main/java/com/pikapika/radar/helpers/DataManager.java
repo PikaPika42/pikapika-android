@@ -1,13 +1,13 @@
-package com.wamp42.pikapika.helpers;
+package com.pikapika.radar.helpers;
 
 
 import android.content.Context;
 import android.provider.Settings;
 
 import com.google.gson.Gson;
-import com.wamp42.pikapika.models.GoogleAuthTokenJson;
-import com.wamp42.pikapika.models.LoginData;
-import com.wamp42.pikapika.network.RestClient;
+import com.pikapika.radar.models.GoogleAuthTokenJson;
+import com.pikapika.radar.models.LoginData;
+import com.pikapika.radar.network.RestClient;
 
 import java.io.IOException;
 import java.util.HashMap;

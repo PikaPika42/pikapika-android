@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.activities;
+package com.pikapika.radar.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -38,16 +38,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.wamp42.pikapika.BuildConfig;
-import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.helpers.DataManager;
-import com.wamp42.pikapika.helpers.PokemonHelper;
-import com.wamp42.pikapika.helpers.PokemonRequestHelper;
-import com.wamp42.pikapika.helpers.UserMarkerHelper;
-import com.wamp42.pikapika.models.GoogleAuthTokenJson;
-import com.wamp42.pikapika.models.PokemonResult;
-import com.wamp42.pikapika.utils.Debug;
-import com.wamp42.pikapika.utils.Utils;
+import com.pikapika.radar.BuildConfig;
+import com.pikapika.radar.R;
+import com.pikapika.radar.helpers.DataManager;
+import com.pikapika.radar.helpers.PokemonHelper;
+import com.pikapika.radar.helpers.PokemonRequestHelper;
+import com.pikapika.radar.helpers.UserMarkerHelper;
+import com.pikapika.radar.models.GoogleAuthTokenJson;
+import com.pikapika.radar.models.PokemonResult;
+import com.pikapika.radar.utils.Debug;
+import com.pikapika.radar.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -366,7 +366,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             searchButton.setText(getString(R.string.login));
         } else {
             //searchButton.setCompoundDrawables(ResourcesCompat.getDrawable(getResources(), android.R.drawable.ic_menu_add, null),null,null,null);
-            searchButton.setText(getString(R.string.search_action));
+            searchButton.setText(getString(R.string.scan_action));
         }
     }
 

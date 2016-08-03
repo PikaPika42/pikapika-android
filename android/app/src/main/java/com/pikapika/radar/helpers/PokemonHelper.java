@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.helpers;
+package com.pikapika.radar.helpers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -12,11 +12,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.models.GoogleAuthTokenJson;
-import com.wamp42.pikapika.models.PokemonResult;
-import com.wamp42.pikapika.models.PokemonToken;
-import com.wamp42.pikapika.utils.Utils;
+import com.pikapika.radar.R;
+import com.pikapika.radar.models.GoogleAuthTokenJson;
+import com.pikapika.radar.models.PokemonResult;
+import com.pikapika.radar.models.PokemonToken;
+import com.pikapika.radar.utils.Utils;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

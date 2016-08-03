@@ -2,6 +2,7 @@
     <string name="app_name">PikaPika</string>
     <string name="title_activity_maps">PikaPika Map</string>
     <string name="search_action">Search</string>
+    <string name="scan_action">Scan</string>
     <string name="please_wait">Please Wait!</string>
     <string name="loading_data">Loading pokemon data</string>
     <string name="arrive_message">They arrive ...</string>

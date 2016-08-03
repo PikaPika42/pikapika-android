@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.activities;
+package com.pikapika.radar.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -11,11 +11,11 @@ import android.widget.RadioButton;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.wamp42.pikapika.R;
-import com.wamp42.pikapika.helpers.DataManager;
-import com.wamp42.pikapika.helpers.PokemonHelper;
-import com.wamp42.pikapika.utils.Debug;
-import com.wamp42.pikapika.utils.Utils;
+import com.pikapika.radar.R;
+import com.pikapika.radar.helpers.DataManager;
+import com.pikapika.radar.helpers.PokemonHelper;
+import com.pikapika.radar.utils.Debug;
+import com.pikapika.radar.utils.Utils;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.models;
+package com.pikapika.radar.models;
 
 /**
  * Created by flavioreyes on 7/24/16.

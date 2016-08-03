@@ -1,4 +1,4 @@
-package com.wamp42.pikapika.network;
+package com.pikapika.radar.network;
 
 import java.io.IOException;
 import java.util.HashMap;
