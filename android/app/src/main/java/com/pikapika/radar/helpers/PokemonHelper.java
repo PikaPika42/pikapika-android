@@ -41,6 +41,7 @@ public class PokemonHelper {
     final public static String AUTO_SEARCH_SETTING        = "audio_setting";
     final public static String FIRST_LAUNCH        = "firstLaunch";
     final public static String CHANGE_POSITION_INSTRUCTION        = "positionInstructionShown";
+    final public static String HAERTBEAT_CLICKS_COUNTER        = "clicks_counter";
 
     //map <marker Id, pokemon Id>
     static public HashMap<String,String> markersPokemonMap = new HashMap<>();
@@ -269,5 +270,20 @@ public class PokemonHelper {
         SharedPreferences sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         return sharedPref.getBoolean(PokemonHelper.CHANGE_POSITION_INSTRUCTION,false);
+    }
+
+    public static int addClickCounter( Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        int clicksCounter =  sharedPref.getInt(PokemonHelper.HAERTBEAT_CLICKS_COUNTER,0) + 1;
+        editor.putInt(HAERTBEAT_CLICKS_COUNTER, clicksCounter);
+        editor.apply();
+        return clicksCounter;
+    }
+
+    public static int getCounerClicks(Context context){
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        return sharedPref.getInt(PokemonHelper.HAERTBEAT_CLICKS_COUNTER,0);
     }
 }

@@ -38,8 +38,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.mopub.mobileads.MoPubInterstitial;
 import com.pikapika.radar.BuildConfig;
 import com.pikapika.radar.R;
+import com.pikapika.radar.helpers.AdsHelper;
+import com.pikapika.radar.helpers.ConfigReader;
 import com.pikapika.radar.helpers.DataManager;
 import com.pikapika.radar.helpers.PokemonHelper;
 import com.pikapika.radar.helpers.PokemonRequestHelper;
@@ -67,7 +70,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_LIMIT_TIME = 3000; //3 seg
     private static final int DELAY_LOGIN_HEARTBEAT = 1000; //1 seg
 
-    private static final int CAMERA_MAP_ZOOM = 16;
+    private static final int CAMERA_MAP_ZOOM = 17;
+
+    private static final String MOPUD_AD_UNIT_ID = "2493c0695a364c929b598164f4b9fd68";
 
     //map stuff
     public GoogleMap mMap;
@@ -86,6 +91,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //helpers
     private UserMarkerHelper userMarkerHelper;
     private PokemonRequestHelper pokemonRequestHelper;
+    private ConfigReader configReader;
+
+    //Ads
+    private MoPubInterstitial mInterstitial;
+    private AdsHelper mAdsHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +136,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             PokemonHelper.saveFirstLaunch(false,this);
         }
 
+        //ADS
+        mInterstitial = new MoPubInterstitial(this, MOPUD_AD_UNIT_ID);
+        mAdsHelper = new AdsHelper();
+        mInterstitial.setInterstitialAdListener(mAdsHelper);
+        mInterstitial.load();
+
         markerHandler = new Handler();
         pokemonRequestHelper = new PokemonRequestHelper(this);
+        configReader = new ConfigReader(this);
     }
 
     public void showPopUpSplash(){
@@ -169,6 +186,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mInterstitial.destroy();
+        super.onDestroy();
     }
 
     /**
@@ -296,7 +319,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(tokenIsEmpty){
             showPopUpLogin();
         } else {
-            pokemonRequestHelper.startAutoHeartBeat_v2();
+            //ADS
+            int clickCounter = PokemonHelper.addClickCounter(this);
+            if(clickCounter % configReader.getDefaultAdsClick() == 0) {
+                if (mInterstitial.isReady())
+                    mInterstitial.show();
+            }
+            //Heartbeat
+            //pokemonRequestHelper.startAutoHeartBeat_v2();
         }
     }
 
