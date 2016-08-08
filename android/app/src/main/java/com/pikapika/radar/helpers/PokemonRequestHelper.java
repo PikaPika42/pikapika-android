@@ -40,10 +40,11 @@ import okhttp3.Response;
  */
 public class PokemonRequestHelper {
     private static final double EARTH_RADIUS_METERS = 6372797.6; // earth radius in meters
-    private static final double BASE_SCAN_METERS = 150;
+    private static final double BASE_SCAN_METERS = 140;
+    private static final int BASE_SCAN_TIMER = 5400; //5.4 seconds
 
     private static final int RADIUS_QUICK_SCAN = 5000; //5km
-    private static final int AUTO_QUICK_SCAN_TIME =15000; //15seconds
+    private static final int AUTO_QUICK_SCAN_TIME =15000; //15 seconds
 
     private static final int CIRCLE_1_SCAN_STEPS = 9;
     private static final int CIRCLE_2_SCAN_STEPS = 25;
@@ -54,9 +55,10 @@ public class PokemonRequestHelper {
 
     public static LatLng lastLocationRequested = null;
 
-    private int scanNumber = 9;
+    private int scanLevel = 2;
     private int scanCounter = 0;
     private List<Marker> markerDebugList = new ArrayList<>();
+    private CountDownTimer countDownAutoScan;
 
     public PokemonRequestHelper(MapsActivity mMapsActivity) {
         this.mMapsActivity = mMapsActivity;
@@ -90,13 +92,19 @@ public class PokemonRequestHelper {
             if(scanCounter == 0){
                 newLatLng = latLng;
             }else {
-                double angleRadians = (2 * Math.PI/(CIRCLE_1_SCAN_STEPS-1))*(scanCounter-1);
-                newLatLng = locationWithBearing(angleRadians, BASE_SCAN_METERS, latLng);
+                if(scanCounter == CIRCLE_1_SCAN_STEPS+1)
+                    clearDebugMarkers();
+                int steps = scanCounter > CIRCLE_1_SCAN_STEPS ? CIRCLE_2_SCAN_STEPS - CIRCLE_1_SCAN_STEPS : CIRCLE_1_SCAN_STEPS;
+                steps -= 1;
+                double distance = scanCounter > CIRCLE_1_SCAN_STEPS ? BASE_SCAN_METERS * 2 : BASE_SCAN_METERS;
+                double angleRadians = (2 * Math.PI/(steps))*(scanCounter-1);
+                newLatLng = locationWithBearing(angleRadians, distance, latLng);
                 Debug.Log("new heartbeat: "+scanCounter+ " angle:"+angleRadians);
 
             }
             createDebugMarker(newLatLng);
-            DataManager.getDataManager().heartbeat_v2(googleAuthTokenJson.getId_token(), newLatLng.latitude + "", newLatLng.longitude + "", heartbeatCallback);
+            DataManager.getDataManager().heartbeat_v2(googleAuthTokenJson.getId_token(),
+                    newLatLng.latitude + "", newLatLng.longitude + "",getAltitude(), heartbeatCallback);
             scanCounter ++;
             return true;
         }
@@ -110,6 +118,13 @@ public class PokemonRequestHelper {
         markerDebugList.add(mMapsActivity.mMap.addMarker(markerOptions));
     }
 
+    private String getAltitude(){
+        String altitude = "0";
+        if(PokemonHelper.lastLocation !=  null)
+            altitude = String.valueOf(PokemonHelper.lastLocation.getAltitude());
+        return altitude;
+    }
+
     public void startAutoHeartBeat_v2(){
         LatLng latLng = mMapsActivity.getLocation();
 
@@ -118,15 +133,48 @@ public class PokemonRequestHelper {
         } else {
             scanCounter = 0;
             lastLocationRequested = latLng;
-            countDownAutoScan.start();
             progressBar.setVisibility(View.VISIBLE);
             mMapsActivity.searchButton.setVisibility(View.INVISIBLE);
+
+            initCountDownScan();
+            countDownAutoScan.start();
 
         }
     }
 
+    private void initCountDownScan(){
+        final int scanSteps = scanLevel == 1 ? CIRCLE_1_SCAN_STEPS : CIRCLE_2_SCAN_STEPS;
+
+        countDownAutoScan = new CountDownTimer((BASE_SCAN_TIMER*scanSteps)+1000, BASE_SCAN_TIMER) {
+
+            public void onTick(long millisUntilFinished) {
+                heartbeat_v2();
+                int progress = 100/scanSteps*scanCounter;
+                if (progress > 97)
+                    progress = 100;
+                progressBar.setProgress(progress);
+            }
+
+            public void onFinish() {
+                scanCounter = 0;
+                mMapsActivity.setActiveSearchButton(false);
+                mMapsActivity.searchButton.setVisibility(View.VISIBLE);
+                mMapsActivity.timerTextView.setVisibility(View.VISIBLE);
+                mMapsActivity.countDownNewHeartBeat.start();
+                progressBar.setVisibility(View.INVISIBLE);
+                clearDebugMarkers();
+            }
+        };
+    }
+
+    private void clearDebugMarkers(){
+        for(Marker marker:markerDebugList)
+            marker.remove();
+    }
+
     public void stopAutoHeartBeat_v2(){
-        countDownAutoScan.onFinish();
+        if(countDownAutoScan != null)
+            countDownAutoScan.onFinish();
         mMapsActivity.countDownNewHeartBeat.onFinish();
     }
 
@@ -276,26 +324,4 @@ public class PokemonRequestHelper {
         double latitude = distance * Math.sin(angle) - location.latitude;
         return new LatLng(latitude,longitude);
     }
-
-    final CountDownTimer countDownAutoScan = new CountDownTimer(50000, 5000) {
-
-        public void onTick(long millisUntilFinished) {
-            heartbeat_v2();
-            int progress = 100/CIRCLE_1_SCAN_STEPS*scanCounter;
-                if (progress > 97)
-                    progress = 100;
-            progressBar.setProgress(progress);
-        }
-
-        public void onFinish() {
-            scanCounter = 0;
-            mMapsActivity.setActiveSearchButton(false);
-            mMapsActivity.searchButton.setVisibility(View.VISIBLE);
-            mMapsActivity.timerTextView.setVisibility(View.VISIBLE);
-            mMapsActivity.countDownNewHeartBeat.start();
-            progressBar.setVisibility(View.INVISIBLE);
-            for(Marker marker:markerDebugList)
-                marker.remove();
-        }
-    };
 }

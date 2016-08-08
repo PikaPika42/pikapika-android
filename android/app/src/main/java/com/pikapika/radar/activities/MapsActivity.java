@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int REQUEST_LIMIT_TIME = 3000; //3 seg
     private static final int DELAY_LOGIN_HEARTBEAT = 1000; //1 seg
 
-    private static final int CAMERA_MAP_ZOOM = 17;
+    private static final int CAMERA_MAP_ZOOM = 16;
 
     private static final String MOPUD_AD_UNIT_ID = "2493c0695a364c929b598164f4b9fd68";
 
@@ -326,7 +326,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mInterstitial.show();
             }
             //Heartbeat
-            //pokemonRequestHelper.startAutoHeartBeat_v2();
+            pokemonRequestHelper.startAutoHeartBeat_v2();
         }
     }
 
