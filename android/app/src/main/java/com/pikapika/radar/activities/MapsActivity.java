@@ -167,6 +167,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertDialog =alert.show();
     }
 
+    public void showPopUpScanAreaSetting(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setView(R.layout.pop_up_scan_area);
+        alert.setPositiveButton(getText(R.string.ok),null);
+        alert.show();
+    }
+
     public void onGoogleButtonClick(View view) {
         if(alertDialog != null)
             alertDialog.dismiss();
@@ -551,6 +558,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 boolean audioEnabled = PokemonHelper.getAudioSetting(this);
                 PokemonHelper.saveAudioSetting(!audioEnabled,this);
                 setAudioIcon(item,!audioEnabled);
+                break;
+            case R.id.menu_scan_area:
+                showPopUpScanAreaSetting();
                 break;
         }
         return true;

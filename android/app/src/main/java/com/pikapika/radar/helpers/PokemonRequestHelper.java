@@ -55,7 +55,7 @@ public class PokemonRequestHelper {
 
     public static LatLng lastLocationRequested = null;
 
-    private int scanLevel = 2;
+    private int scanLevel = 1;
     private int scanCounter = 0;
     private List<Marker> markerDebugList = new ArrayList<>();
     private CountDownTimer countDownAutoScan;

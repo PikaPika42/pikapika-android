@@ -12,7 +12,9 @@
     <string name="login_ptc">Login with PTC (next version)</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
+    <string name="faq">FAQ</string>
     <string name="sound">Sound</string>
+    <string name="area_setting">Scan Area</string>
     <string name="google">Google</string>
     <string name="ptc">PTC (available next version)</string>
     <string name="time_left">Time Left</string>
@@ -41,4 +43,6 @@
     <string name="pokemon_not_found">No pokemon found. If the problem persists, try to logout/login.</string>
     <string name="warning_banning_location">To move the pointer this far could get you ban. Currently we don\'t support this.</string>
     <string name="change_position_instruction">Just tap the map for 2s to change your position (limited to 700 meters from your last research to prevent users from ban).</string>
+    <string name="scan_level_1">Normal</string>
+    <string name="scan_level_2">Bigger Area</string>
 </resources>

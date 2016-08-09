@@ -2,13 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/group_main">
 
-    <item android:id="@+id/menu_sound_option"
-        android:title="@string/sound"
-        android:icon="@drawable/ic_volume_up_black_24dp"/>
-    <item
-        android:id="@+id/nav_logout"
-        android:title="@string/logout"
-        android:icon="@drawable/ic_exit_to_app_black_24dp"/>
+        <item android:id="@+id/menu_sound_option"
+            android:title="@string/sound"
+            android:icon="@drawable/ic_volume_up_black_24dp"/>
+        <item
+            android:id="@+id/menu_faq"
+            android:title="@string/faq"
+            android:icon="@drawable/ic_announcement_black_36dp"/>
+        <item
+            android:id="@+id/menu_scan_area"
+            android:title="@string/area_setting"
+            android:icon="@drawable/ic_settings_input_antenna_black_24dp"/>
+        <item
+            android:id="@+id/nav_logout"
+            android:title="@string/logout"
+            android:icon="@drawable/ic_exit_to_app_black_24dp"/>
     </group>
 
 </menu>
