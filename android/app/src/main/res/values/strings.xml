@@ -14,7 +14,7 @@
     <string name="logout">Logout</string>
     <string name="faq">FAQ</string>
     <string name="sound">Sound</string>
-    <string name="area_setting">Scan Area</string>
+    <string name="area_setting">Scan Zone</string>
     <string name="google">Google</string>
     <string name="ptc">PTC (available next version)</string>
     <string name="time_left">Time Left</string>
@@ -45,5 +45,19 @@
     <string name="warning_banning_location">To move the pointer this far could get you ban. Currently we don\'t support this.</string>
     <string name="change_position_instruction">Just tap the map for 2s to change your position (limited to 700 meters from your last research to prevent users from ban).</string>
     <string name="scan_level_1">Normal</string>
-    <string name="scan_level_2">Bigger Area</string>
+    <string name="scan_level_2">Big</string>
+    <string name="fag_text_html"><![CDATA[
+    <h3>How to move your position?</h3>
+    <p>On the map, press the place you want to search for 2s. We don’t allow to search for more than 700 meters in order to not cheat and to not create problems to your account</p>
+    <h3>Why do you need me to connect?</h3>
+    <p>We have thousands of users and we can’t have an account to share for everybody. So we ask you to connect. You can (and we recommend) to use an account of test. Any gmail email will do the job.
+    Your info is totally safe, you don’t connect to our servers but to Google.
+    <h3>Can I be ban using PikaPika?</h3>
+    <p>You should not because we prevent you from scanning far from your actual position. But we advise you to use a test account
+    <h3>Why did you put Ads?</h3>
+    <p>We have thousands of users so we have to rent servers to offer you a great service. There are pretty expensive so we need ads to follow the PikaPika adventure.
+    <h3>Can I contact you?</h3>
+    <p>Sure, you can write us to <a href="mailto:pikapika.app@gmail.com">pikapika.app@gmail.com</a> or look for us on <h2><a href="https://www.facebook.com/pikapika42">Facebook</a></h2> <h2><a href="https://mobile.twitter.com/42pikapika">Twitter</a></h2></p>
+    ]]>
+    </string>
 </resources>

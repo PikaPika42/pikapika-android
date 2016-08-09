@@ -1,6 +1,7 @@
 package com.pikapika.radar.activities;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -24,9 +25,12 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -40,6 +44,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mopub.mobileads.MoPubInterstitial;
+import com.mopub.mobileads.MoPubView;
 import com.pikapika.radar.BuildConfig;
 import com.pikapika.radar.R;
 import com.pikapika.radar.helpers.AdsHelper;
@@ -47,6 +52,7 @@ import com.pikapika.radar.helpers.ConfigReader;
 import com.pikapika.radar.helpers.DataManager;
 import com.pikapika.radar.helpers.PokemonHelper;
 import com.pikapika.radar.helpers.PokemonRequestHelper;
+import com.pikapika.radar.helpers.SettingsSaving;
 import com.pikapika.radar.helpers.UserMarkerHelper;
 import com.pikapika.radar.models.GoogleAuthTokenJson;
 import com.pikapika.radar.models.PokemonResult;
@@ -74,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int CAMERA_MAP_ZOOM = 16;
 
     private static final String MOPUD_INTERSTITIAL_UNIT_ID = "2493c0695a364c929b598164f4b9fd68";
-    private static final String MOPUD_BANNER_UNIT_ID = "2493c0695a364c929b598164f4b9fd68";
+    private static final String MOPUD_BANNER_UNIT_ID = "eb21a36f0eb14d59b660660d33585893";
 
     //map stuff
     public GoogleMap mMap;
@@ -94,9 +100,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private UserMarkerHelper userMarkerHelper;
     private PokemonRequestHelper pokemonRequestHelper;
     private ConfigReader configReader;
+    public SettingsSaving settingsSaving;
 
     //Ads
     private MoPubInterstitial mInterstitial;
+    private MoPubView moPubView;;
     private AdsHelper mAdsHelper;
 
     //Firebase
@@ -146,6 +154,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mAdsHelper = new AdsHelper();
         mInterstitial.setInterstitialAdListener(mAdsHelper);
         mInterstitial.load();
+        moPubView = (MoPubView) findViewById(R.id.adview);
+        moPubView.setAdUnitId(MOPUD_BANNER_UNIT_ID); //Ad Unit ID from www.mopub.com
+        moPubView.loadAd();
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -153,6 +164,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerHandler = new Handler();
         pokemonRequestHelper = new PokemonRequestHelper(this);
         configReader = new ConfigReader(this);
+        settingsSaving = new SettingsSaving(this);
     }
 
     public void showPopUpSplash(){
@@ -169,10 +181,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void showPopUpScanAreaSetting(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setView(R.layout.pop_up_scan_area);
-        alert.setPositiveButton(getText(R.string.ok),null);
-        alert.show();
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.pop_up_scan_area);
+        RadioGroup radioGroup = (RadioGroup)dialog.findViewById(R.id.scan_radio_group);
+        radioGroup.check(settingsSaving.getScanZoneSetting() == 0 ? R.id.radio_button_scan_1 : R.id.radio_button_scan_2);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                int level = (i == R.id.radio_button_scan_1 ? 0 : 1);
+                settingsSaving.saveScanZoneSetting(level);
+            }
+        });
+        dialog.show();
+    }
+
+    public void showPopUpFAQ(){
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.pop_up_splash_view);
+        TextView mainTexView = (TextView)dialog.findViewById(R.id.text_view_pop_up);
+        TextView emptyTexView = (TextView)dialog.findViewById(R.id.textView);
+        emptyTexView.setText("");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            mainTexView.setText(Html.fromHtml(getString(R.string.fag_text_html),Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            mainTexView.setText(Html.fromHtml(getString(R.string.fag_text_html)));
+        }
+        mainTexView. setMovementMethod(LinkMovementMethod.getInstance());
+        dialog.show();
     }
 
     public void onGoogleButtonClick(View view) {
@@ -206,6 +241,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onDestroy() {
         mInterstitial.destroy();
+        moPubView.destroy();
         super.onDestroy();
     }
 
@@ -566,6 +602,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
             case R.id.menu_scan_area:
                 showPopUpScanAreaSetting();
+                break;
+            case R.id.menu_faq:
+                showPopUpFAQ();
                 break;
         }
         return true;

@@ -129,6 +129,15 @@
     app:headerLayout="@layout/navigation_header"
     app:menu="@menu/main_menu_drawer"
         >
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+        <com.mopub.mobileads.MoPubView
+            android:id="@+id/adview"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true" />
+        </RelativeLayout>
     </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>

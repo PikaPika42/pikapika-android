@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -41,14 +43,14 @@ import okhttp3.Response;
  */
 public class PokemonRequestHelper {
     private static final double EARTH_RADIUS_METERS = 6372797.6; // earth radius in meters
-    private static final double BASE_SCAN_METERS = 130;
+    private static final double BASE_SCAN_METERS = 135;
     private static final int BASE_SCAN_TIMER = 5300; //5.3 seconds
 
     private static final int RADIUS_QUICK_SCAN = 5000; //5km
     private static final int AUTO_QUICK_SCAN_TIME =15000; //15 seconds
 
-    private static final int CIRCLE_1_SCAN_STEPS = 9;
-    private static final int CIRCLE_2_SCAN_STEPS = 25;
+    private static final int CIRCLE_1_SCAN_STEPS = 7;
+    private static final int CIRCLE_2_SCAN_STEPS = 19;
 
     private MapsActivity mMapsActivity;
     private Handler autoScanHandler;
@@ -57,9 +59,10 @@ public class PokemonRequestHelper {
 
     public static LatLng lastLocationRequested = null;
 
-    private int scanLevel = 1;
+    private int scanLevel = 0;
     private int scanCounter = 0;
     private List<Marker> markerDebugList = new ArrayList<>();
+    private List<Circle> circleList = new ArrayList<>();
     private CountDownTimer countDownAutoScan;
 
     public PokemonRequestHelper(MapsActivity mMapsActivity) {
@@ -85,7 +88,6 @@ public class PokemonRequestHelper {
 
     public boolean heartbeat_v2(){
         LatLng latLng = lastLocationRequested;
-
         if(latLng == null) {
             PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.gps_error_title),mMapsActivity.getString(R.string.gps_error_body));
             return false;
@@ -95,17 +97,20 @@ public class PokemonRequestHelper {
             if(scanCounter == 0){
                 newLatLng = latLng;
             }else {
-                if(scanCounter == CIRCLE_1_SCAN_STEPS+1)
-                    clearDebugMarkers();
-                int steps = scanCounter > CIRCLE_1_SCAN_STEPS ? CIRCLE_2_SCAN_STEPS - CIRCLE_1_SCAN_STEPS : CIRCLE_1_SCAN_STEPS;
-                steps -= 1;
-                double distance = scanCounter > CIRCLE_1_SCAN_STEPS ? BASE_SCAN_METERS * 2 : BASE_SCAN_METERS;
+                double widthSizeConst = Math.sqrt(3)/2 * BASE_SCAN_METERS;
+                //if(scanCounter == CIRCLE_1_SCAN_STEPS+1)
+                //    clearDebugMarkers();
+                int steps = scanCounter >= CIRCLE_1_SCAN_STEPS ? CIRCLE_2_SCAN_STEPS - CIRCLE_1_SCAN_STEPS : CIRCLE_1_SCAN_STEPS-1;
+                double level2ConstDistance;
+                if(scanCounter % 2 == 1)
+                    level2ConstDistance = 2 * widthSizeConst;
+                else
+                    level2ConstDistance = 1.5 * BASE_SCAN_METERS;
+                double distance = scanCounter >= CIRCLE_1_SCAN_STEPS ? level2ConstDistance :  widthSizeConst;
                 double angleRadians = (2 * Math.PI/(steps))*(scanCounter-1);
                 newLatLng = locationWithBearing(angleRadians, distance, latLng);
-                Debug.Log("new heartbeat: "+scanCounter+ " angle:"+angleRadians);
-
             }
-            createDebugMarker(newLatLng);
+            createDebugMarker(newLatLng, BASE_SCAN_METERS/2);
             DataManager.getDataManager().heartbeat_v2(googleAuthTokenJson.getId_token(),
                     newLatLng.latitude + "", newLatLng.longitude + "",getAltitude(), heartbeatCallback);
             scanCounter ++;
@@ -113,12 +118,20 @@ public class PokemonRequestHelper {
         }
     }
 
-    public void createDebugMarker(LatLng latLng){
+    public void createDebugMarker(LatLng latLng, double radio){
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_ocation_map_pin_blue_36))
                 .draggable(true);
         markerDebugList.add(mMapsActivity.mMap.addMarker(markerOptions));
+        //circle
+        Circle circle = mMapsActivity.mMap.addCircle(new CircleOptions()
+                .center(latLng)
+                .radius(radio)
+                .strokeWidth(8)
+                .strokeColor(0xFF303F9F)
+                .fillColor(0x4400bfff));
+        circleList.add(circle);
     }
 
     private String getAltitude(){
@@ -134,6 +147,7 @@ public class PokemonRequestHelper {
         if(latLng == null) {
             PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.gps_error_title),mMapsActivity.getString(R.string.gps_error_body));
         } else {
+            scanLevel = mMapsActivity.settingsSaving.getScanZoneSetting();
             scanCounter = 0;
             lastLocationRequested = latLng;
             progressBar.setVisibility(View.VISIBLE);
@@ -146,7 +160,7 @@ public class PokemonRequestHelper {
     }
 
     private void initCountDownScan(){
-        final int scanSteps = scanLevel == 1 ? CIRCLE_1_SCAN_STEPS : CIRCLE_2_SCAN_STEPS;
+        final int scanSteps = scanLevel == 0 ? CIRCLE_1_SCAN_STEPS : CIRCLE_2_SCAN_STEPS;
 
         countDownAutoScan = new CountDownTimer((BASE_SCAN_TIMER*scanSteps)+1000, BASE_SCAN_TIMER) {
 
@@ -174,6 +188,8 @@ public class PokemonRequestHelper {
     private void clearDebugMarkers(){
         for(Marker marker:markerDebugList)
             marker.remove();
+        for(Circle circle: circleList)
+            circle.remove();
     }
 
     public void stopAutoHeartBeat_v2(){

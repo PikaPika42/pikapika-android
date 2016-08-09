@@ -16,19 +16,20 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="10dp"
+        android:id="@+id/scan_radio_group">
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/scan_level_1"
-            android:id="@+id/radio_button_sacan_1" />
+            android:id="@+id/radio_button_scan_1" />
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/scan_level_2"
-            android:id="@+id/radio_button_sacan_2" />
+            android:id="@+id/radio_button_scan_2" />
     </RadioGroup>
 
 
