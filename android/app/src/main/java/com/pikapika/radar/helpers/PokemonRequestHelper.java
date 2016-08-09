@@ -40,7 +40,7 @@ import okhttp3.Response;
  */
 public class PokemonRequestHelper {
     private static final double EARTH_RADIUS_METERS = 6372797.6; // earth radius in meters
-    private static final double BASE_SCAN_METERS = 140;
+    private static final double BASE_SCAN_METERS = 130;
     private static final int BASE_SCAN_TIMER = 5400; //5.4 seconds
 
     private static final int RADIUS_QUICK_SCAN = 5000; //5km

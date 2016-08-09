@@ -38,6 +38,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mopub.mobileads.MoPubInterstitial;
 import com.pikapika.radar.BuildConfig;
 import com.pikapika.radar.R;
@@ -97,6 +98,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MoPubInterstitial mInterstitial;
     private AdsHelper mAdsHelper;
 
+    //Firebase
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,6 +145,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mAdsHelper = new AdsHelper();
         mInterstitial.setInterstitialAdListener(mAdsHelper);
         mInterstitial.load();
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         markerHandler = new Handler();
         pokemonRequestHelper = new PokemonRequestHelper(this);

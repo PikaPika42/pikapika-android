@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "354309479595",
+    "firebase_url": "https://future-bucksaw-138021.firebaseio.com",
+    "project_id": "future-bucksaw-138021",
+    "storage_bucket": "future-bucksaw-138021.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354309479595:android:2b2f172ca05646e0",
+        "android_client_info": {
+          "package_name": "com.pikapika.radar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354309479595-qktde8fnbnn840tpiic11ffl4gmtgu8f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pikapika.radar",
+            "certificate_hash": "0E6189B5859A7D45A3A5F544680CE55D225CD73F"
+          }
+        },
+        {
+          "client_id": "354309479595-ph75jc70uhqa0hp4uagp9su1sep0klej.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8BpfoWUs7MwLEfAUkNV9V-qT4ow6CSbs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354309479595-ph75jc70uhqa0hp4uagp9su1sep0klej.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
