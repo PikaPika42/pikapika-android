@@ -73,7 +73,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final int CAMERA_MAP_ZOOM = 16;
 
-    private static final String MOPUD_AD_UNIT_ID = "2493c0695a364c929b598164f4b9fd68";
+    private static final String MOPUD_INTERSTITIAL_UNIT_ID = "2493c0695a364c929b598164f4b9fd68";
+    private static final String MOPUD_BANNER_UNIT_ID = "2493c0695a364c929b598164f4b9fd68";
 
     //map stuff
     public GoogleMap mMap;
@@ -141,7 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         //ADS
-        mInterstitial = new MoPubInterstitial(this, MOPUD_AD_UNIT_ID);
+        mInterstitial = new MoPubInterstitial(this, MOPUD_INTERSTITIAL_UNIT_ID);
         mAdsHelper = new AdsHelper();
         mInterstitial.setInterstitialAdListener(mAdsHelper);
         mInterstitial.load();
@@ -342,6 +343,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //Heartbeat
             pokemonRequestHelper.startAutoHeartBeat_v2();
         }
+    }
+
+    public void onCancelScanClick(View view) {
+        pokemonRequestHelper.stopAutoHeartBeat_v2();
     }
 
     public LatLng getLocation(){

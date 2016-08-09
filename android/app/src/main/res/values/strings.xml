@@ -21,6 +21,7 @@
     <string name="it_has_gone">It has gone.</string>
     <string name="preference_file_key">prefFileKey</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="request_error_title">Oops!</string>
     <string name="request_error_body">Something was wrong. Try later.</string>
     <string name="timeout_error_body">Timeout error. Try later.</string>

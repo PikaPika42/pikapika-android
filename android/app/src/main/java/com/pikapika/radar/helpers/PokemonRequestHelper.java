@@ -3,6 +3,7 @@ package com.pikapika.radar.helpers;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -41,7 +42,7 @@ import okhttp3.Response;
 public class PokemonRequestHelper {
     private static final double EARTH_RADIUS_METERS = 6372797.6; // earth radius in meters
     private static final double BASE_SCAN_METERS = 130;
-    private static final int BASE_SCAN_TIMER = 5400; //5.4 seconds
+    private static final int BASE_SCAN_TIMER = 5300; //5.3 seconds
 
     private static final int RADIUS_QUICK_SCAN = 5000; //5km
     private static final int AUTO_QUICK_SCAN_TIME =15000; //15 seconds
@@ -52,6 +53,7 @@ public class PokemonRequestHelper {
     private MapsActivity mMapsActivity;
     private Handler autoScanHandler;
     private ProgressBar progressBar;
+    private Button cancelScanbutton;
 
     public static LatLng lastLocationRequested = null;
 
@@ -63,6 +65,7 @@ public class PokemonRequestHelper {
     public PokemonRequestHelper(MapsActivity mMapsActivity) {
         this.mMapsActivity = mMapsActivity;
         progressBar = (ProgressBar)mMapsActivity.findViewById(R.id.progressBar);
+        cancelScanbutton = (Button)mMapsActivity.findViewById(R.id.cancel_scan_button);
         autoScanHandler = new Handler();
     }
 
@@ -138,7 +141,7 @@ public class PokemonRequestHelper {
 
             initCountDownScan();
             countDownAutoScan.start();
-
+            cancelScanbutton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -163,6 +166,7 @@ public class PokemonRequestHelper {
                 mMapsActivity.countDownNewHeartBeat.start();
                 progressBar.setVisibility(View.INVISIBLE);
                 clearDebugMarkers();
+                cancelScanbutton.setVisibility(View.GONE);
             }
         };
     }
@@ -173,9 +177,12 @@ public class PokemonRequestHelper {
     }
 
     public void stopAutoHeartBeat_v2(){
-        if(countDownAutoScan != null)
+        if(countDownAutoScan != null) {
             countDownAutoScan.onFinish();
+            countDownAutoScan.cancel();
+        }
         mMapsActivity.countDownNewHeartBeat.onFinish();
+        mMapsActivity.countDownNewHeartBeat.cancel();
     }
 
     final Callback heartbeatCallback = new Callback() {
