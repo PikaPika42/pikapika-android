@@ -211,10 +211,7 @@ public class PokemonRequestHelper {
                 //internet error message
                 PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.error_title)+"!",
                         mMapsActivity.getString(R.string.internet_error_body));
-            } else {
-                mMapsActivity.refreshToken();
             }
-            //mMapsActivity.countDownRequestTimer.onFinish();
         }
 
         @Override
@@ -240,15 +237,8 @@ public class PokemonRequestHelper {
                 }
                 response.body().close();
             } else {
-                //strange error from api, try to generate login again
-                if (response.code() >= 400) {
-                    mMapsActivity.refreshToken();
-                    return;
-                }
-                PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.request_error_title),
-                        mMapsActivity.getString(R.string.request_error_body));
+                Debug.Log("Error with code : "+response.code());
             }
-            //mMapsActivity.countDownRequestTimer.onFinish();
         }
     };
 
