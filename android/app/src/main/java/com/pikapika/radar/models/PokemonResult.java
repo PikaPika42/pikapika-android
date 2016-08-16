@@ -116,7 +116,7 @@ public class PokemonResult {
             String timeStr = String.format(Locale.ENGLISH, "%dm %ds", secondsArray[0], secondsArray[1]);
             return timeLeftStr + ": " + timeStr;
         }
-        return context.getString(R.string.it_has_gone);
+        return context.getString(R.string.it_will_appear);
     }
 
     public boolean isFromQuickScan() {

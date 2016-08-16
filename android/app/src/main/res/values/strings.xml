@@ -19,6 +19,7 @@
     <string name="ptc">PTC (available next version)</string>
     <string name="time_left">Time Left</string>
     <string name="it_has_gone">It has gone.</string>
+    <string name="it_will_appear">Appear in less than 15 min.</string>
     <string name="preference_file_key">prefFileKey</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
