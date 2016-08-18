@@ -248,6 +248,8 @@ public class PokemonRequestHelper {
     }
 
     public void autoQuickPokemonScan(){
+        //we use this loop to clean the pokemones with expired time
+        PokemonHelper.cleanPokemon();
         LatLng latLng = mMapsActivity.getLocation();
         if(latLng != null) {
             DataManager.getDataManager().quickHeartbeat(latLng.latitude + "", latLng.longitude + "", RADIUS_QUICK_SCAN, quickScanCallback);
@@ -273,6 +275,7 @@ public class PokemonRequestHelper {
             if (response.code() == 200) {
                 String jsonStr = response.body().string();
                 if (!jsonStr.isEmpty()) {
+                    Debug.Log("DB data: "+jsonStr);
                     Type listType = new TypeToken<List<PokemonResult>>() {}.getType();
                     try {
                         JsonParser parser = new JsonParser();

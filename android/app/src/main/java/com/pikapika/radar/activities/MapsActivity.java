@@ -232,6 +232,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStart();
         pokemonRequestHelper.startQuickScanLoop();
         configReader.requestConfig();
+        PokemonHelper.cleanPokemon();
     }
 
     protected void onStop() {

@@ -54,8 +54,6 @@ public class PokemonHelper {
 
     static public void addToDrawPokemon(Context context, GoogleMap map, List<PokemonResult> locationList){
 
-        cleanPokemon();
-
         //draw the new pokemon
         for(PokemonResult pokemon:locationList) {
             //if doesn't exist we added to map
