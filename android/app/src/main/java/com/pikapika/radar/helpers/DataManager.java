@@ -54,6 +54,10 @@ public class DataManager {
         restClient.postJson(jsonInString,"trainers/login",callback);
     }
 
+    public void configuration(Callback callback){
+        restClient.get("configuration", new HashMap<String, String>(), callback);
+    }
+
     public void heartbeat(String token,String lat, String lng, Callback callback){
         HashMap<String, String> params = new HashMap<>();
         params.put("access_token", token);

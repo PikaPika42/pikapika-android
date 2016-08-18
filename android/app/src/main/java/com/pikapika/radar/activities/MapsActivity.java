@@ -231,6 +231,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGoogleApiClient.connect();
         super.onStart();
         pokemonRequestHelper.startQuickScanLoop();
+        configReader.requestConfig();
     }
 
     protected void onStop() {

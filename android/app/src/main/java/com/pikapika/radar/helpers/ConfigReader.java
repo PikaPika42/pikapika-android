@@ -11,6 +11,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 /**
  * Created by flavioreyes on 8/7/16.
  */
@@ -23,6 +27,26 @@ public class ConfigReader {
     public ConfigReader(Context context){
         this.m_context = context;
         readLocalConfig();
+    }
+
+    public void requestConfig(){
+        DataManager.getDataManager().configuration(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.code() == 200) {
+                    String jsonStr = response.body().string();
+                    if (!jsonStr.isEmpty()) {
+                        parseJsonConfig(jsonStr);
+                    }
+                }
+                response.body().close();
+            }
+        });
     }
 
 
@@ -43,6 +67,10 @@ public class ConfigReader {
         }
         //get the json as string
         String jsonStr = byteArrayOutputStream.toString();
+        parseJsonConfig(jsonStr);
+    }
+
+    void parseJsonConfig(String jsonStr){
         JsonParser parser = new JsonParser();
         m_jsonConfig = parser.parse(jsonStr).getAsJsonObject();
         //read data
