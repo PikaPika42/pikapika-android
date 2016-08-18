@@ -43,11 +43,11 @@ import okhttp3.Response;
  */
 public class PokemonRequestHelper {
     private static final double EARTH_RADIUS_METERS = 6372797.6; // earth radius in meters
-    private static final double BASE_SCAN_METERS = 135;
-    private static final int BASE_SCAN_TIMER = 5300; //5.3 seconds
+    private static double BASE_SCAN_METERS = 135;
+    private static int BASE_SCAN_TIMER = 5300; //5.3 seconds
 
     private static final int RADIUS_QUICK_SCAN = 5000; //5km
-    private static final int AUTO_QUICK_SCAN_TIME =15000; //15 seconds
+    private static final int AUTO_QUICK_SCAN_TIME =20000; //20 seconds
 
     private static final int CIRCLE_1_SCAN_STEPS = 7;
     private static final int CIRCLE_2_SCAN_STEPS = 19;
@@ -70,6 +70,10 @@ public class PokemonRequestHelper {
         progressBar = (ProgressBar)mMapsActivity.findViewById(R.id.progressBar);
         cancelScanbutton = (Button)mMapsActivity.findViewById(R.id.cancel_scan_button);
         autoScanHandler = new Handler();
+        if(MapsActivity.USER_JAVA_LIB) {
+            BASE_SCAN_TIMER = 10000;
+            //BASE_SCAN_METERS = 350;
+        }
     }
 
     public void heartbeat(){
@@ -96,7 +100,7 @@ public class PokemonRequestHelper {
             LatLng newLatLng;
             if(scanCounter == 0){
                 newLatLng = latLng;
-            }else {
+            } else {
                 double widthSizeConst = Math.sqrt(3)/2 * BASE_SCAN_METERS;
                 //if(scanCounter == CIRCLE_1_SCAN_STEPS+1)
                 //    clearDebugMarkers();
@@ -111,8 +115,11 @@ public class PokemonRequestHelper {
                 newLatLng = locationWithBearing(angleRadians, distance, latLng);
             }
             createDebugMarker(newLatLng, BASE_SCAN_METERS/2);
-            DataManager.getDataManager().heartbeat_v2(googleAuthTokenJson.getId_token(),
-                    newLatLng.latitude + "", newLatLng.longitude + "",getAltitude(), heartbeatCallback);
+            if(!MapsActivity.USER_JAVA_LIB)
+                DataManager.getDataManager().heartbeat_v2(googleAuthTokenJson.getId_token(),
+                        newLatLng.latitude + "", newLatLng.longitude + "",getAltitude(), heartbeatCallback);
+            else
+                mMapsActivity.pokeAPILib.getCatchablePokemon(latLng.latitude,latLng.longitude,getAltitudeNumber());
             scanCounter ++;
             return true;
         }
@@ -138,6 +145,13 @@ public class PokemonRequestHelper {
         String altitude = "0";
         if(PokemonHelper.lastLocation !=  null)
             altitude = String.valueOf(PokemonHelper.lastLocation.getAltitude());
+        return altitude;
+    }
+
+    private Double getAltitudeNumber(){
+        Double altitude = 0.0;
+        if(PokemonHelper.lastLocation !=  null)
+            altitude = PokemonHelper.lastLocation.getAltitude();
         return altitude;
     }
 
@@ -221,6 +235,7 @@ public class PokemonRequestHelper {
             if (response.code() == 200) {
                 String jsonStr = response.body().string();
                 if (!jsonStr.isEmpty()) {
+                    Debug.Log("onResponse: "+jsonStr);
                     Type listType = new TypeToken<List<PokemonResult>>() {}.getType();
                     try {
                         JsonParser parser = new JsonParser();

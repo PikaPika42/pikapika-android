@@ -46,6 +46,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mopub.mobileads.MoPubInterstitial;
 import com.mopub.mobileads.MoPubView;
 import com.pikapika.radar.BuildConfig;
+import com.pikapika.radar.PokeAPILib;
 import com.pikapika.radar.R;
 import com.pikapika.radar.helpers.AdsHelper;
 import com.pikapika.radar.helpers.ConfigReader;
@@ -69,6 +70,8 @@ import okhttp3.Response;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener,NavigationView.OnNavigationItemSelectedListener,
         GoogleMap.OnMapClickListener{
+
+    public static boolean USER_JAVA_LIB = false;
 
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
     private static final int LOGIN_ACTIVITY_RESULT = 101;
@@ -101,6 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private PokemonRequestHelper pokemonRequestHelper;
     private ConfigReader configReader;
     public SettingsSaving settingsSaving;
+    public PokeAPILib pokeAPILib;
 
     //Ads
     private MoPubInterstitial mInterstitial;
@@ -165,6 +169,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         pokemonRequestHelper = new PokemonRequestHelper(this);
         configReader = new ConfigReader(this);
         settingsSaving = new SettingsSaving(this);
+        if(USER_JAVA_LIB)
+            pokeAPILib = new PokeAPILib(this);
     }
 
     public void showPopUpSplash(){
@@ -261,6 +267,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMapClickListener(this);
         mMap = googleMap;
+        configReader.requestConfig();
+
+        String token =  PokemonHelper.getGoogleRefreshToken(MapsActivity.this);
+        if(USER_JAVA_LIB && !token.isEmpty())
+            pokeAPILib.initGO(token);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -376,8 +387,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (mInterstitial.isReady())
                     mInterstitial.show();
             }
-            //Heartbeat
+            //Heartbeat.
             pokemonRequestHelper.startAutoHeartBeat_v2();
+            /*LatLng latLng = getLocation();
+            double altitude = 0;
+            if(PokemonHelper.lastLocation !=  null)
+                altitude = PokemonHelper.lastLocation.getAltitude();
+            pokeAPILib.getCatchablePokemon(latLng.latitude,latLng.longitude,altitude);
+            */
         }
     }
 
@@ -491,6 +508,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //check first if the request was ok
             if (response.code() == 200){
+                if(MapsActivity.USER_JAVA_LIB && !pokeAPILib.isInitializedGO()){
+                    String token =  PokemonHelper.getGoogleRefreshToken(MapsActivity.this);
+                    pokeAPILib.initGO(token);
+                }
                 runHeartbeatWithDelay();
                 response.body().close();
                 return;
@@ -528,9 +549,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(currentMarker != null && PokemonHelper.markersPokemonMap.containsKey(currentMarker.getId())) {
                 String key = PokemonHelper.markersPokemonMap.get(currentMarker.getId());
                 PokemonResult pokemonResult = PokemonHelper.pokemonGlobalMap.get(key);
-                if(pokemonResult.getTimeleft() > 0) {
+                if(pokemonResult.getTimeleft() > 0 || USER_JAVA_LIB) {
                     long currentMilli = System.currentTimeMillis() - pokemonResult.getInitTime();
-                    if(pokemonResult.getTimeleft() - currentMilli > 0 ) {
+                    long timeLeft = pokemonResult.getTimeleft();
+                    if(USER_JAVA_LIB) {
+                        currentMilli = System.currentTimeMillis();
+                        timeLeft= pokemonResult.getExpirationTimestampMs();
+                    }
+                    if(timeLeft - currentMilli > 0 ) {
                         currentMarker.setSnippet(pokemonResult.getTimeleftParsed(MapsActivity.this, currentMilli));
                         currentMarker.showInfoWindow();
                     } else {
@@ -564,8 +590,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             currentMarker = marker;
             markerHandler.removeCallbacks(markerRunnable);
 
-            if(pokemonResult.getTimeleft() > 0) {
+            if(pokemonResult.getTimeleft() > 0 || USER_JAVA_LIB) {
                 long t = System.currentTimeMillis() - pokemonResult.getInitTime();
+                if(USER_JAVA_LIB)
+                    t = System.currentTimeMillis();
                 marker.setSnippet(pokemonResult.getTimeleftParsed(MapsActivity.this, t));
                 markerHandler.postDelayed(markerRunnable,1000);
             }

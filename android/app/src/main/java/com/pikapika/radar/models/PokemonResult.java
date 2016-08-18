@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pikapika.radar.R;
+import com.pikapika.radar.activities.MapsActivity;
 import com.pikapika.radar.helpers.PokemonHelper;
 
 import java.util.Locale;
@@ -35,6 +36,8 @@ public class PokemonResult {
 
     private long initTime = 0;
     private boolean fromQuickScan = false;
+
+    private long expirationTimestampMs;
 
     private String createdAt;
     private String expireAt;
@@ -109,14 +112,27 @@ public class PokemonResult {
     }
 
     public String getTimeleftParsed(Context context,long currentMilli) {
-        long realTimeLeft = timeleft-currentMilli;
+        long realTimeLeft;
+        if(MapsActivity.USER_JAVA_LIB && timeleft == 0){
+            realTimeLeft = expirationTimestampMs - currentMilli;
+        } else {
+            realTimeLeft = timeleft - currentMilli;
+        }
         if(realTimeLeft > 0) {
             int[] secondsArray = splitToComponentTimes(realTimeLeft);
             String timeLeftStr = context.getString(R.string.time_left);
             String timeStr = String.format(Locale.ENGLISH, "%dm %ds", secondsArray[0], secondsArray[1]);
             return timeLeftStr + ": " + timeStr;
         }
-        return context.getString(R.string.it_will_appear);
+        return context.getString(R.string.it_has_gone);
+    }
+
+    public void setExpirationTimestampMs(long expirationTimestampMs) {
+        this.expirationTimestampMs = expirationTimestampMs;
+    }
+
+    public long getExpirationTimestampMs() {
+        return expirationTimestampMs;
     }
 
     public boolean isFromQuickScan() {
@@ -149,5 +165,21 @@ public class PokemonResult {
         Canvas canvas = new Canvas(resultBitmap);
         canvas.drawBitmap(resultBitmap, 0, 0, p);
         return resultBitmap;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPosition(PokemonPosition position) {
+        this.position = position;
     }
 }
