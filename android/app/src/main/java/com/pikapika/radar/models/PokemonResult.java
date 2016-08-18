@@ -65,6 +65,7 @@ public class PokemonResult {
                 resizedIcon = changeBitmapColor(resizedIcon, 0xacb2d8);
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedIcon));
         }
+        markerOptions.anchor(0.5f,0.5f);
         Marker marker = map.addMarker(markerOptions);
         //maps the marker and the pokemon id
         PokemonHelper.markersPokemonMap.put(marker.getId(),id);

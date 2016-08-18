@@ -47,7 +47,7 @@ public class PokemonRequestHelper {
     private static final int BASE_SCAN_TIMER = 5300; //5.3 seconds
 
     private static final int RADIUS_QUICK_SCAN = 5000; //5km
-    private static final int AUTO_QUICK_SCAN_TIME =15000; //15 seconds
+    private static final int AUTO_QUICK_SCAN_TIME =20000; //20 seconds
 
     private static final int CIRCLE_1_SCAN_STEPS = 7;
     private static final int CIRCLE_2_SCAN_STEPS = 19;
