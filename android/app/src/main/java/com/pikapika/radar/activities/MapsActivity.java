@@ -238,6 +238,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
+        pokemonRequestHelper.stopAutoHeartBeat_v2();
     }
 
     @Override
