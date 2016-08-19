@@ -1,0 +1,718 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A57BC2C89E3AE0C9D697216B /* Pods_pikapika.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87C7C89D30CCA9C036E0B9BB /* Pods_pikapika.framework */; };
+		C632ABD61D667FF800046DD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C632ABD51D667FF800046DD2 /* AppDelegate.swift */; };
+		C632ABD81D667FF800046DD2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C632ABD71D667FF800046DD2 /* ViewController.swift */; };
+		C632ABDB1D667FF800046DD2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C632ABD91D667FF800046DD2 /* Main.storyboard */; };
+		C632ABDD1D667FF800046DD2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C632ABDC1D667FF800046DD2 /* Assets.xcassets */; };
+		C632ABE01D667FF800046DD2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C632ABDE1D667FF800046DD2 /* LaunchScreen.storyboard */; };
+		C632ABEB1D667FF800046DD2 /* pikapikaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C632ABEA1D667FF800046DD2 /* pikapikaTests.swift */; };
+		C632ABF61D667FF800046DD2 /* pikapikaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C632ABF51D667FF800046DD2 /* pikapikaUITests.swift */; };
+		C632AC061D66841E00046DD2 /* PokemonResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = C632AC051D66841E00046DD2 /* PokemonResult.swift */; };
+		C632AC081D668EE600046DD2 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C632AC071D668EE600046DD2 /* MapKit.framework */; };
+		E380B07E6A2E4344D4DF5C04 /* Pods_pikapikaTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C36F7B8A3DDA67AEE3E17B2 /* Pods_pikapikaTests.framework */; };
+		FF8CE5474B44F1FBD275BEBC /* Pods_pikapikaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8034E6D5191B1FD7CC8C6480 /* Pods_pikapikaUITests.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C632ABE71D667FF800046DD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C632ABCA1D667FF800046DD2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C632ABD11D667FF800046DD2;
+			remoteInfo = pikapika;
+		};
+		C632ABF21D667FF800046DD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C632ABCA1D667FF800046DD2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C632ABD11D667FF800046DD2;
+			remoteInfo = pikapika;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2912C150BEC692D6617945EC /* Pods-pikapikaUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pikapikaUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-pikapikaUITests/Pods-pikapikaUITests.release.xcconfig"; sourceTree = "<group>"; };
+		689A536747390E442683F113 /* Pods-pikapikaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pikapikaTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-pikapikaTests/Pods-pikapikaTests.release.xcconfig"; sourceTree = "<group>"; };
+		74CF58CB4CCEF938543EC960 /* Pods-pikapikaUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pikapikaUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-pikapikaUITests/Pods-pikapikaUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		7C36F7B8A3DDA67AEE3E17B2 /* Pods_pikapikaTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_pikapikaTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8034E6D5191B1FD7CC8C6480 /* Pods_pikapikaUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_pikapikaUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		87C7C89D30CCA9C036E0B9BB /* Pods_pikapika.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_pikapika.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		90644411602623FFBBA40A9F /* Pods-pikapika.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pikapika.release.xcconfig"; path = "Pods/Target Support Files/Pods-pikapika/Pods-pikapika.release.xcconfig"; sourceTree = "<group>"; };
+		B111296EC24FFD3320940A99 /* Pods-pikapika.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pikapika.debug.xcconfig"; path = "Pods/Target Support Files/Pods-pikapika/Pods-pikapika.debug.xcconfig"; sourceTree = "<group>"; };
+		C3642EF4B7F102E114660220 /* Pods-pikapikaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pikapikaTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-pikapikaTests/Pods-pikapikaTests.debug.xcconfig"; sourceTree = "<group>"; };
+		C632ABD21D667FF800046DD2 /* pikapika.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pikapika.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C632ABD51D667FF800046DD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C632ABD71D667FF800046DD2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C632ABDA1D667FF800046DD2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C632ABDC1D667FF800046DD2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C632ABDF1D667FF800046DD2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C632ABE11D667FF800046DD2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C632ABE61D667FF800046DD2 /* pikapikaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pikapikaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C632ABEA1D667FF800046DD2 /* pikapikaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pikapikaTests.swift; sourceTree = "<group>"; };
+		C632ABEC1D667FF800046DD2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C632ABF11D667FF800046DD2 /* pikapikaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pikapikaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C632ABF51D667FF800046DD2 /* pikapikaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pikapikaUITests.swift; sourceTree = "<group>"; };
+		C632ABF71D667FF800046DD2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C632AC051D66841E00046DD2 /* PokemonResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PokemonResult.swift; sourceTree = "<group>"; };
+		C632AC071D668EE600046DD2 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C632ABCF1D667FF800046DD2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C632AC081D668EE600046DD2 /* MapKit.framework in Frameworks */,
+				A57BC2C89E3AE0C9D697216B /* Pods_pikapika.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C632ABE31D667FF800046DD2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E380B07E6A2E4344D4DF5C04 /* Pods_pikapikaTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C632ABEE1D667FF800046DD2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF8CE5474B44F1FBD275BEBC /* Pods_pikapikaUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		85A23FAF617DCC605FB6DA93 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C632AC071D668EE600046DD2 /* MapKit.framework */,
+				87C7C89D30CCA9C036E0B9BB /* Pods_pikapika.framework */,
+				7C36F7B8A3DDA67AEE3E17B2 /* Pods_pikapikaTests.framework */,
+				8034E6D5191B1FD7CC8C6480 /* Pods_pikapikaUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C632ABC91D667FF700046DD2 = {
+			isa = PBXGroup;
+			children = (
+				C632ABD41D667FF800046DD2 /* pikapika */,
+				C632ABE91D667FF800046DD2 /* pikapikaTests */,
+				C632ABF41D667FF800046DD2 /* pikapikaUITests */,
+				C632ABD31D667FF800046DD2 /* Products */,
+				FEBD76C0C736A3775192D530 /* Pods */,
+				85A23FAF617DCC605FB6DA93 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		C632ABD31D667FF800046DD2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C632ABD21D667FF800046DD2 /* pikapika.app */,
+				C632ABE61D667FF800046DD2 /* pikapikaTests.xctest */,
+				C632ABF11D667FF800046DD2 /* pikapikaUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C632ABD41D667FF800046DD2 /* pikapika */ = {
+			isa = PBXGroup;
+			children = (
+				C632AC031D6683FF00046DD2 /* Core */,
+				C632ABD51D667FF800046DD2 /* AppDelegate.swift */,
+				C632ABD71D667FF800046DD2 /* ViewController.swift */,
+				C632ABD91D667FF800046DD2 /* Main.storyboard */,
+				C632ABDC1D667FF800046DD2 /* Assets.xcassets */,
+				C632ABDE1D667FF800046DD2 /* LaunchScreen.storyboard */,
+				C632ABE11D667FF800046DD2 /* Info.plist */,
+			);
+			path = pikapika;
+			sourceTree = "<group>";
+		};
+		C632ABE91D667FF800046DD2 /* pikapikaTests */ = {
+			isa = PBXGroup;
+			children = (
+				C632ABEA1D667FF800046DD2 /* pikapikaTests.swift */,
+				C632ABEC1D667FF800046DD2 /* Info.plist */,
+			);
+			path = pikapikaTests;
+			sourceTree = "<group>";
+		};
+		C632ABF41D667FF800046DD2 /* pikapikaUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C632ABF51D667FF800046DD2 /* pikapikaUITests.swift */,
+				C632ABF71D667FF800046DD2 /* Info.plist */,
+			);
+			path = pikapikaUITests;
+			sourceTree = "<group>";
+		};
+		C632AC031D6683FF00046DD2 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				C632AC041D6683FF00046DD2 /* Models */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		C632AC041D6683FF00046DD2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C632AC051D66841E00046DD2 /* PokemonResult.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FEBD76C0C736A3775192D530 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				B111296EC24FFD3320940A99 /* Pods-pikapika.debug.xcconfig */,
+				90644411602623FFBBA40A9F /* Pods-pikapika.release.xcconfig */,
+				C3642EF4B7F102E114660220 /* Pods-pikapikaTests.debug.xcconfig */,
+				689A536747390E442683F113 /* Pods-pikapikaTests.release.xcconfig */,
+				74CF58CB4CCEF938543EC960 /* Pods-pikapikaUITests.debug.xcconfig */,
+				2912C150BEC692D6617945EC /* Pods-pikapikaUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C632ABD11D667FF800046DD2 /* pikapika */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C632ABFA1D667FF800046DD2 /* Build configuration list for PBXNativeTarget "pikapika" */;
+			buildPhases = (
+				232A7DAB50DA8440506D2882 /* [CP] Check Pods Manifest.lock */,
+				C632ABCE1D667FF800046DD2 /* Sources */,
+				C632ABCF1D667FF800046DD2 /* Frameworks */,
+				C632ABD01D667FF800046DD2 /* Resources */,
+				64BC0437012FD037E4BAF188 /* [CP] Embed Pods Frameworks */,
+				B23872184C27827A2509B890 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = pikapika;
+			productName = pikapika;
+			productReference = C632ABD21D667FF800046DD2 /* pikapika.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C632ABE51D667FF800046DD2 /* pikapikaTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C632ABFD1D667FF800046DD2 /* Build configuration list for PBXNativeTarget "pikapikaTests" */;
+			buildPhases = (
+				B76D12F048FD13E6956EE886 /* [CP] Check Pods Manifest.lock */,
+				C632ABE21D667FF800046DD2 /* Sources */,
+				C632ABE31D667FF800046DD2 /* Frameworks */,
+				C632ABE41D667FF800046DD2 /* Resources */,
+				2B8C840E067DDC2242901B5F /* [CP] Embed Pods Frameworks */,
+				B5E82F602DC2C076D26ACB75 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C632ABE81D667FF800046DD2 /* PBXTargetDependency */,
+			);
+			name = pikapikaTests;
+			productName = pikapikaTests;
+			productReference = C632ABE61D667FF800046DD2 /* pikapikaTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C632ABF01D667FF800046DD2 /* pikapikaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C632AC001D667FF800046DD2 /* Build configuration list for PBXNativeTarget "pikapikaUITests" */;
+			buildPhases = (
+				FF133FE412483A0A65065F75 /* [CP] Check Pods Manifest.lock */,
+				C632ABED1D667FF800046DD2 /* Sources */,
+				C632ABEE1D667FF800046DD2 /* Frameworks */,
+				C632ABEF1D667FF800046DD2 /* Resources */,
+				B9A62393D2498841FD93883C /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C632ABF31D667FF800046DD2 /* PBXTargetDependency */,
+			);
+			name = pikapikaUITests;
+			productName = pikapikaUITests;
+			productReference = C632ABF11D667FF800046DD2 /* pikapikaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C632ABCA1D667FF800046DD2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = Flavio;
+				TargetAttributes = {
+					C632ABD11D667FF800046DD2 = {
+						CreatedOnToolsVersion = 7.3;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+					C632ABE51D667FF800046DD2 = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = C632ABD11D667FF800046DD2;
+					};
+					C632ABF01D667FF800046DD2 = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = C632ABD11D667FF800046DD2;
+					};
+				};
+			};
+			buildConfigurationList = C632ABCD1D667FF800046DD2 /* Build configuration list for PBXProject "pikapika" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C632ABC91D667FF700046DD2;
+			productRefGroup = C632ABD31D667FF800046DD2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C632ABD11D667FF800046DD2 /* pikapika */,
+				C632ABE51D667FF800046DD2 /* pikapikaTests */,
+				C632ABF01D667FF800046DD2 /* pikapikaUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C632ABD01D667FF800046DD2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C632ABE01D667FF800046DD2 /* LaunchScreen.storyboard in Resources */,
+				C632ABDD1D667FF800046DD2 /* Assets.xcassets in Resources */,
+				C632ABDB1D667FF800046DD2 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C632ABE41D667FF800046DD2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C632ABEF1D667FF800046DD2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		232A7DAB50DA8440506D2882 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		2B8C840E067DDC2242901B5F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-pikapikaTests/Pods-pikapikaTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		64BC0437012FD037E4BAF188 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-pikapika/Pods-pikapika-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B23872184C27827A2509B890 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-pikapika/Pods-pikapika-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B5E82F602DC2C076D26ACB75 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-pikapikaTests/Pods-pikapikaTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B76D12F048FD13E6956EE886 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B9A62393D2498841FD93883C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-pikapikaUITests/Pods-pikapikaUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FF133FE412483A0A65065F75 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C632ABCE1D667FF800046DD2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C632ABD81D667FF800046DD2 /* ViewController.swift in Sources */,
+				C632AC061D66841E00046DD2 /* PokemonResult.swift in Sources */,
+				C632ABD61D667FF800046DD2 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C632ABE21D667FF800046DD2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C632ABEB1D667FF800046DD2 /* pikapikaTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C632ABED1D667FF800046DD2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C632ABF61D667FF800046DD2 /* pikapikaUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C632ABE81D667FF800046DD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C632ABD11D667FF800046DD2 /* pikapika */;
+			targetProxy = C632ABE71D667FF800046DD2 /* PBXContainerItemProxy */;
+		};
+		C632ABF31D667FF800046DD2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C632ABD11D667FF800046DD2 /* pikapika */;
+			targetProxy = C632ABF21D667FF800046DD2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C632ABD91D667FF800046DD2 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C632ABDA1D667FF800046DD2 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C632ABDE1D667FF800046DD2 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C632ABDF1D667FF800046DD2 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C632ABF81D667FF800046DD2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C632ABF91D667FF800046DD2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C632ABFB1D667FF800046DD2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B111296EC24FFD3320940A99 /* Pods-pikapika.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = pikapika/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = radar.pikapika;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C632ABFC1D667FF800046DD2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 90644411602623FFBBA40A9F /* Pods-pikapika.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = pikapika/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = radar.pikapika;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		C632ABFE1D667FF800046DD2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C3642EF4B7F102E114660220 /* Pods-pikapikaTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = pikapikaTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = radar.pikapikaTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/pikapika.app/pikapika";
+			};
+			name = Debug;
+		};
+		C632ABFF1D667FF800046DD2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 689A536747390E442683F113 /* Pods-pikapikaTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = pikapikaTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = radar.pikapikaTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/pikapika.app/pikapika";
+			};
+			name = Release;
+		};
+		C632AC011D667FF800046DD2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 74CF58CB4CCEF938543EC960 /* Pods-pikapikaUITests.debug.xcconfig */;
+			buildSettings = {
+				INFOPLIST_FILE = pikapikaUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = radar.pikapikaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = pikapika;
+			};
+			name = Debug;
+		};
+		C632AC021D667FF800046DD2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2912C150BEC692D6617945EC /* Pods-pikapikaUITests.release.xcconfig */;
+			buildSettings = {
+				INFOPLIST_FILE = pikapikaUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = radar.pikapikaUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = pikapika;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C632ABCD1D667FF800046DD2 /* Build configuration list for PBXProject "pikapika" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C632ABF81D667FF800046DD2 /* Debug */,
+				C632ABF91D667FF800046DD2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C632ABFA1D667FF800046DD2 /* Build configuration list for PBXNativeTarget "pikapika" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C632ABFB1D667FF800046DD2 /* Debug */,
+				C632ABFC1D667FF800046DD2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C632ABFD1D667FF800046DD2 /* Build configuration list for PBXNativeTarget "pikapikaTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C632ABFE1D667FF800046DD2 /* Debug */,
+				C632ABFF1D667FF800046DD2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C632AC001D667FF800046DD2 /* Build configuration list for PBXNativeTarget "pikapikaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C632AC011D667FF800046DD2 /* Debug */,
+				C632AC021D667FF800046DD2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C632ABCA1D667FF800046DD2 /* Project object */;
+}
