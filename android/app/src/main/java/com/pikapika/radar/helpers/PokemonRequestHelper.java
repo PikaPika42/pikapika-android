@@ -212,6 +212,7 @@ public class PokemonRequestHelper {
                 PokemonHelper.showAlert(mMapsActivity,mMapsActivity.getString(R.string.error_title)+"!",
                         mMapsActivity.getString(R.string.internet_error_body));
             }
+            Debug.Log("onFailure: "+e.toString());
         }
 
         @Override
@@ -221,6 +222,7 @@ public class PokemonRequestHelper {
             if (response.code() == 200) {
                 String jsonStr = response.body().string();
                 if (!jsonStr.isEmpty()) {
+                    Debug.Log("onResponse data:"+jsonStr);
                     Type listType = new TypeToken<List<PokemonResult>>() {}.getType();
                     try {
                         JsonParser parser = new JsonParser();
@@ -245,6 +247,10 @@ public class PokemonRequestHelper {
     public void startQuickScanLoop(){
         autoScanHandler.removeCallbacks(quickScanRunnable);
         autoQuickPokemonScan();
+    }
+
+    public void stoptQuickScanLoop(){
+        autoScanHandler.removeCallbacks(quickScanRunnable);
     }
 
     public void autoQuickPokemonScan(){

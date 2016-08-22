@@ -151,12 +151,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //ADS
         mInterstitial = new MoPubInterstitial(this, MOPUD_INTERSTITIAL_UNIT_ID);
-        mAdsHelper = new AdsHelper();
-        mInterstitial.setInterstitialAdListener(mAdsHelper);
         mInterstitial.load();
         moPubView = (MoPubView) findViewById(R.id.adview);
         moPubView.setAdUnitId(MOPUD_BANNER_UNIT_ID); //Ad Unit ID from www.mopub.com
         moPubView.loadAd();
+        mAdsHelper = new AdsHelper();
+        mAdsHelper.setBannerView(moPubView);
+        mInterstitial.setInterstitialAdListener(mAdsHelper);
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -238,7 +239,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
-        pokemonRequestHelper.stopAutoHeartBeat_v2();
+        pokemonRequestHelper.stoptQuickScanLoop();
     }
 
     @Override
