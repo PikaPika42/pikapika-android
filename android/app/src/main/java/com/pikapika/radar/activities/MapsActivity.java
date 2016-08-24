@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -56,6 +57,7 @@ import com.pikapika.radar.helpers.SettingsSaving;
 import com.pikapika.radar.helpers.UserMarkerHelper;
 import com.pikapika.radar.models.GoogleAuthTokenJson;
 import com.pikapika.radar.models.PokemonResult;
+import com.pikapika.radar.update.AppUpdate;
 import com.pikapika.radar.utils.Debug;
 import com.pikapika.radar.utils.Utils;
 
@@ -691,25 +693,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    /*final public CountDownTimer countDownRequestTimer = new CountDownTimer(REQUEST_LIMIT_TIME, 1000) {
-
-        public void onTick(long millisUntilFinished) {
-            String textTimer = String.valueOf(millisUntilFinished / 1000);
-            if(loadingProgressDialog != null)
-                loadingProgressDialog.setTitle(getString(R.string.please_wait)+"    "+textTimer);
-        }
-
-        public void onFinish() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (loadingProgressDialog != null)
-                        loadingProgressDialog.setTitle(getString(R.string.please_wait)+"  "+getString(R.string.arrive_message));
-                }
-            });
-        }
-    };*/
-
     public void setActiveSearchButton(boolean active){
         if(!active){
             searchButton.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.round_shape_button_gray, null));
@@ -723,5 +706,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapClick(LatLng latLng) {
         markerHandler.removeCallbacks(markerRunnable);
+    }
+
+    public void showAppUpdateDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(R.string.update_available_title)
+                .setMessage(getString(R.string.app_name) + " " + configReader.getRemoteVersion() + " " + getString(R.string.update_available))
+                .setIcon(R.mipmap.ic_launcher)
+                .setPositiveButton(getString(R.string.update), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        AppUpdate.downloadAndInstallAppUpdate(MapsActivity.this, configReader);
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setCancelable(false);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

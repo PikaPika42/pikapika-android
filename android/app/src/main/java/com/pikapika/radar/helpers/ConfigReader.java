@@ -6,6 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.pikapika.radar.BuildConfig;
 import com.pikapika.radar.R;
+import com.pikapika.radar.activities.MapsActivity;
+import com.pikapika.radar.update.SemVer;
+import com.pikapika.radar.utils.PermissionUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,12 +23,12 @@ import okhttp3.Response;
  */
 public class ConfigReader {
 
-    private Context m_context;
+    private MapsActivity m_Activity;
     private JsonObject m_jsonConfig;
     private int defaultClicksForAds = 10;
 
-    public ConfigReader(Context context){
-        this.m_context = context;
+    public ConfigReader(MapsActivity context){
+        this.m_Activity = context;
         readLocalConfig();
     }
 
@@ -42,6 +45,8 @@ public class ConfigReader {
                     String jsonStr = response.body().string();
                     if (!jsonStr.isEmpty()) {
                         parseJsonConfig(jsonStr);
+                        //check the new apk version
+                        checkNewVersion();
                     }
                 }
                 response.body().close();
@@ -49,10 +54,9 @@ public class ConfigReader {
         });
     }
 
-
     void readLocalConfig(){
         //read json from raw folder
-        InputStream inputStream = m_context.getResources().openRawResource(R.raw.config);
+        InputStream inputStream = m_Activity.getResources().openRawResource(R.raw.config);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         int ctr;
         try {
@@ -85,12 +89,40 @@ public class ConfigReader {
         return defaultClicksForAds;
     }
 
-    public String getLastVersion(){
+    public String getRemoteVersion(){
         String lastVersion = BuildConfig.VERSION_NAME;
         if(m_jsonConfig.has("data")){
-            JsonObject jsonObject = m_jsonConfig.getAsJsonObject("data").getAsJsonObject("last_version").getAsJsonObject("android");
-            lastVersion = jsonObject.toString();
+            JsonObject jsonObject = m_jsonConfig.getAsJsonObject("data").getAsJsonObject("last_version");
+            if(jsonObject != null) {
+                lastVersion = jsonObject.get("android").getAsString();
+                //lastVersion = jsonObject.toString();
+            }
         }
         return lastVersion;
+    }
+
+    public String getAPKUri(){
+        String url = "";
+        if(m_jsonConfig.has("data")){
+            JsonObject jsonObject = m_jsonConfig.getAsJsonObject("data").getAsJsonObject("apk_url");
+            if(jsonObject != null)
+                url = jsonObject.toString();
+        }
+        return url;
+    }
+
+    public void  checkNewVersion(){
+        //check if there a valid url to download the apk
+        if(getAPKUri().isEmpty())
+            return;
+        SemVer currentVersion = SemVer.parse(BuildConfig.VERSION_NAME);
+        SemVer remoteVersion = SemVer.parse(getRemoteVersion());
+        if (currentVersion.compareTo(remoteVersion) < 0) {
+            if (PermissionUtils.doWeHaveReadWritePermission(m_Activity)) {
+                m_Activity.showAppUpdateDialog();
+            } else {
+
+            }
+        }
     }
 }

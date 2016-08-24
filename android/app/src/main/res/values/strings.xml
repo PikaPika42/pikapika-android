@@ -61,4 +61,10 @@
     <p>Sure, you can write us to <a href="mailto:pikapika.app@gmail.com">pikapika.app@gmail.com</a> or look for us on <h2><a href="https://www.facebook.com/pikapika42">Facebook</a></h2> <h2><a href="https://mobile.twitter.com/42pikapika">Twitter</a></h2></p>
     ]]>
     </string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_available">is available.</string>
+    <string name="update">Update</string>
+    <string name="updating">Updating</string>
+    <string name="apk_read_permission">We need access to your file system in order to read the apk file</string>
+    <string name="apk_write_permission">We need access to your file system in order to download the apk file</string>
 </resources>
