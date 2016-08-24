@@ -59,6 +59,7 @@ import com.pikapika.radar.models.GoogleAuthTokenJson;
 import com.pikapika.radar.models.PokemonResult;
 import com.pikapika.radar.update.AppUpdate;
 import com.pikapika.radar.utils.Debug;
+import com.pikapika.radar.utils.PermissionUtils;
 import com.pikapika.radar.utils.Utils;
 
 import java.io.IOException;
@@ -298,6 +299,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startQuickSearchWithDelay();
             } else {
                 PokemonHelper.showAlert(this,getString(R.string.warning_title),getString(R.string.permissions_location_body));
+            }
+        } else if (requestCode == PermissionUtils.READ_PERMISSION_REQUESTED || requestCode == PermissionUtils.WRITE_PERMISSION_REQUESTED){
+            if (grantResults.length > 0 &&  grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if(configReader.isApkAvailable())
+                    startDownloadUpdate();
+            } else {
+                //TODO: show message the permission is needed
             }
         }
     }
@@ -709,25 +717,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void showAppUpdateDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this)
+                        .setTitle(R.string.update_available_title)
+                        .setMessage(getString(R.string.app_name) + " " + configReader.getRemoteVersion() + " " + getString(R.string.update_available))
+                        .setIcon(R.mipmap.ic_launcher)
+                        .setPositiveButton(getString(R.string.update), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                startDownloadUpdate();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .setCancelable(false);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle(R.string.update_available_title)
-                .setMessage(getString(R.string.app_name) + " " + configReader.getRemoteVersion() + " " + getString(R.string.update_available))
-                .setIcon(R.mipmap.ic_launcher)
-                .setPositiveButton(getString(R.string.update), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        AppUpdate.downloadAndInstallAppUpdate(MapsActivity.this, configReader);
-                    }
-                })
-                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                })
-                .setCancelable(false);
-        AlertDialog dialog = builder.create();
-        dialog.show();
+    private void startDownloadUpdate(){
+        if (!PermissionUtils.doWeHaveReadWritePermission(this)) {
+            if(!PermissionUtils.doWeHaveWriteExternalStoragePermission(this))
+                PermissionUtils.getWritePermission(this);
+            else if (!PermissionUtils.doWeHaveReadExternalStoragePermission(this))
+                PermissionUtils.getReadPermission(this);
+            return;
+        }
+        AppUpdate.downloadAndInstallAppUpdate(this, configReader);
     }
 }

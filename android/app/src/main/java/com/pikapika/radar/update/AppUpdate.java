@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Environment;
 
 import com.pikapika.radar.R;
 import com.pikapika.radar.helpers.ConfigReader;
@@ -16,11 +17,10 @@ import java.io.File;
  * Created by flavioreyes on 8/23/16.
  */
 public class AppUpdate {
-
     public static void downloadAndInstallAppUpdate(Context context, ConfigReader configReader) {
         try {
-            String destination = context.getExternalFilesDir(null) + "/";
-            String fileName = "update.apk";
+            String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
+            String fileName = context.getString(R.string.app_name)+configReader.getRemoteVersion()+".apk";
             destination += fileName;
             final Uri uri = Uri.parse("file://" + destination);
 
@@ -41,14 +41,14 @@ public class AppUpdate {
 
             // get download service and enqueue file
             final DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-            final long downloadId = manager.enqueue(request);
+            manager.enqueue(request);
 
             //set BroadcastReceiver to install app when .apk is downloaded
             BroadcastReceiver onComplete = new BroadcastReceiver() {
                 public void onReceive(Context ctxt, Intent intent) {
                     Intent install = new Intent(Intent.ACTION_VIEW);
-                    install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    install.setDataAndType(uri, manager.getMimeTypeForDownloadedFile(downloadId));
+                    install.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    install.setDataAndType(uri, "application/vnd.android.package-archive");
                     ctxt.startActivity(install);
                     ctxt.unregisterReceiver(this);
                 }

@@ -15,8 +15,8 @@ import com.pikapika.radar.R;
  * Created by flavioreyes on 8/23/16.
  */
 public class PermissionUtils {
-    private final static int READ_PERMISSION_REQUESTED = 1300;
-    private final static int WRITE_PERMISSION_REQUESTED = 1400;
+    public final static int READ_PERMISSION_REQUESTED = 1300;
+    public final static int WRITE_PERMISSION_REQUESTED = 1400;
 
     public static boolean doWeHaveReadWritePermission(Context context) {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
@@ -31,7 +31,7 @@ public class PermissionUtils {
         return (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
     }
 
-    public void getReadPermission(final Activity activity) {
+    public static void getReadPermission(final Activity activity) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
@@ -49,7 +49,7 @@ public class PermissionUtils {
         }
     }
 
-    public void getWritePermission(final Activity activity) {
+    public static void getWritePermission(final Activity activity) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(activity);

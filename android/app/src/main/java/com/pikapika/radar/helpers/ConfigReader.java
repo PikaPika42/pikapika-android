@@ -2,6 +2,7 @@ package com.pikapika.radar.helpers;
 
 import android.content.Context;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.pikapika.radar.BuildConfig;
@@ -27,6 +28,9 @@ public class ConfigReader {
     private JsonObject m_jsonConfig;
     private int defaultClicksForAds = 10;
 
+    private boolean apkAvailable = false;
+    private boolean updateDialogShown = false;
+
     public ConfigReader(MapsActivity context){
         this.m_Activity = context;
         readLocalConfig();
@@ -46,7 +50,8 @@ public class ConfigReader {
                     if (!jsonStr.isEmpty()) {
                         parseJsonConfig(jsonStr);
                         //check the new apk version
-                        checkNewVersion();
+                        if(!updateDialogShown)
+                            checkNewVersion();
                     }
                 }
                 response.body().close();
@@ -104,9 +109,9 @@ public class ConfigReader {
     public String getAPKUri(){
         String url = "";
         if(m_jsonConfig.has("data")){
-            JsonObject jsonObject = m_jsonConfig.getAsJsonObject("data").getAsJsonObject("apk_url");
+            JsonElement jsonObject = m_jsonConfig.getAsJsonObject("data").get("apk_url");
             if(jsonObject != null)
-                url = jsonObject.toString();
+                url = jsonObject.getAsString();
         }
         return url;
     }
@@ -117,12 +122,15 @@ public class ConfigReader {
             return;
         SemVer currentVersion = SemVer.parse(BuildConfig.VERSION_NAME);
         SemVer remoteVersion = SemVer.parse(getRemoteVersion());
-        if (currentVersion.compareTo(remoteVersion) < 0) {
-            if (PermissionUtils.doWeHaveReadWritePermission(m_Activity)) {
-                m_Activity.showAppUpdateDialog();
-            } else {
 
-            }
+        if (currentVersion.compareTo(remoteVersion) < 0) {
+            apkAvailable = true;
+            updateDialogShown = true;
+            m_Activity.showAppUpdateDialog();
         }
+    }
+
+    public boolean isApkAvailable() {
+        return apkAvailable;
     }
 }
