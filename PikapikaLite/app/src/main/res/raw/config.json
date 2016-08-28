@@ -1,0 +1,12 @@
+{
+  "data": {
+    "last_version": {
+      "ios": "1.0.0",
+      "android": "1.0.1"
+    },
+    "ads": {
+      "reload_number": 4
+    },
+    "apk_url": ""
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "project_info": {
+    "project_number": "354309479595",
+    "firebase_url": "https://future-bucksaw-138021.firebaseio.com",
+    "project_id": "future-bucksaw-138021",
+    "storage_bucket": "future-bucksaw-138021.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354309479595:android:ccbd0d7738c6ddb1",
+        "android_client_info": {
+          "package_name": "com.pikapika.lite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354309479595-33r7o41um4taimlugd9u302ijngi6e3l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pikapika.lite",
+            "certificate_hash": "54E0DBE7A1CE2D7FE6F3A7754F8725FE152C11CC"
+          }
+        },
+        {
+          "client_id": "354309479595-ph75jc70uhqa0hp4uagp9su1sep0klej.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8BpfoWUs7MwLEfAUkNV9V-qT4ow6CSbs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

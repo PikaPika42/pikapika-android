@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">Pikapika Lite</string>
+    <string name="title_activity_maps">Pikapika Lite</string>
+    <string name="search_action">Search</string>
+    <string name="scan_action">Scan</string>
+    <string name="please_wait">Please Wait!</string>
+    <string name="loading_data">Loading pokemon data</string>
+    <string name="arrive_message">They arrive ...</string>
+    <string name="login_user">User</string>
+    <string name="login_pass">Password</string>
+    <string name="login_google">Login with Google</string>
+    <string name="login_ptc">Login with PTC (next version)</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="faq">FAQ</string>
+    <string name="sound">Sound</string>
+    <string name="area_setting">Scan Zone</string>
+    <string name="google">Google</string>
+    <string name="ptc">PTC (available next version)</string>
+    <string name="time_left">Time Left</string>
+    <string name="it_has_gone">It has gone.</string>
+    <string name="it_will_appear">Appear in less than 15 min.</string>
+    <string name="preference_file_key">prefFileKey</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="request_error_title">Oops!</string>
+    <string name="request_error_body">Something was wrong. Try later.</string>
+    <string name="timeout_error_body">Timeout error. Try later.</string>
+    <string name="server_error_title">Server Error!</string>
+    <string name="server_error_body">Something was wrong with the connection. Try later.</string>
+    <string name="gps_error_title">GPS Error!</string>
+    <string name="gps_error_body">We have a problem with your GPS location.</string>
+    <string name="error_title">Error!</string>
+    <string name="warning_title">Warning!</string>
+    <string name="auth_error_body">"Bad Authentication."</string>
+    <string name="login_title">Login!</string>
+    <string name="refreshing_title">Refreshing credentials!</string>
+    <string name="login_error_body">"Authenticating error from server. Try again."</string>
+    <string name="internet_error_body">"Could not connect to internet."</string>
+    <string name="time_remaining">Time Remaining</string>
+    <string name="splash_text">Please connect to your Pokemon Account.Your info is safe, we do not store anything.</string>
+    <string name="splash_text_2">If you want, you can use a test account but you would not see the Pokemon that are visible to only you.</string>
+    <string name="permissions_error_body">To use PikaPika we need you to accept these permissions</string>
+    <string name="permissions_location_body">To use PikaPika you need to allow the location services and activate it</string>
+    <string name="pokemon_not_found">No pokemon found. If the problem persists, try to logout/login.</string>
+    <string name="warning_banning_location">To move the pointer this far could get you ban. Currently we don\'t support this.</string>
+    <string name="change_position_instruction">Just tap the map for 2s to change your position (limited to 700 meters from your last research to prevent users from ban).</string>
+    <string name="scan_level_1">Normal</string>
+    <string name="scan_level_2">Big</string>
+    <string name="fag_text_html"><![CDATA[
+    <h3>How to move your position?</h3>
+    <p>On the map, press the place you want to search for 2s. We don’t allow to search for more than 700 meters in order to not cheat and to not create problems to your account</p>
+    <h3>Why do you need me to connect?</h3>
+    <p>We have thousands of users and we can’t have an account to share for everybody. So we ask you to connect. You can (and we recommend) to use an account of test. Any gmail email will do the job.
+    Your info is totally safe, you don’t connect to our servers but to Google.
+    <h3>Can I be ban using PikaPika?</h3>
+    <p>You should not because we prevent you from scanning far from your actual position. But we advise you to use a test account
+    <h3>Why did you put Ads?</h3>
+    <p>We have thousands of users so we have to rent servers to offer you a great service. There are pretty expensive so we need ads to follow the PikaPika adventure.
+    <h3>Can I contact you?</h3>
+    <p>Sure, you can write us to <a href="mailto:pikapika.app@gmail.com">pikapika.app@gmail.com</a> or look for us on <h2><a href="https://www.facebook.com/pikapika42">Facebook</a></h2> <h2><a href="https://mobile.twitter.com/42pikapika">Twitter</a></h2></p>
+    ]]>
+    </string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_available">is available.</string>
+    <string name="update">Update</string>
+    <string name="updating">Updating</string>
+    <string name="apk_read_permission">We need access to your file system in order to read the apk file</string>
+    <string name="apk_write_permission">We need access to your file system in order to download the apk file</string>
+</resources>
