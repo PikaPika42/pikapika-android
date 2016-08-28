@@ -24,25 +24,30 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.mopub.mobileads.MoPubView;
+import com.pikapika.lite.BuildConfig;
 import com.pikapika.lite.R;
 import com.pikapika.lite.helpers.PokemonHelper;
 import com.pikapika.lite.helpers.PokemonRequestHelper;
 import com.pikapika.lite.helpers.SettingsSaving;
 import com.pikapika.lite.models.PokemonResult;
 import com.pikapika.lite.utils.Debug;
-import com.pikapika.lite.utils.PermissionUtils;
 
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener,GoogleMap.OnMapClickListener {
+        GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener,GoogleMap.OnMapClickListener,GoogleMap.OnCameraChangeListener {
 
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
     private static final int CAMERA_MAP_ZOOM = 16;
+
+    private static final String MOPUD_BANNER_UNIT_ID = "eb21a36f0eb14d59b660660d33585893";
+
+    public boolean isMapReady = false;
 
     //map stuff
     private GoogleMap mMap;
@@ -56,12 +61,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //private ConfigReader configReader;
     public SettingsSaving settingsSaving;
 
+    //Ads
+    private MoPubView moPubView;
+
     //Firebase
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Debug.setDebugLogActive(BuildConfig.DEBUG);
+
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -76,6 +86,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
+
+        //ADS
+        //moPubView = (MoPubView) findViewById(R.id.adview);
+        //moPubView.setAdUnitId(MOPUD_BANNER_UNIT_ID); //Ad Unit ID from www.mopub.com
+        //moPubView.loadAd();
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -98,7 +113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
-        pokemonRequestHelper.stoptQuickScanLoop();
+        pokemonRequestHelper.stopQuickScanLoop();
     }
 
     /**
@@ -112,9 +127,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        isMapReady = true;
         mMap = googleMap;
 
         googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMapClickListener(this);
+        googleMap.setOnCameraChangeListener(this);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -127,6 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 /* TODO:Show an explanation to the user *asynchronously* -- don't block
                     this thread waiting for the user's response! After the user
                      sees the explanation, try again to request the permission. */
+                PokemonHelper.showAlert(this,getString(R.string.warning_title),getString(R.string.permissions_location_body));
             } else {
 
                 // No explanation needed, we can request the permission.
@@ -144,7 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //enable map location and set the current position
                 initMapResources();
             } else {
-                //`PokemonHelper.showAlert(this,getString(R.string.warning_title),getString(R.string.permissions_location_body));
+                PokemonHelper.showAlert(this,getString(R.string.warning_title),getString(R.string.permissions_location_body));
             }
         }
     }
@@ -184,27 +203,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (location != null) {
             LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, CAMERA_MAP_ZOOM));
-            //create the user marker
-
         }
     }
 
     public LatLng getLocation(){
-        LatLng latLng = null;
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED){
-            //get the last location
-            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        return  mMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+    }
 
-            //makes sure we have a valid location
-            if (location == null)
-                location = PokemonHelper.lastLocation;
-            else
-                PokemonHelper.lastLocation = location;
+    public int getRadios(){
+        LatLng left = mMap.getProjection().getVisibleRegion().farLeft;
+        LatLng right = mMap.getProjection().getVisibleRegion().farRight;
+        return (int)PokemonRequestHelper.distance(left.latitude,left.longitude,right.latitude,right.longitude);
+    }
 
-            if (location != null)
-                latLng = new LatLng(location.getLatitude(),location.getLongitude());
-        }
-        return  latLng;
+    private void startQuickSearchWithDelay(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pokemonRequestHelper.startQuickScanLoop();
+            }
+        },1000);
     }
 
     /**
@@ -308,5 +326,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapClick(LatLng latLng) {
         markerHandler.removeCallbacks(markerRunnable);
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        Debug.Log("onCameraChange, request pokemones");
+        pokemonRequestHelper.startQuickScanLoop();
     }
 }

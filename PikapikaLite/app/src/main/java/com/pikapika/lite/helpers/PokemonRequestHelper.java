@@ -1,32 +1,19 @@
 package com.pikapika.lite.helpers;
 
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.pikapika.lite.R;
 import com.pikapika.lite.activities.MapsActivity;
 import com.pikapika.lite.models.PokemonResult;
 import com.pikapika.lite.utils.Debug;
-import com.pikapika.lite.utils.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -43,7 +30,7 @@ import okhttp3.Response;
 public class PokemonRequestHelper {
     private static final double EARTH_RADIUS_METERS = 6372797.6; // earth radius in meters
 
-    private static final int RADIUS_QUICK_SCAN = 5000; //5km
+    private static final int RADIUS_QUICK_SCAN_LIMIT = 30000; //30km
     private static final int AUTO_QUICK_SCAN_TIME =20000; //20 seconds
 
     private MapsActivity mMapsActivity;
@@ -55,11 +42,13 @@ public class PokemonRequestHelper {
     }
 
     public void startQuickScanLoop(){
+        if(!mMapsActivity.isMapReady)
+            return;
         autoScanHandler.removeCallbacks(quickScanRunnable);
         autoQuickPokemonScan();
     }
 
-    public void stoptQuickScanLoop(){
+    public void stopQuickScanLoop(){
         autoScanHandler.removeCallbacks(quickScanRunnable);
     }
 
@@ -68,7 +57,11 @@ public class PokemonRequestHelper {
         PokemonHelper.cleanPokemon();
         LatLng latLng = mMapsActivity.getLocation();
         if(latLng != null) {
-            DataManager.getDataManager().quickHeartbeat(latLng.latitude + "", latLng.longitude + "", RADIUS_QUICK_SCAN, quickScanCallback);
+            int mapRadio = mMapsActivity.getRadios();
+            if(mapRadio > RADIUS_QUICK_SCAN_LIMIT)
+                mapRadio = RADIUS_QUICK_SCAN_LIMIT;
+            Debug.Log("quick scan with radio: "+mapRadio);
+            DataManager.getDataManager().quickHeartbeat(latLng.latitude + "", latLng.longitude + "", mapRadio, quickScanCallback);
         }
         autoScanHandler.postDelayed(quickScanRunnable,AUTO_QUICK_SCAN_TIME);
     }
@@ -154,5 +147,16 @@ public class PokemonRequestHelper {
         double longitude = distance * Math.cos(angle) - location.longitude;
         double latitude = distance * Math.sin(angle) - location.latitude;
         return new LatLng(latitude,longitude);
+    }
+
+    //return the distance between two locations
+    public static double distance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
+        dist = Math.acos(dist);
+        dist = Math.toDegrees(dist);
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1609.34; //convert to meters
+        return dist;
     }
 }
