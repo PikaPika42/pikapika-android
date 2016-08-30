@@ -26,6 +26,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mopub.mobileads.MoPubView;
@@ -214,6 +215,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng left = mMap.getProjection().getVisibleRegion().farLeft;
         LatLng right = mMap.getProjection().getVisibleRegion().farRight;
         return (int)PokemonRequestHelper.distance(left.latitude,left.longitude,right.latitude,right.longitude);
+    }
+
+    public LatLngBounds getMapBounds(){
+        return mMap.getProjection().getVisibleRegion().latLngBounds;
     }
 
     private void startQuickSearchWithDelay(){

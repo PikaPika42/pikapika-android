@@ -2,6 +2,7 @@ package com.pikapika.lite.helpers;
 
 import android.os.Handler;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -68,7 +69,8 @@ public class PokemonRequestHelper {
             if(mapRadio > RADIUS_QUICK_SCAN_LIMIT)
                 mapRadio = RADIUS_QUICK_SCAN_LIMIT;
             Debug.Log("quick scan with radio: "+mapRadio);
-            DataManager.getDataManager().quickHeartbeat(latLng.latitude + "", latLng.longitude + "", mapRadio, quickScanCallback);
+            LatLngBounds bound = mMapsActivity.getMapBounds();
+            DataManager.getDataManager().quickHeartbeatv2(latLng,bound.northeast,bound.southwest, mapRadio, quickScanCallback);
         }
         autoScanHandler.postDelayed(quickScanRunnable,AUTO_QUICK_SCAN_TIME);
     }
