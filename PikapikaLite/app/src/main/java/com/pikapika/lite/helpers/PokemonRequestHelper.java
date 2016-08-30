@@ -32,6 +32,9 @@ public class PokemonRequestHelper {
 
     private static final int RADIUS_QUICK_SCAN_LIMIT = 30000; //30km
     private static final int AUTO_QUICK_SCAN_TIME =20000; //20 seconds
+    private static final long TIME_BETWEEN_REQUEST_LIMIT = 1000; // 1 second
+
+    private long initTimeRequestAsked = 0;
 
     private MapsActivity mMapsActivity;
     private Handler autoScanHandler;
@@ -44,6 +47,10 @@ public class PokemonRequestHelper {
     public void startQuickScanLoop(){
         if(!mMapsActivity.isMapReady)
             return;
+        long currentTimeMillis = System.currentTimeMillis();
+        if(currentTimeMillis - initTimeRequestAsked < TIME_BETWEEN_REQUEST_LIMIT)
+            return;
+        initTimeRequestAsked =  currentTimeMillis;
         autoScanHandler.removeCallbacks(quickScanRunnable);
         autoQuickPokemonScan();
     }

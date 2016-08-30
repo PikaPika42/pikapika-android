@@ -88,9 +88,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         //ADS
-        //moPubView = (MoPubView) findViewById(R.id.adview);
-        //moPubView.setAdUnitId(MOPUD_BANNER_UNIT_ID); //Ad Unit ID from www.mopub.com
-        //moPubView.loadAd();
+        moPubView = (MoPubView) findViewById(R.id.adview);
+        moPubView.setAdUnitId(MOPUD_BANNER_UNIT_ID); //Ad Unit ID from www.mopub.com
+        moPubView.loadAd();
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
