@@ -27,7 +27,7 @@
 #-keep class com.google.gson.stream.** { *; }
 
 # Application classes that will be serialized/deserialized over Gson
--keep class com.pikapika.radar.models.** { *; }
+-keep class com.pikapika.lite.models.** { *; }
 
 -dontwarn okhttp3.**
 -dontwarn okio.**
