@@ -57,13 +57,17 @@ public class PokemonResult {
         String idStr = getStrNumber();
         int iconId = context.getResources().getIdentifier("pokemon_"+idStr+"", "drawable", context.getPackageName());
         if(iconId > 0) {
-            Bitmap bitmapIcon = BitmapFactory.decodeResource(context.getResources(),iconId);
-            float wt_px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, POKEMON_SIZE, context.getResources().getDisplayMetrics());
-            int iconSize = (int)wt_px;
-            Bitmap resizedIcon = Bitmap.createScaledBitmap(bitmapIcon, iconSize, iconSize, false);
-            if(fromQuickScan)
-                resizedIcon = changeBitmapColor(resizedIcon, 0xacb2d8);
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedIcon));
+            try {
+                Bitmap bitmapIcon = BitmapFactory.decodeResource(context.getResources(), iconId);
+                float wt_px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, POKEMON_SIZE, context.getResources().getDisplayMetrics());
+                int iconSize = (int) wt_px;
+                Bitmap resizedIcon = Bitmap.createScaledBitmap(bitmapIcon, iconSize, iconSize, false);
+                if (fromQuickScan)
+                    resizedIcon = changeBitmapColor(resizedIcon, 0xacb2d8);
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedIcon));
+            } catch (OutOfMemoryError e){
+                e.printStackTrace();
+            }
         }
         markerOptions.anchor(0.5f,0.5f);
         Marker marker = map.addMarker(markerOptions);

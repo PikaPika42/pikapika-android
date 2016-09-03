@@ -71,7 +71,7 @@ import okhttp3.Response;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener,NavigationView.OnNavigationItemSelectedListener,
-        GoogleMap.OnMapClickListener{
+        GoogleMap.OnMapClickListener {
 
     private static final int MY_LOCATION_REQUEST_CODE = 1001;
     private static final int LOGIN_ACTIVITY_RESULT = 101;
@@ -107,7 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //Ads
     private MoPubInterstitial mInterstitial;
-    private MoPubView moPubView;;
+    private MoPubView moPubView;
     private AdsHelper mAdsHelper;
 
     //Firebase
@@ -165,6 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+        //helpers
         markerHandler = new Handler();
         pokemonRequestHelper = new PokemonRequestHelper(this);
         configReader = new ConfigReader(this);
@@ -493,7 +494,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else {
                 PokemonHelper.showAlert(MapsActivity.this,getString(R.string.server_error_title),
                         getString(R.string.login_error_body));
-                pokemonRequestHelper.stopAutoHeartBeat_v2();
+                MapsActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pokemonRequestHelper.stopAutoHeartBeat_v2();
+                    }
+                });
             }
 
         }
