@@ -11,111 +11,123 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/layout_root">
+        android:id="@+id/content_layout">
 
-        <!--android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@color/colorPrimary"/ -->
-
-        <!-- Map fragment -->
-
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:map="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".activities.MapsActivity" />
-
-        <!-- Button with main actions -->
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/layout_left_bar">
+            android:id="@+id/layout_root"
+            android:layout_above="@+id/adview">
+
+            <!--android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@color/colorPrimary"/ -->
+
+            <!-- Map fragment -->
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".activities.MapsActivity" />
 
             <!-- Button with main actions -->
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/layout_left_bar">
+
+                <!-- Button with main actions -->
+                <Button
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/ic_arrow_drop_down_circle_black_36dp"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/button_drawer_menu"
+                    android:layout_marginLeft="10dp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+            <!-- Button with main actions -->
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/layout_right_bar">
+
+                <!-- Button with main actions -->
+                <Button
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/ic_location_on_black_36dp"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/button_location_marker"
+                    android:layout_marginRight="10dp"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
             <Button
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="@drawable/ic_arrow_drop_down_circle_black_36dp"
-                android:layout_alignParentTop="false"
-                android:layout_alignParentLeft="true"
-                android:id="@+id/button_drawer_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:background="@drawable/round_shape_button"
+                android:id="@+id/cancel_scan_button"
+                android:layout_above="@+id/progressBar"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp"
+                android:textColor="@android:color/white"
+                android:onClick="onCancelScanClick"
+                android:visibility="gone" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:progressDrawable="@drawable/custom_progressbar"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
                 android:layout_marginLeft="10dp"
-                android:layout_centerVertical="true" />
-
-        </RelativeLayout>
-
-        <!-- Button with main actions -->
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/layout_right_bar">
-
-            <!-- Button with main actions -->
-            <Button
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="@drawable/ic_location_on_black_36dp"
-                android:layout_alignParentTop="false"
-                android:layout_alignParentRight="true"
-                android:id="@+id/button_location_marker"
                 android:layout_marginRight="10dp"
-                android:layout_centerVertical="true" />
+                android:layout_marginBottom="10dp"
+                android:visibility="invisible" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/timer_text_view"
+                android:layout_above="@+id/main_action_button"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="15dp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:background="#F7F9F9" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/scan_action"
+                android:id="@+id/main_action_button"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/round_shape_button"
+                android:layout_marginBottom="10dp"
+                android:textColor="@android:color/white"
+                android:onClick="onMainActionClick" />
         </RelativeLayout>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            android:background="@drawable/round_shape_button"
-            android:id="@+id/cancel_scan_button"
-            android:layout_above="@+id/progressBar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="5dp"
-            android:textColor="@android:color/white"
-            android:onClick="onCancelScanClick"
-            android:visibility="gone" />
+        <com.mopub.mobileads.MoPubView
+            android:id="@+id/adview"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true" />
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/progressBar"
-            android:progressDrawable="@drawable/custom_progressbar"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:visibility="invisible" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/timer_text_view"
-            android:layout_above="@+id/main_action_button"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="15dp"
-            android:textColor="@color/colorPrimary"
-            android:textStyle="bold"
-            android:background="#F7F9F9" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/scan_action"
-            android:id="@+id/main_action_button"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/round_shape_button"
-            android:layout_marginBottom="10dp"
-            android:textColor="@android:color/white"
-            android:onClick="onMainActionClick" />
     </RelativeLayout>
 
     <!-- Sliding Left Menu -->
@@ -129,15 +141,6 @@
     app:headerLayout="@layout/navigation_header"
     app:menu="@menu/main_menu_drawer"
         >
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-        <com.mopub.mobileads.MoPubView
-            android:id="@+id/adview"
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true" />
-        </RelativeLayout>
     </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
